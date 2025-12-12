@@ -13,6 +13,12 @@ The repository uses GitHub Actions to automate:
 - Pull request notifications and labeling
 - Conditional auto-approval for trusted contributors
 
+**Note:** Some features require additional configuration:
+- **Codecov integration**: Optional - Add `CODECOV_TOKEN` secret for coverage reports
+- **Auto-approval**: Optional - Update trusted users list in `auto-approve.yml`
+- **CODEOWNERS**: Optional - Replace placeholder team names with actual teams/usernames
+- **Bundle size monitoring**: Optional - Requires size-limit configuration (can be added later)
+
 ## Workflows
 
 ### 1. CI Workflow (`ci.yml`)

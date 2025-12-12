@@ -1,6 +1,10 @@
 # CODEOWNERS file for automatic review assignments
 # See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
+# TODO: Replace @Algodons/* team references with actual GitHub team names or individual usernames
+# Example: *  @username1 @username2 (for individual users)
+#          *  @OrgName/team-name (for teams)
+
 # Default owners for everything in the repo
 # These users will be requested for review when someone opens a pull request
 *       @Algodons/maintainers
