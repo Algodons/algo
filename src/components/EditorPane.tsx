@@ -45,6 +45,8 @@ const EditorPane = ({
     })
 
     // Track cursor position
+    // Note: Direct mutation is intentional here for performance - cursor position
+    // is transient UI state that updates frequently and doesn't need re-renders
     editor.onDidChangeCursorPosition((e: any) => {
       const tab = tabs.find(t => t.id === activeTab)
       if (tab) {

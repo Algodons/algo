@@ -11,6 +11,12 @@ const execAsync = promisify(exec)
 
 const WORKSPACE_DIR = process.env.WORKSPACE_DIR || path.join(__dirname, '..', 'workspace')
 
+// Helper function to escape shell arguments
+function escapeShellArg(arg: string): string {
+  // Replace single quotes with '\'' and wrap in single quotes
+  return `'${arg.replace(/'/g, "'\\''")}'`
+}
+
 export function setupSearchRoutes(app: Express) {
   // Search files using ripgrep
   app.post('/api/search', async (req, res) => {
@@ -35,7 +41,8 @@ export function setupSearchRoutes(app: Express) {
         flags.push('-F') // Fixed string search
       }
 
-      const command = `rg ${flags.join(' ')} "${query.replace(/"/g, '\\"')}" "${WORKSPACE_DIR}"`
+      // Properly escape the query and workspace directory
+      const command = `rg ${flags.join(' ')} ${escapeShellArg(query)} ${escapeShellArg(WORKSPACE_DIR)}`
 
       try {
         const { stdout, stderr } = await execAsync(command, {
@@ -89,7 +96,8 @@ export function setupSearchRoutes(app: Express) {
         return res.status(400).json({ error: 'Query required' })
       }
 
-      const command = `find "${WORKSPACE_DIR}" -type f -iname "*${query.replace(/"/g, '\\"')}*" -not -path "*/node_modules/*" -not -path "*/.git/*"`
+      // Properly escape the query and workspace directory for shell command
+      const command = `find ${escapeShellArg(WORKSPACE_DIR)} -type f -iname ${escapeShellArg('*' + query + '*')} -not -path "*/node_modules/*" -not -path "*/.git/*"`
 
       const { stdout } = await execAsync(command, {
         maxBuffer: 10 * 1024 * 1024
