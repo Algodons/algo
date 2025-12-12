@@ -20,12 +20,10 @@ import {
   Building2,
   CreditCard,
   FileText,
-  Bell,
   Shield,
   Key as KeyIcon,
   Trash2,
   Plus,
-  CheckCircle2,
 } from 'lucide-react';
 
 export function SettingsSection() {
