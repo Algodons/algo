@@ -3,6 +3,12 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import databaseRoutes from './routes/database-routes';
+import queryRoutes from './routes/query-routes';
+import schemaRoutes from './routes/schema-routes';
+import migrationRoutes from './routes/migration-routes';
+import importExportRoutes from './routes/import-export-routes';
+import backupRoutes from './routes/backup-routes';
 
 dotenv.config();
 
@@ -25,6 +31,14 @@ app.use(express.json());
 app.get('/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// Database management routes
+app.use('/api/databases', databaseRoutes);
+app.use('/api/databases', queryRoutes);
+app.use('/api/databases', schemaRoutes);
+app.use('/api/databases', migrationRoutes);
+app.use('/api/databases', importExportRoutes);
+app.use('/api/databases', backupRoutes);
 
 // API endpoints
 app.get('/api/files', (_req: Request, res: Response) => {

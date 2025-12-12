@@ -4,6 +4,19 @@ Algo is a powerful platform that integrates various AI models and provides tools
 
 ## Features
 
+### Database Management Platform (NEW!)
+- **Multi-Database Support**: PostgreSQL, MySQL, MongoDB, Redis, SQLite, Pinecone, Weaviate
+- **Connection Management**: Unified interface with connection pooling and health monitoring
+- **Query Execution**: SQL/NoSQL query execution with history tracking and performance metrics
+- **Schema Management**: Complete schema introspection, modification, and comparison
+- **Migrations**: Version-controlled schema changes with rollback support
+- **Import/Export**: CSV, JSON, and SQL format support with compression
+- **Backup Automation**: Scheduled backups with point-in-time recovery (PITR)
+- **Security**: AES-256 encryption for credentials and connection pooling
+
+📖 **[Full Database Platform Documentation](./DATABASE_PLATFORM.md)**
+📚 **[API Reference](./DATABASE_API.md)**
+
 ### Built-in AI Features
 - **Code Generation**: Generate code from natural language prompts
 - **Bug Detection**: Automatically detect bugs and suggest fixes
