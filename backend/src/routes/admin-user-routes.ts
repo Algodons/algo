@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { Pool } from 'pg';
 import { requireAdmin, requireSuperAdmin, require2FA, logAdminAction } from '../middleware/admin-auth';
+import * as crypto from 'crypto';
 
 export function createAdminUserRoutes(pool: Pool) {
   const router = Router();
@@ -296,7 +297,6 @@ export function createAdminUserRoutes(pool: Pool) {
       }
 
       // Generate session token
-      const crypto = require('crypto');
       const sessionToken = crypto.randomBytes(32).toString('hex');
 
       // Create impersonation session

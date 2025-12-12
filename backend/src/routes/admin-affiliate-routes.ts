@@ -1,10 +1,10 @@
 import { Router, Request, Response } from 'express';
 import { Pool } from 'pg';
 import { requireAdmin, require2FA, logAdminAction } from '../middleware/admin-auth';
+import * as crypto from 'crypto';
 
 export function createAdminAffiliateRoutes(pool: Pool) {
   const router = Router();
-  const crypto = require('crypto');
 
   // Apply admin authentication and logging to all routes
   router.use(requireAdmin);

@@ -17,6 +17,17 @@ export function createAdminSystemRoutes(pool: Pool) {
     try {
       const { period = '1h' } = req.query;
 
+      // Validate period parameter
+      const validPeriods = ['1h', '6h', '24h', '7d'];
+      const periodMap: { [key: string]: string } = {
+        '1h': '1 hour',
+        '6h': '6 hours',
+        '24h': '24 hours',
+        '7d': '7 days',
+      };
+      const safePeriod = validPeriods.includes(period as string) ? period as string : '1h';
+      const intervalPeriod = periodMap[safePeriod];
+
       const result = await pool.query(
         `SELECT 
            server_id,
@@ -28,9 +39,10 @@ export function createAdminSystemRoutes(pool: Pool) {
            status,
            COUNT(*) as metric_count
          FROM server_health
-         WHERE timestamp > NOW() - INTERVAL '${period}'
+         WHERE timestamp > NOW() - INTERVAL $1
          GROUP BY server_id, status
-         ORDER BY server_id`
+         ORDER BY server_id`,
+        [intervalPeriod]
       );
 
       // Get latest status for each server
@@ -91,6 +103,17 @@ export function createAdminSystemRoutes(pool: Pool) {
     try {
       const { period = '1h' } = req.query;
 
+      // Validate period parameter
+      const validPeriods = ['1h', '6h', '24h', '7d'];
+      const periodMap: { [key: string]: string } = {
+        '1h': '1 hour',
+        '6h': '6 hours',
+        '24h': '24 hours',
+        '7d': '7 days',
+      };
+      const safePeriod = validPeriods.includes(period as string) ? period as string : '1h';
+      const intervalPeriod = periodMap[safePeriod];
+
       // Get pod status
       const podsResult = await pool.query(
         `SELECT 
@@ -99,8 +122,9 @@ export function createAdminSystemRoutes(pool: Pool) {
            AVG(cpu_usage) as avg_cpu,
            AVG(memory_usage) as avg_memory
          FROM container_metrics
-         WHERE timestamp > NOW() - INTERVAL '${period}'
-         GROUP BY status`
+         WHERE timestamp > NOW() - INTERVAL $1
+         GROUP BY status`,
+        [intervalPeriod]
       );
 
       // Get node allocation
@@ -111,9 +135,10 @@ export function createAdminSystemRoutes(pool: Pool) {
            AVG(cpu_usage) as avg_cpu,
            AVG(memory_usage) as avg_memory
          FROM container_metrics
-         WHERE timestamp > NOW() - INTERVAL '${period}'
+         WHERE timestamp > NOW() - INTERVAL $1
          GROUP BY node_name
-         ORDER BY pod_count DESC`
+         ORDER BY pod_count DESC`,
+        [intervalPeriod]
       );
 
       // Get restart statistics
@@ -122,10 +147,11 @@ export function createAdminSystemRoutes(pool: Pool) {
            pod_name,
            SUM(restart_count) as total_restarts
          FROM container_metrics
-         WHERE timestamp > NOW() - INTERVAL '${period}' AND restart_count > 0
+         WHERE timestamp > NOW() - INTERVAL $1 AND restart_count > 0
          GROUP BY pod_name
          ORDER BY total_restarts DESC
-         LIMIT 10`
+         LIMIT 10`,
+        [intervalPeriod]
       );
 
       res.json({

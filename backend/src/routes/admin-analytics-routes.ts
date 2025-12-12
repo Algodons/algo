@@ -64,6 +64,16 @@ export function createAdminAnalyticsRoutes(pool: Pool) {
     try {
       const { period = '12m' } = req.query;
 
+      // Validate period parameter
+      const validPeriods = ['6m', '12m', '24m'];
+      const intervalMap: { [key: string]: string } = {
+        '6m': '6 months',
+        '12m': '12 months',
+        '24m': '24 months',
+      };
+      const safePeriod = validPeriods.includes(period as string) ? period as string : '12m';
+      const interval = intervalMap[safePeriod];
+
       // Calculate MRR (Monthly Recurring Revenue)
       const mrrResult = await pool.query(
         `SELECT 
@@ -82,9 +92,10 @@ export function createAdminAnalyticsRoutes(pool: Pool) {
            COUNT(*) as new_subscriptions,
            SUM(amount) as revenue
          FROM subscriptions
-         WHERE created_at > NOW() - INTERVAL '${period}'
+         WHERE created_at > NOW() - INTERVAL $1
          GROUP BY month
-         ORDER BY month ASC`
+         ORDER BY month ASC`,
+        [interval]
       );
 
       // Calculate growth rate
@@ -197,23 +208,30 @@ export function createAdminAnalyticsRoutes(pool: Pool) {
     try {
       const { period = '24h' } = req.query;
 
-      let interval = '1 hour';
-      if (period === '7d') interval = '6 hours';
-      if (period === '30d') interval = '1 day';
+      // Validate period and interval parameters
+      const periodMap: { [key: string]: { period: string; interval: string } } = {
+        '24h': { period: '24 hours', interval: 'hour' },
+        '7d': { period: '7 days', interval: 'hour' },
+        '30d': { period: '30 days', interval: 'day' },
+      };
+      const validPeriods = Object.keys(periodMap);
+      const safePeriod = validPeriods.includes(period as string) ? period as string : '24h';
+      const { period: intervalPeriod, interval } = periodMap[safePeriod];
 
-      // Get resource metrics
+      // Get resource metrics - use safe interval value
       const metricsResult = await pool.query(
         `SELECT 
            metric_type,
-           DATE_TRUNC('${interval}', timestamp) as time_bucket,
+           DATE_TRUNC($1, timestamp) as time_bucket,
            SUM(value) as total,
            AVG(value) as average,
            MAX(value) as peak,
            unit
          FROM resource_metrics
-         WHERE timestamp > NOW() - INTERVAL '${period}'
+         WHERE timestamp > NOW() - INTERVAL $2
          GROUP BY metric_type, time_bucket, unit
-         ORDER BY time_bucket ASC`
+         ORDER BY time_bucket ASC`,
+        [interval, intervalPeriod]
       );
 
       // Get container counts
@@ -238,7 +256,8 @@ export function createAdminAnalyticsRoutes(pool: Pool) {
       const bandwidthResult = await pool.query(
         `SELECT SUM(value) as total_bandwidth
          FROM resource_metrics
-         WHERE metric_type = 'bandwidth' AND timestamp > NOW() - INTERVAL '${period}'`
+         WHERE metric_type = 'bandwidth' AND timestamp > NOW() - INTERVAL $1`,
+        [intervalPeriod]
       );
 
       res.json({
@@ -372,6 +391,17 @@ export function createAdminAnalyticsRoutes(pool: Pool) {
     try {
       const { period = '24h' } = req.query;
 
+      // Validate period parameter
+      const validPeriods = ['1h', '24h', '7d', '30d'];
+      const periodMap: { [key: string]: string } = {
+        '1h': '1 hour',
+        '24h': '24 hours',
+        '7d': '7 days',
+        '30d': '30 days',
+      };
+      const safePeriod = validPeriods.includes(period as string) ? period as string : '24h';
+      const intervalPeriod = periodMap[safePeriod];
+
       // Get API performance metrics
       const apiPerfResult = await pool.query(
         `SELECT 
@@ -383,10 +413,11 @@ export function createAdminAnalyticsRoutes(pool: Pool) {
            PERCENTILE_CONT(0.99) WITHIN GROUP (ORDER BY response_time_ms) as p99_latency,
            COUNT(CASE WHEN status_code >= 400 THEN 1 END) as error_count
          FROM api_usage
-         WHERE timestamp > NOW() - INTERVAL '${period}'
+         WHERE timestamp > NOW() - INTERVAL $1
          GROUP BY endpoint
          ORDER BY request_count DESC
-         LIMIT 20`
+         LIMIT 20`,
+        [intervalPeriod]
       );
 
       // Get overall platform performance
@@ -397,7 +428,8 @@ export function createAdminAnalyticsRoutes(pool: Pool) {
            AVG(p99_latency) as avg_p99,
            AVG(error_rate) as avg_error_rate
          FROM platform_performance
-         WHERE timestamp > NOW() - INTERVAL '${period}'`
+         WHERE timestamp > NOW() - INTERVAL $1`,
+        [intervalPeriod]
       );
 
       // Get database query performance
@@ -408,9 +440,10 @@ export function createAdminAnalyticsRoutes(pool: Pool) {
            request_count,
            error_rate
          FROM platform_performance
-         WHERE metric_name LIKE 'db_%' AND timestamp > NOW() - INTERVAL '${period}'
+         WHERE metric_name LIKE 'db_%' AND timestamp > NOW() - INTERVAL $1
          ORDER BY avg_response_time DESC
-         LIMIT 10`
+         LIMIT 10`,
+        [intervalPeriod]
       );
 
       res.json({

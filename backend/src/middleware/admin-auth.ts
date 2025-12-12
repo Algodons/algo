@@ -171,9 +171,22 @@ export const require2FA = (pool: Pool) => {
         });
       }
 
-      // TODO: Verify the 2FA token against the user's secret
-      // This would require a TOTP library like speakeasy
-      // For now, we'll just check that a token was provided
+      // TODO: CRITICAL - Implement actual 2FA token verification
+      // This requires integration with a TOTP library like speakeasy or otplib
+      // Example implementation:
+      // const speakeasy = require('speakeasy');
+      // const verified = speakeasy.totp.verify({
+      //   secret: result.rows[0].secret,
+      //   encoding: 'base32',
+      //   token: tfaToken as string,
+      //   window: 2
+      // });
+      // if (!verified) {
+      //   return res.status(403).json({ error: 'Invalid 2FA token' });
+      // }
+      
+      // SECURITY WARNING: Current implementation accepts any token
+      // This MUST be implemented before production use
 
       next();
     } catch (error) {
@@ -258,8 +271,24 @@ export const validateSensitiveOperation = (req: Request, res: Response, next: Ne
     });
   }
 
-  // TODO: Verify password against user's stored hash
-  // This would require bcrypt or similar
+  // TODO: CRITICAL - Implement actual password verification
+  // This requires bcrypt or argon2 password verification
+  // Example implementation:
+  // const bcrypt = require('bcrypt');
+  // const userResult = await pool.query(
+  //   'SELECT password_hash FROM users WHERE id = $1',
+  //   [req.user!.id]
+  // );
+  // const validPassword = await bcrypt.compare(
+  //   passwordConfirmation as string,
+  //   userResult.rows[0].password_hash
+  // );
+  // if (!validPassword) {
+  //   return res.status(403).json({ error: 'Invalid password' });
+  // }
+  
+  // SECURITY WARNING: Current implementation accepts any password
+  // This MUST be implemented before production use
   
   next();
 };
