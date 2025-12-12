@@ -45,7 +45,7 @@ export function setupSearchRoutes(app: Express) {
       const command = `rg ${flags.join(' ')} ${escapeShellArg(query)} ${escapeShellArg(WORKSPACE_DIR)}`
 
       try {
-        const { stdout, stderr } = await execAsync(command, {
+        const { stdout } = await execAsync(command, {
           maxBuffer: 10 * 1024 * 1024 // 10MB buffer
         })
 
