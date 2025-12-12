@@ -271,8 +271,9 @@ docker-compose ps redis
 # Check Docker socket is accessible
 ls -la /var/run/docker.sock
 
-# Grant permissions
-sudo chmod 666 /var/run/docker.sock
+# If you get a permissions error, add your user to the docker group:
+sudo usermod -aG docker $USER
+# Then log out and log back in (or restart your session) for the group change to take effect.
 
 # Check Docker service
 sudo systemctl status docker
