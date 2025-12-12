@@ -2,14 +2,11 @@ import { Express } from 'express'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 import path from 'path'
-import { fileURLToPath } from 'url'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 
 const execAsync = promisify(exec)
 
-const WORKSPACE_DIR = process.env.WORKSPACE_DIR || path.join(__dirname, '..', 'workspace')
+// Using process.cwd() as it works in CommonJS
+const WORKSPACE_DIR = process.env.WORKSPACE_DIR || path.join(process.cwd(), 'workspace')
 
 // Helper function to escape shell arguments
 function escapeShellArg(arg: string): string {

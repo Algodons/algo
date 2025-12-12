@@ -1,20 +1,16 @@
 import { Express } from 'express'
 import fs from 'fs/promises'
 import path from 'path'
-import { fileURLToPath } from 'url'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-// Default workspace directory
-const WORKSPACE_DIR = process.env.WORKSPACE_DIR || path.join(__dirname, '..', 'workspace')
+// Default workspace directory - using process.cwd() as fallback since __dirname is available in CommonJS
+const WORKSPACE_DIR = process.env.WORKSPACE_DIR || path.join(process.cwd(), 'workspace')
 
 export function setupFileRoutes(app: Express) {
   // Ensure workspace directory exists
   fs.mkdir(WORKSPACE_DIR, { recursive: true }).catch(console.error)
 
   // Get file tree
-  app.get('/api/files', async (req, res) => {
+  app.get('/api/files', async (_req, res) => {
     try {
       const files = await buildFileTree(WORKSPACE_DIR)
       res.json(files)
