@@ -14,6 +14,12 @@ import { createProjectManagementRoutes } from './routes/project-management-route
 import { createResourceMonitoringRoutes } from './routes/resource-monitoring-routes';
 import { createApiManagementRoutes } from './routes/api-management-routes';
 import { createAccountSettingsRoutes } from './routes/account-settings-routes';
+import { createAdminUserRoutes } from './routes/admin-user-routes';
+import { createAdminAnalyticsRoutes } from './routes/admin-analytics-routes';
+import { createAdminAffiliateRoutes } from './routes/admin-affiliate-routes';
+import { createAdminFinancialRoutes } from './routes/admin-financial-routes';
+import { createAdminSystemRoutes } from './routes/admin-system-routes';
+import { handleImpersonation } from './middleware/admin-auth';
 
 dotenv.config();
 
@@ -41,6 +47,9 @@ const dashboardPool = new Pool({
 app.use(cors());
 app.use(express.json());
 
+// Admin impersonation middleware (should be early in the chain)
+app.use(handleImpersonation(dashboardPool));
+
 // Health check endpoint
 app.get('/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -59,6 +68,13 @@ app.use('/api/dashboard/projects', createProjectManagementRoutes(dashboardPool))
 app.use('/api/dashboard/resources', createResourceMonitoringRoutes(dashboardPool));
 app.use('/api/dashboard/api', createApiManagementRoutes(dashboardPool));
 app.use('/api/dashboard/settings', createAccountSettingsRoutes(dashboardPool));
+
+// Admin control system routes
+app.use('/api/admin/users', createAdminUserRoutes(dashboardPool));
+app.use('/api/admin/analytics', createAdminAnalyticsRoutes(dashboardPool));
+app.use('/api/admin/affiliates', createAdminAffiliateRoutes(dashboardPool));
+app.use('/api/admin/financial', createAdminFinancialRoutes(dashboardPool));
+app.use('/api/admin/system', createAdminSystemRoutes(dashboardPool));
 
 // API endpoints
 app.get('/api/files', (_req: Request, res: Response) => {
