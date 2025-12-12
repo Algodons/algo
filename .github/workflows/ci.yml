@@ -150,7 +150,7 @@ jobs:
         run: npm ci
 
       - name: Run TypeScript compiler
-        run: npx tsc --noEmit
+        run: npm run type-check
 
   ci-success:
     name: CI Success
