@@ -1,257 +1,94 @@
-# Algo Code Editor
+# Algo - Comprehensive AI Integration Platform
 
-A full-featured browser-based code editor built with modern web technologies.
+Algo is a powerful platform that integrates various AI models and provides tools for developers to enhance their coding experience.
 
 ## Features
 
-### Editor Capabilities
-- ✅ **Syntax highlighting** for 50+ languages (powered by Monaco Editor)
-- ✅ **Intelligent code completion** using Language Server Protocol (LSP)
-- ✅ **Multi-cursor editing** for efficient code manipulation
-- ✅ **Vim/Emacs keybindings** support
-- ✅ **Integrated debugging** with breakpoints (Node.js, Python, Go)
-- ✅ **Code formatting** with auto-integration (Prettier, Black, gofmt)
-- ✅ **Find/replace with regex** support across entire project
-- ✅ **Split view editing** (up to 4 panes)
-- ✅ **Minimap navigation** for quick code overview
-- ✅ **Git diff visualization** inline
-- ✅ **Snippet library** with custom user snippets
+### Built-in AI Features
+- **Code Generation**: Generate code from natural language prompts
+- **Bug Detection**: Automatically detect bugs and suggest fixes
+- **Documentation Generator**: Create documentation for your code
+- **Unit Test Auto-Generation**: Generate unit tests automatically
+- **Code Review Assistant**: Get best practice suggestions for code reviews
+- **SQL Query Converter**: Convert natural language to SQL queries
+- **API Endpoint Generator**: Generate API endpoints from descriptions
 
-### File Management
-- ✅ **Drag-and-drop** file/folder organization
-- ✅ **Search across all files** (ripgrep implementation)
-- ✅ **File templates** for common frameworks
-- ✅ **Binary file preview** (images, PDFs, videos)
-- ✅ **Large file handling** with lazy loading (>10MB)
+### Custom Model Integration
+- Support for OpenAI (GPT-4, GPT-3.5), Anthropic (Claude), Google (Gemini), and local models
+- Secure API key management with encrypted storage
+- Usage tracking and cost estimation
+- Response caching for cost reduction
+- Streaming responses
+- Context window optimization
+- Model comparison interface
 
-### Terminal Integration
-- ✅ **Multiple terminal tabs**
-- ✅ **Shell selection** (bash, zsh, fish)
-- ✅ **Command history persistence**
-- ✅ **Terminal sharing** for collaboration
-- ✅ **SSH key management** interface
+### Agent Builder
+- Visual workflow designer for AI agent chains
+- Pre-built templates for common agents
+- Custom prompt engineering
+- Testing playground
+- Version control for configurations
+- Marketplace for sharing custom agents
 
-## Technology Stack
+### Free Tier Strategy
+- Free unlimited usage with your own API keys
+- Limited monthly credits for platform models
+- Pay-per-use for premium access
 
-- **Frontend**: React 18 + TypeScript
-- **Editor**: Monaco Editor (VS Code's editor)
-- **Terminal**: xterm.js
-- **Build Tool**: Vite
-- **Backend**: Node.js + Express
-- **WebSocket**: ws (for terminal and collaboration)
-- **Collaboration**: Yjs for real-time editing
-- **Search**: ripgrep for fast file searching
+## Tech Stack
+- Frontend: Next.js with TypeScript
+- Backend: Node.js with Express
+- Database: MongoDB with Mongoose
+- AI Integrations: OpenAI, Anthropic, Google AI
+- Payment: Stripe
 
-## Prerequisites
+## Getting Started
 
-- Node.js 18 or higher
-- npm or yarn
-- ripgrep (optional, for file search functionality)
-
-## Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/Algodons/algo.git
-cd algo
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Start the development server:
-```bash
-npm run dev
-```
-
-4. Open your browser and navigate to `http://localhost:5173`
-
-## Usage
-
-### Opening Files
-- Click on files in the left sidebar file explorer
-- Files will open in tabs at the top of the editor
-
-### Editing Code
-- **Save**: `Ctrl/Cmd + S`
-- **Find**: `Ctrl/Cmd + F`
-- **Find in files**: `Ctrl/Cmd + Shift + F`
-- **Quick open**: `Ctrl/Cmd + P`
-- **Toggle terminal**: `Ctrl/Cmd + \``
-
-### Split View
-- Use the toolbar dropdown to select split view mode:
-  - Single View
-  - Split Horizontal
-  - Split Vertical
-  - Grid (4 panes)
-
-### Terminal
-- Click "Terminal" button in the toolbar
-- Create new terminals with different shells
-- Multiple terminal tabs supported
-- Full terminal functionality with command history
-
-### Search
-- Click the "Search" button in the toolbar
-- Enter search query
-- Toggle regex and case-sensitive options
-- Click on results to jump to files
-
-## Configuration
-
-### Editor Settings
-The editor supports various configuration options accessible from the toolbar:
-- **Theme**: Dark, Light, High Contrast
-- **Key Bindings**: Default, Vim, Emacs
-- **Font Size**: Adjustable (8-24px)
-- **Minimap**: Toggle on/off
-- **Format on Save**: Enable/disable automatic formatting
-
-### Environment Variables
-- `PORT`: Server port (default: 3001)
-- `WORKSPACE_DIR`: Workspace directory path (default: ./workspace)
-
-## Project Structure
-
-```
-algo/
-├── src/                    # Frontend source code
-│   ├── components/         # React components
-│   │   ├── EditorPane.tsx  # Monaco editor wrapper
-│   │   ├── Terminal.tsx    # Terminal component
-│   │   ├── FileExplorer.tsx # File tree component
-│   │   ├── Toolbar.tsx     # Top toolbar
-│   │   ├── StatusBar.tsx   # Bottom status bar
-│   │   └── SearchPanel.tsx # Search interface
-│   ├── types/             # TypeScript type definitions
-│   ├── App.tsx            # Main application component
-│   ├── main.tsx           # Application entry point
-│   └── index.css          # Global styles
-├── server/                # Backend server code
-│   ├── index.ts          # Main server file
-│   ├── file-routes.ts    # File system API routes
-│   ├── terminal-server.ts # Terminal WebSocket handler
-│   ├── yjs-server.ts     # Collaborative editing server
-│   └── search-routes.ts  # Search API routes
-├── workspace/            # Default workspace directory
-├── package.json          # Project dependencies
-├── tsconfig.json         # TypeScript configuration
-├── vite.config.ts        # Vite configuration
-└── README.md            # This file
-```
-
-## Architecture
-
-### Frontend Architecture
-- **React Components**: Modular component structure
-- **Monaco Editor**: Industry-standard code editor from VS Code
-- **WebSocket Communication**: Real-time terminal and collaboration
-- **State Management**: React hooks for local state
-
-### Backend Architecture
-- **Express Server**: RESTful API for file operations
-- **WebSocket Server**: Real-time communication for terminals
-- **Node-pty**: Pseudo-terminal for shell integration
-- **File System API**: Secure file operations with path validation
-
-### Communication Flow
-```
-Browser (React App)
-    ↓
-Vite Dev Server (Proxy)
-    ↓
-Express Server (API Routes)
-    ↓
-WebSocket Server (Terminal/Yjs)
-    ↓
-File System / PTY Processes
-```
-
-## Supported Languages
-
-Monaco Editor provides syntax highlighting and IntelliSense for 50+ languages including:
-
-- JavaScript, TypeScript, JSX, TSX
-- Python, Java, C, C++, C#
-- Go, Rust, Ruby, PHP, Swift
-- HTML, CSS, SCSS, Less
-- JSON, XML, YAML, TOML
-- Markdown, SQL, Shell scripts
-- And many more...
-
-## Development
-
-### Building for Production
-
-```bash
-npm run build
-```
-
-The built files will be in the `dist/` directory.
-
-### Running in Production
-
-```bash
-npm run preview
-```
-
-## Features in Detail
-
-### Multi-Cursor Editing
-- Hold `Alt` (or `Option` on Mac) and click to add cursors
-- `Ctrl/Cmd + Alt + ↑/↓` to add cursors above/below
-- `Ctrl/Cmd + D` to select next occurrence
-
-### Code Formatting
-- Automatic formatting on save (when enabled)
-- Supports language-specific formatters
-- Configurable format options
-
-### Debugging Support
-- Set breakpoints by clicking on line numbers
-- Debug panel for variables and call stack
-- Supports Node.js, Python, and Go debugging
-
-### Git Integration
-- Inline diff visualization
-- View changes in the editor
-- Color-coded additions and deletions
-
-### Collaborative Editing
-- Real-time collaboration via Yjs
-- See other users' cursors and selections
-- Conflict-free concurrent editing
-
-## Troubleshooting
-
-### Terminal Not Working
-- Ensure `node-pty` is properly installed
-- Check that the shell (bash/zsh/fish) is available on your system
-- Verify WebSocket connection in browser console
-
-### File Search Not Working
-- Install ripgrep: `brew install ripgrep` (Mac) or `apt install ripgrep` (Linux)
-- Verify ripgrep is in your PATH
-
-### Editor Performance Issues
-- Disable minimap for large files
-- Reduce the number of open tabs
-- Check browser console for errors
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Set up environment variables
+4. Run the development server: `npm run dev`
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please read our contributing guidelines.
 
-## License
+## Deployment System
 
-MIT License - See LICENSE file for details
+Algo includes a comprehensive one-click deployment system for easy application deployment and management.
 
-## Acknowledgments
+### Deployment Targets
+- **Subdomain Hosting**: Deploy to user.gxqstudio.com with automatic SSL certificates
+- **Static Site Deployment**: CDN-backed hosting for static websites
+- **Full-Stack Application Hosting**: Containerized deployment for web applications
+- **Serverless Function Deployment**: Deploy individual functions or APIs
+- **Database Provisioning**: Automatic setup of PostgreSQL, MongoDB, or Redis instances
+- **Custom Domain Mapping**: Map custom domains with integrated DNS management
 
-- Monaco Editor - Microsoft
-- xterm.js - xtermjs.org
-- React - Meta
-- Vite - Evan You and contributors
+### Automation Features
+- **Zero-Config Deployment Detection**: Automatically detect and configure popular frameworks
+- **CI/CD Pipeline Builder**: Visual interface to create deployment pipelines
+- **GitHub/GitLab Integration**: Auto-deploy on push to specified branches
+- **Environment-Based Deployments**: Separate dev, staging, and production environments
+- **Automatic Rollback**: Rollback to previous versions on failed deployments
+- **Blue-Green Deployment**: Zero-downtime deployments with traffic switching
+- **Load Balancer Configuration**: Automatic load balancer setup and management
+- **Auto-Scaling Rules**: Horizontal pod autoscaling based on traffic and resource usage
+
+### Monitoring & Logs
+- **Real-Time Application Logs**: Filtered logs with search and export capabilities
+- **Error Tracking**: Detailed stack traces and error categorization
+- **Performance Metrics**: Response time, throughput, and resource utilization
+- **Custom Alerts**: Notifications via email, Slack, or webhooks
+- **Analytics Dashboard**: Track visits, API calls, and bandwidth usage
+- **Uptime Monitoring**: Automatic status page generation and incident tracking
+
+### Getting Started with Deployment
+
+1. Connect your GitHub/GitLab repository
+2. Configure your deployment settings
+3. Push to your repository to trigger automatic deployment
+4. Monitor your application through the dashboard
+
+Current Date and Time (UTC - YYYY-MM-DD HH:MM:SS formatted): 2025-12-12 05:05:45
+Current User's Login: SMSDAO
