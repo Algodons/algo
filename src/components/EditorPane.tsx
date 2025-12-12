@@ -1,6 +1,5 @@
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import Editor from '@monaco-editor/react'
-import * as monaco from 'monaco-editor'
 import './EditorPane.css'
 import { EditorTab, EditorConfig } from '../types'
 
@@ -68,7 +67,7 @@ const EditorPane = ({
     lineNumbers: config.lineNumbers,
     automaticLayout: true,
     scrollBeyondLastLine: false,
-    renderWhitespace: 'selection',
+    renderWhitespace: 'selection' as const,
     suggestOnTriggerCharacters: true,
     quickSuggestions: true,
     formatOnPaste: true,

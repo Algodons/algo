@@ -20,11 +20,9 @@
     "node-pty": "^1.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-split-pane": "^0.1.92",
     "yjs": "^13.6.10",
     "y-websocket": "^1.5.0",
     "monaco-editor": "^0.45.0",
-    "ripgrep-js": "^1.0.2",
     "chokidar": "^3.5.3",
     "cors": "^2.8.5",
     "simple-git": "^3.22.0"
