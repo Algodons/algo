@@ -17,7 +17,23 @@ const server = createServer(app)
 const wss = new WebSocketServer({ server })
 
 // Middleware
-app.use(cors())
+
+// Allow only trusted origins for CORS
+const allowedOrigins = [
+  'http://localhost:3000', // Add your frontend dev URL here
+  // Add more trusted origins as needed
+];
+app.use(cors({
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
 app.use(express.json())
 
 // API Routes
