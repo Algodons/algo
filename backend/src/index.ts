@@ -4,6 +4,9 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import databaseRoutes from './routes/database-routes';
+import queryRoutes from './routes/query-routes';
+import schemaRoutes from './routes/schema-routes';
+import migrationRoutes from './routes/migration-routes';
 
 dotenv.config();
 
@@ -29,6 +32,9 @@ app.get('/health', (_req: Request, res: Response) => {
 
 // Database management routes
 app.use('/api/databases', databaseRoutes);
+app.use('/api/databases', queryRoutes);
+app.use('/api/databases', schemaRoutes);
+app.use('/api/databases', migrationRoutes);
 
 // API endpoints
 app.get('/api/files', (_req: Request, res: Response) => {
