@@ -31,14 +31,16 @@ export function setupDatabaseRoutes(app: Express) {
 
   app.post('/api/db/postgres/query', async (req: Request, res: Response) => {
     try {
-      const { connectionId, query } = req.body;
+      const { connectionId, query, params } = req.body;
       const conn = connections.get(connectionId);
       
       if (!conn || conn.type !== 'postgres') {
         return res.status(400).json({ error: 'Invalid connection' });
       }
       
-      const result = await conn.client.query(query);
+      // Ensure params is an array, or default to empty array
+      const safeParams = Array.isArray(params) ? params : [];
+      const result = await conn.client.query(query, safeParams);
       
       res.json({ success: true, rows: result.rows, rowCount: result.rowCount });
     } catch (error) {
@@ -91,14 +93,16 @@ export function setupDatabaseRoutes(app: Express) {
 
   app.post('/api/db/mysql/query', async (req: Request, res: Response) => {
     try {
-      const { connectionId, query } = req.body;
+      const { connectionId, query, params } = req.body;
       const conn = connections.get(connectionId);
       
       if (!conn || conn.type !== 'mysql') {
         return res.status(400).json({ error: 'Invalid connection' });
       }
       
-      const [rows] = await conn.client.execute(query);
+      // Ensure params is an array, or default to empty array
+      const safeParams = Array.isArray(params) ? params : [];
+      const [rows] = await conn.client.execute(query, safeParams);
       
       res.json({ success: true, rows });
     } catch (error) {

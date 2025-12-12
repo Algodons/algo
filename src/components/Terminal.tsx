@@ -51,8 +51,13 @@ const Terminal: React.FC = () => {
 
     xtermRef.current = term;
 
-    // Connect to WebSocket terminal server
-    const ws = new WebSocket('ws://localhost:5000/terminal');
+    // Connect to WebSocket terminal server - dynamically construct URL
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsHost = window.location.hostname;
+    const wsPort = window.location.port ? `:${window.location.port}` : '';
+    const wsUrl = `${wsProtocol}//${wsHost}${wsPort}/terminal`;
+    
+    const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
 
     ws.onopen = () => {

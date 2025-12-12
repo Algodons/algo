@@ -35,10 +35,15 @@ const Editor: React.FC<EditorProps> = ({ workspaceId, filePath }) => {
       providerRef.current.destroy();
     }
 
-    // Create Yjs document and provider
+    // Create Yjs document and provider - dynamically construct WebSocket URL
     const doc = new Y.Doc();
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsHost = window.location.hostname;
+    const wsPort = window.location.port ? `:${window.location.port}` : '';
+    const wsUrl = `${wsProtocol}//${wsHost}${wsPort}/yjs`;
+    
     const provider = new WebsocketProvider(
-      `ws://localhost:5000/yjs`,
+      wsUrl,
       `${workspaceId}:${filePath}`,
       doc
     );
