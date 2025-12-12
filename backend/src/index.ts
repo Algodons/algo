@@ -3,12 +3,17 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { Pool } from 'pg';
 import databaseRoutes from './routes/database-routes';
 import queryRoutes from './routes/query-routes';
 import schemaRoutes from './routes/schema-routes';
 import migrationRoutes from './routes/migration-routes';
 import importExportRoutes from './routes/import-export-routes';
 import backupRoutes from './routes/backup-routes';
+import { createProjectManagementRoutes } from './routes/project-management-routes';
+import { createResourceMonitoringRoutes } from './routes/resource-monitoring-routes';
+import { createApiManagementRoutes } from './routes/api-management-routes';
+import { createAccountSettingsRoutes } from './routes/account-settings-routes';
 
 dotenv.config();
 
@@ -22,6 +27,15 @@ const io = new Server(httpServer, {
 });
 
 const PORT = process.env.PORT || 4000;
+
+// Initialize PostgreSQL pool for dashboard features
+const dashboardPool = new Pool({
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '5432'),
+  database: process.env.DB_NAME || 'algo_ide',
+  user: process.env.DB_USER || 'algo_user',
+  password: process.env.DB_PASSWORD,
+});
 
 // Middleware
 app.use(cors());
@@ -39,6 +53,12 @@ app.use('/api/databases', schemaRoutes);
 app.use('/api/databases', migrationRoutes);
 app.use('/api/databases', importExportRoutes);
 app.use('/api/databases', backupRoutes);
+
+// Dashboard feature routes
+app.use('/api/dashboard/projects', createProjectManagementRoutes(dashboardPool));
+app.use('/api/dashboard/resources', createResourceMonitoringRoutes(dashboardPool));
+app.use('/api/dashboard/api', createApiManagementRoutes(dashboardPool));
+app.use('/api/dashboard/settings', createAccountSettingsRoutes(dashboardPool));
 
 // API endpoints
 app.get('/api/files', (_req: Request, res: Response) => {
