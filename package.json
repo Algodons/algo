@@ -1,4 +1,7 @@
 {
+  "name": "algo-cloud-ide",
+  "version": "1.0.0",
+  "description": "Production-grade cloud IDE and deployment platform",
   "name": "algo",
   "version": "1.0.0",
   "description": "Cloud IDE Platform",
@@ -8,6 +11,32 @@
     "backend"
   ],
   "scripts": {
+    "dev": "npm-run-all --parallel dev:*",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "build": "npm-run-all build:*",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "start": "npm-run-all --parallel start:*",
+    "start:frontend": "cd frontend && npm start",
+    "start:backend": "cd backend && npm start",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "k8s:deploy": "kubectl apply -f k8s/",
+    "k8s:delete": "kubectl delete -f k8s/"
+  },
+  "keywords": [
+    "cloud-ide",
+    "code-editor",
+    "deployment-platform",
+    "replit-clone"
+  ],
+  "author": "Algo Team",
+  "license": "MIT",
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
     "dev": "npm run dev --workspace=frontend & npm run dev --workspace=backend",
     "build": "npm run build --workspace=frontend && npm run build --workspace=backend",
     "start": "npm run start --workspace=frontend & npm run start --workspace=backend",
