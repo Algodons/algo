@@ -1,10 +1,10 @@
 # Algo - Cloud IDE Platform
 
-A modern cloud-based IDE platform built with Next.js 14, TypeScript, and Express.
+A modern cloud-based IDE platform built with Next.js 15, TypeScript, and Express.
 
 ## Features
 
-- **Modern Frontend**: Next.js 14 with App Router and TypeScript
+- **Modern Frontend**: Next.js 15 with App Router and TypeScript
 - **Code Editor**: Monaco Editor integration for a VSCode-like experience
 - **Terminal**: Integrated terminal using xterm.js
 - **File Explorer**: Sidebar with file tree navigation
@@ -14,7 +14,7 @@ A modern cloud-based IDE platform built with Next.js 14, TypeScript, and Express
 ## Tech Stack
 
 ### Frontend
-- Next.js 14 (App Router)
+- Next.js 15 (App Router)
 - TypeScript
 - TailwindCSS
 - Monaco Editor
