@@ -27,8 +27,8 @@ jobs:
           # List of trusted contributors (GitHub usernames)
           # TODO: Replace with actual GitHub usernames before enabling auto-approval
           TRUSTED_USERS=(
-            "owner-username"
-            "maintainer-username"
+            "alice"
+            "bob"
           )
 
           PR_AUTHOR="${{ github.event.pull_request.user.login }}"
