@@ -137,7 +137,49 @@ jobs:
               }
 
               // Configuration changes
-              if (path.includes('.json') || path.includes('.yml') || path.includes('.yaml') || path.includes('config')) {
+              // Only label as configuration if the file is in a known config directory or is a root-level config file
+              const configDirs = [
+                'config/',
+                '.github/',
+                '.vscode/',
+                '.circleci/',
+                '.husky/',
+                '.github/workflows/',
+              ];
+              const rootConfigFiles = [
+                'package.json',
+                'package-lock.json',
+                'yarn.lock',
+                'pnpm-lock.yaml',
+                'tsconfig.json',
+                'jsconfig.json',
+                '.eslintrc.json',
+                '.eslintrc.js',
+                '.eslintrc.yml',
+                '.prettierrc',
+                '.prettierrc.json',
+                '.prettierrc.yml',
+                '.prettierrc.yaml',
+                '.stylelintrc',
+                '.stylelintrc.json',
+                '.stylelintrc.yml',
+                '.stylelintrc.yaml',
+                '.editorconfig',
+                'docker-compose.yml',
+                'docker-compose.yaml',
+                'renovate.json',
+                'renovate.json5',
+                'renovate.yaml',
+                'renovate.yml',
+                '.nvmrc',
+                '.env',
+                '.env.example',
+              ];
+              // Check for config directories
+              if (
+                configDirs.some(dir => path.startsWith(dir)) ||
+                rootConfigFiles.includes(path)
+              ) {
                 labels.add('configuration');
               }
 
