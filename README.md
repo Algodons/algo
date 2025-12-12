@@ -40,6 +40,14 @@ A production-grade cloud IDE and deployment platform similar to Replit, built wi
 - **MongoDB** - Collection operations and document queries
 - Visual database management interface
 
+### 7. **Admin Control System** 🆕
+- **User Management** - Advanced search, suspension/activation, analytics, impersonation mode
+- **Platform Analytics** - Real-time metrics, revenue tracking (MRR/ARR), churn analysis
+- **Sales & Affiliates** - Affiliate program management, discount codes, commission tracking
+- **Financial Controls** - Revenue reconciliation, subscription management, refund processing
+- **System Administration** - Server health monitoring, deployment queue, feature flags
+- **Security Features** - Role-based access control (RBAC), 2FA, audit logging, IP whitelisting
+
 ## 🛠️ Tech Stack
 
 ### Frontend
@@ -202,6 +210,8 @@ npm test
 ```
 
 ## 📝 API Documentation
+
+For detailed Admin Control System API documentation, see [ADMIN_API.md](./ADMIN_API.md)
 
 ### Git API
 - `POST /api/git/clone` - Clone repository
