@@ -1,9 +1,55 @@
 .database-panel {
   padding: 12px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #cccccc;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #3e3e42;
 }
 
 .db-section {
   margin-bottom: 12px;
+  background: #1e1e1e;
+  border: 1px solid #3e3e42;
+  border-radius: 4px;
+  padding: 12px;
+}
+
+.db-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #aaaaaa;
+}
+
+.form-field {
+  margin-bottom: 12px;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: #aaaaaa;
+}
+
+.form-field input,
+.form-field select {
+  width: 100%;
+  padding: 6px 8px;
+  background: #2d2d30;
+  border: 1px solid #3e3e42;
+  border-radius: 3px;
+  color: #cccccc;
+  font-size: 13px;
 }
 
 .connection-status {
@@ -50,8 +96,101 @@
   overflow-y: auto;
 }
 
+.db-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #3e3e42;
+}
+
+.db-tab {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #aaaaaa;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.db-tab:hover {
+  color: #cccccc;
+  background: #2d2d30;
+}
+
+.db-tab.active {
+  color: #0e639c;
+  border-bottom-color: #0e639c;
+}
+
+.db-tab-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.query-tab {
+  flex: 1;
+  overflow-y: auto;
+}
+
 textarea {
   resize: vertical;
   min-height: 80px;
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  width: 100%;
+  padding: 8px;
+  background: #2d2d30;
+  border: 1px solid #3e3e42;
+  border-radius: 3px;
+  color: #cccccc;
+  font-size: 13px;
+}
+
+.btn {
+  padding: 6px 12px;
+  background: #2d2d30;
+  border: 1px solid #3e3e42;
+  border-radius: 3px;
+  color: #cccccc;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.btn:hover {
+  background: #37373d;
+}
+
+.btn-primary {
+  background: #0e639c;
+  color: #ffffff;
+  border: none;
+  margin-top: 8px;
+}
+
+.btn-primary:hover {
+  background: #1177bb;
+}
+
+.error {
+  padding: 8px;
+  background: #5a1d1d;
+  border: 1px solid #be1100;
+  border-radius: 3px;
+  color: #f48771;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.success {
+  padding: 8px;
+  background: #1a3d1a;
+  border: 1px solid #458945;
+  border-radius: 3px;
+  color: #89d185;
+  font-size: 12px;
+  margin-top: 8px;
 }

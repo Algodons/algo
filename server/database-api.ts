@@ -183,7 +183,7 @@ export function setupDatabaseRoutes(app: Express) {
       
       const collections = await conn.db.listCollections().toArray();
       
-      res.json({ success: true, collections: collections.map(c => c.name) });
+      res.json({ success: true, collections: collections.map((c: any) => c.name) });
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch collections', details: (error as Error).message });
     }
