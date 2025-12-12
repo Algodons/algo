@@ -1,280 +1,404 @@
 # Architecture Overview
 
-## System Architecture
+## High-Level Architecture
+
+The Cloud IDE platform follows a client-server architecture with real-time capabilities powered by WebSocket connections.
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        Load Balancer                         │
-│                    (NGINX Ingress / LB)                      │
-└─────────────────────┬───────────────────────────────────────┘
-                      │
-        ┌─────────────┴─────────────┐
-        │                           │
-┌───────▼────────┐         ┌────────▼───────┐
-│    Frontend    │         │    Backend     │
-│   (Next.js)    │◄────────┤   (Express)    │
-│  React + TS    │  WebSocket  Node.js      │
-└────────────────┘         └────────┬───────┘
-                                    │
-                    ┌───────────────┼───────────────┐
-                    │               │               │
-            ┌───────▼──────┐  ┌────▼────┐  ┌──────▼──────┐
-            │  PostgreSQL  │  │  Redis  │  │  MongoDB    │
-            │  (User Data) │  │ (Cache) │  │   (Logs)    │
-            └──────────────┘  └─────────┘  └─────────────┘
-                    │
-            ┌───────▼──────┐
-            │   MinIO/S3   │
-            │  (Storage)   │
-            └──────────────┘
-                    │
-            ┌───────▼──────┐
-            │    Docker    │
-            │  Containers  │
-            │  (Execution) │
-            └──────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                        Client (Browser)                          │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │                    React Application                      │  │
+│  │  ┌────────────┐  ┌────────────┐  ┌────────────────────┐ │  │
+│  │  │  Editor    │  │  Terminal  │  │   Control Panels   │ │  │
+│  │  │ (CodeMirror│  │  (xterm.js)│  │  (Git, DB, Pkg)    │ │  │
+│  │  │    + Yjs)  │  │            │  │                    │ │  │
+│  │  └────────────┘  └────────────┘  └────────────────────┘ │  │
+│  └──────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                    HTTP/WebSocket
+                              │
+┌─────────────────────────────────────────────────────────────────┐
+│                      Server (Node.js)                            │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │                   Express + WebSocket                     │  │
+│  │  ┌────────────┐  ┌────────────┐  ┌────────────────────┐ │  │
+│  │  │ Yjs Server │  │  Terminal  │  │    REST APIs       │ │  │
+│  │  │  (CRDT)    │  │  (node-pty)│  │  (Git, Pkg, DB)    │ │  │
+│  │  └────────────┘  └────────────┘  └────────────────────┘ │  │
+│  └──────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                    File System / Databases
+                              │
+┌─────────────────────────────────────────────────────────────────┐
+│                       Infrastructure                             │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐ │
+│  │  Workspaces  │  │  Databases   │  │   External Services  │ │
+│  │  (Files)     │  │ (PG/MySQL/   │  │   (Git Remotes)      │ │
+│  │              │  │  MongoDB)    │  │                      │ │
+│  └──────────────┘  └──────────────┘  └──────────────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-## Component Details
+## Component Architecture
 
-### Frontend Layer
-- **Technology**: Next.js 14 with App Router
-- **Responsibilities**:
-  - User interface rendering
-  - Monaco Editor integration
-  - Real-time collaboration (Yjs)
-  - WebSocket management
-  - Authentication UI
+### Frontend Components
 
-### Backend API Layer
-- **Technology**: Node.js/Express
-- **Responsibilities**:
-  - REST API endpoints
-  - WebSocket server
-  - Authentication & authorization
-  - Business logic
-  - Database operations
-  - Container orchestration
+```
+App.tsx
+├── Header
+├── Sidebar (Left)
+│   ├── FileExplorer
+│   ├── GitPanel
+│   └── PackageManager
+├── MainContent
+│   ├── Editor (CodeMirror + Yjs)
+│   ├── PreviewPanel (iframe)
+│   └── Terminal (xterm.js)
+└── Sidebar (Right)
+    └── DatabasePanel
+```
 
-### Database Layer
+### Backend Services
 
-#### PostgreSQL
-- **Purpose**: Primary data store
-- **Stores**:
-  - User accounts
-  - Projects metadata
-  - Environment variables
-  - Custom domains
-  - Audit logs
-
-#### Redis
-- **Purpose**: Caching and sessions
-- **Stores**:
-  - Session data
-  - API response cache
-  - Rate limiting data
-  - Real-time collaboration state
-
-#### MongoDB
-- **Purpose**: Analytics and logs
-- **Stores**:
-  - Application logs
-  - User activity logs
-  - Performance metrics
-  - Error tracking
-
-### Storage Layer
-- **Technology**: S3-compatible storage (MinIO/AWS S3)
-- **Purpose**: File storage
-- **Stores**:
-  - Project files
-  - User uploads
-  - Build artifacts
-  - Static assets
-
-### Container Execution Layer
-- **Technology**: Docker
-- **Purpose**: Code execution environment
-- **Features**:
-  - Isolated execution
-  - Resource limits
-  - Multi-language support
-  - Security sandboxing
+```
+server/index.ts (Main Server)
+├── Express HTTP Server
+│   ├── Git API Routes
+│   ├── Package API Routes
+│   ├── Database API Routes
+│   └── Preview API Routes
+└── WebSocket Server
+    ├── Yjs Server (Collaborative Editing)
+    └── Terminal Server (PTY Sessions)
+```
 
 ## Data Flow
 
-### User Authentication Flow
+### 1. Collaborative Editing Flow
+
 ```
-User → Frontend → Backend API → PostgreSQL
-                      ↓
-                  JWT Token
-                      ↓
-                  Redis Cache
-                      ↓
-                   Frontend
+User A Types
+     │
+     ▼
+CodeMirror Editor
+     │
+     ▼
+Yjs Client
+     │
+     ▼
+WebSocket (/yjs)
+     │
+     ▼
+Yjs Server
+     │
+     ├──────────────┐
+     ▼              ▼
+User B Client   User C Client
+     │              │
+     ▼              ▼
+Sync Updates   Sync Updates
 ```
 
-### Code Execution Flow
+### 2. Terminal Flow
+
 ```
-User Code → Frontend → Backend API → Docker Container
-                                          ↓
-                                    S3 Storage
-                                          ↓
-                                     Execution
-                                          ↓
-                                    Terminal Output
-                                          ↓
-                                     WebSocket
-                                          ↓
-                                      Frontend
+User Input
+     │
+     ▼
+xterm.js Client
+     │
+     ▼
+WebSocket (/terminal)
+     │
+     ▼
+Terminal Server
+     │
+     ▼
+node-pty
+     │
+     ▼
+Shell Process (bash/powershell)
+     │
+     ▼
+Output back through WebSocket
+     │
+     ▼
+xterm.js Display
 ```
 
-### Collaborative Editing Flow
+### 3. Git Operations Flow
+
 ```
-User A → Monaco Editor → Yjs CRDT → WebSocket → Backend
-                                                    ↓
-                                              Broadcast
-                                                    ↓
-                                    User B ← WebSocket ← Backend
+User Action (Git Panel)
+     │
+     ▼
+HTTP Request to /api/git/*
+     │
+     ▼
+Git API Handler
+     │
+     ▼
+simple-git Library
+     │
+     ▼
+Git CLI Commands
+     │
+     ▼
+File System (Workspace)
+     │
+     ▼
+Response back to Client
 ```
+
+### 4. File Preview Flow
+
+```
+File Change Detection
+     │
+     ▼
+Chokidar Watcher
+     │
+     ▼
+Notify Preview Panel
+     │
+     ▼
+Preview Panel Refresh
+     │
+     ▼
+Request File via /api/preview/*
+     │
+     ▼
+Express Static Handler
+     │
+     ▼
+Serve File in iframe
+```
+
+## Technology Stack Details
+
+### Frontend Stack
+
+| Technology | Purpose | Version |
+|------------|---------|---------|
+| React | UI Framework | 18.x |
+| TypeScript | Type Safety | 5.x |
+| Vite | Build Tool | 5.x |
+| CodeMirror | Code Editor | 6.x |
+| Yjs | CRDT Sync | 13.x |
+| xterm.js | Terminal Emulator | 5.x |
+| Zustand | State Management | 4.x |
+
+### Backend Stack
+
+| Technology | Purpose | Version |
+|------------|---------|---------|
+| Node.js | Runtime | 18+ |
+| Express | Web Framework | 4.x |
+| ws | WebSocket | 8.x |
+| node-pty | Terminal | 1.x |
+| simple-git | Git Operations | 3.x |
+| chokidar | File Watching | 3.x |
+| pg | PostgreSQL Client | 8.x |
+| mysql2 | MySQL Client | 3.x |
+| mongodb | MongoDB Client | 6.x |
+
+## Communication Protocols
+
+### HTTP/REST
+- Git operations
+- Package management
+- Database queries
+- File serving
+
+### WebSocket
+- Real-time collaborative editing (Yjs)
+- Terminal I/O
+- File change notifications (future)
 
 ## Security Architecture
 
-### Authentication & Authorization
-1. **User Registration**: Password hashing with bcrypt
-2. **Login**: JWT token generation
-3. **Authorization**: Token verification middleware
-4. **RBAC**: Role-based access control
+### Current Implementation
+- CORS enabled for development
+- Iframe sandboxing for preview
+- Input validation on all APIs
+- Isolated workspaces
 
-### API Security
-- Rate limiting (100 req/15min)
-- Input validation
-- SQL injection prevention
-- XSS protection
-- CORS configuration
+### Production Recommendations
+1. **Authentication**
+   - JWT tokens
+   - OAuth2 integration
+   - Session management
 
-### Container Security
-- Resource quotas
-- Process limits
-- Network isolation
-- Read-only root filesystem (where applicable)
-- Security options (no-new-privileges)
+2. **Authorization**
+   - Role-based access control
+   - Workspace permissions
+   - API rate limiting
 
-### Data Security
-- Encryption at rest for sensitive data
-- TLS/SSL for data in transit
-- Secure credential management
-- Audit logging
+3. **Data Security**
+   - HTTPS/WSS only
+   - Environment variable encryption
+   - Database credential management
+   - File system isolation
 
-## Scalability
+4. **Network Security**
+   - Firewall rules
+   - DDoS protection
+   - API gateway
+
+## Scalability Considerations
 
 ### Horizontal Scaling
-- Frontend: Multiple replicas behind load balancer
-- Backend: Multiple replicas with session affinity
-- Database: Read replicas for PostgreSQL
-- Redis: Cluster mode for high availability
 
-### Vertical Scaling
-- Configurable resource limits
-- Auto-scaling based on metrics
-- Database connection pooling
+```
+                Load Balancer
+                     │
+        ┌────────────┼────────────┐
+        ▼            ▼            ▼
+    Server 1     Server 2     Server 3
+        │            │            │
+        └────────────┼────────────┘
+                     ▼
+              Shared Storage
+              (NFS/S3/EFS)
+                     │
+                     ▼
+              Redis (Session)
+                     │
+                     ▼
+              Database Cluster
+```
 
-### Caching Strategy
-- Redis for API response caching
-- CDN for static assets
-- Browser caching for client-side resources
+### Challenges
+1. **WebSocket Sticky Sessions**
+   - Use Redis adapter for Socket.io
+   - Implement session affinity in load balancer
 
-## High Availability
+2. **File System Sharing**
+   - Use network storage (NFS, S3, EFS)
+   - Implement distributed file locking
 
-### Database HA
-- PostgreSQL: Primary-replica setup
-- Redis: Sentinel or Cluster mode
-- MongoDB: Replica set
+3. **State Management**
+   - Redis for shared state
+   - Database for persistent state
 
-### Application HA
-- Multiple frontend replicas
-- Multiple backend replicas
-- Health checks and auto-restart
-- Rolling updates for zero downtime
+### Performance Optimization
 
-### Storage HA
-- S3: Built-in redundancy
-- Backup strategy
-- Disaster recovery plan
+1. **Frontend**
+   - Code splitting
+   - Lazy loading components
+   - Virtual scrolling for large files
+   - Service workers for caching
+
+2. **Backend**
+   - Connection pooling
+   - Caching (Redis)
+   - Request debouncing
+   - Compression
+
+3. **Database**
+   - Query optimization
+   - Indexing
+   - Connection pooling
+   - Read replicas
 
 ## Monitoring & Observability
 
-### Metrics Collection
-- Application metrics (response time, error rate)
-- Container metrics (CPU, memory, disk)
-- Database metrics (connections, queries)
+### Metrics to Track
+- WebSocket connection count
+- Active terminal sessions
+- API response times
+- Error rates
+- Resource usage (CPU, Memory, Disk)
 
-### Logging
-- Application logs → MongoDB
-- Audit logs → PostgreSQL
-- System logs → Centralized logging
+### Logging Strategy
+- Structured logging (JSON)
+- Log levels (DEBUG, INFO, WARN, ERROR)
+- Centralized logging (ELK, Datadog)
+- Request/response logging
 
-### Alerting
-- Resource usage alerts
-- Error rate alerts
-- Downtime alerts
+### Health Checks
+- `/api/health` endpoint
+- Database connectivity
+- File system accessibility
+- WebSocket availability
 
-## Performance Optimization
+## Deployment Architecture
 
-### Frontend
-- Code splitting
-- Lazy loading
-- Image optimization
-- Caching strategies
+### Development
+```
+Developer Machine
+├── Frontend (Vite Dev Server) :3000
+└── Backend (Nodemon) :5000
+```
 
-### Backend
-- Database indexing
-- Query optimization
-- Connection pooling
-- Response compression
+### Production
+```
+Nginx (Reverse Proxy)
+├── Static Files (Frontend) :80/443
+└── API/WebSocket (Backend) :80/443
+    └── Node.js Process (PM2) :5000
+```
 
-### Infrastructure
-- Load balancing
-- CDN integration
+### Docker Deployment
+```
+Docker Compose
+├── App Container (Frontend + Backend)
+├── PostgreSQL Container
+├── MySQL Container
+└── MongoDB Container
+```
+
+## Future Architecture Enhancements
+
+1. **Microservices**
+   - Separate services for Git, Terminal, etc.
+   - Service mesh (Istio)
+   - gRPC communication
+
+2. **Serverless**
+   - Lambda functions for API
+   - CloudFront for CDN
+   - S3 for workspaces
+
+3. **Real-time Collaboration**
+   - Presence tracking
+   - Live cursors
+   - Voice/video chat
+
+4. **AI Integration**
+   - Code completion (GPT)
+   - Code review assistant
+   - Natural language queries
+
+## Disaster Recovery
+
+### Backup Strategy
+- Workspace backups (daily)
+- Database backups (hourly)
+- Configuration backups
+- Automated backup testing
+
+### Recovery Plan
+1. Restore from latest backup
+2. Verify data integrity
+3. Test functionality
+4. Switch DNS/traffic
+
+## Maintenance
+
+### Regular Tasks
+- Security updates
+- Dependency updates
+- Performance monitoring
+- Backup verification
+- Log rotation
 - Database optimization
-- Caching layers
 
-## Technology Decisions
-
-### Why Next.js?
-- Server-side rendering
-- Built-in routing
-- API routes
-- Great developer experience
-- Strong TypeScript support
-
-### Why Express?
-- Lightweight and flexible
-- Large ecosystem
-- Easy WebSocket integration
-- Good performance
-
-### Why PostgreSQL?
-- ACID compliance
-- Relational data model
-- Strong consistency
-- Rich feature set
-
-### Why Redis?
-- Fast in-memory storage
-- Perfect for caching
-- Pub/sub capabilities
-- Good for sessions
-
-### Why Docker?
-- Consistent environments
-- Easy isolation
-- Resource management
-- Wide language support
-
-### Why Kubernetes?
-- Container orchestration
-- Auto-scaling
-- Self-healing
+### Update Strategy
 - Rolling updates
-- Service discovery
+- Blue-green deployment
+- Canary releases
+- Rollback procedures

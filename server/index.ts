@@ -1,65 +1,49 @@
-import express from 'express'
-import { createServer } from 'http'
-import { WebSocketServer } from 'ws'
-import cors from 'cors'
-import path from 'path'
-import { fileURLToPath } from 'url'
-import { setupFileRoutes } from './file-routes.js'
-import { setupTerminalServer } from './terminal-server.js'
-import { setupYjsServer } from './yjs-server.js'
-import { setupSearchRoutes } from './search-routes.js'
+import express from 'express';
+import { createServer } from 'http';
+import { WebSocketServer } from 'ws';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { setupYjsServer } from './yjs-server';
+import { setupTerminalServer } from './terminal-server';
+import { setupGitRoutes } from './git-api';
+import { setupPackageRoutes } from './package-api';
+import { setupPreviewServer } from './preview-server';
+import { setupDatabaseRoutes } from './database-api';
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+dotenv.config();
 
-const app = express()
-const server = createServer(app)
-const wss = new WebSocketServer({ server })
+const app = express();
+const server = createServer(app);
+const wss = new WebSocketServer({ server });
+
+const PORT = process.env.PORT || 5000;
 
 // Middleware
-
-// Allow only trusted origins for CORS
-const allowedOrigins = [
-  'http://localhost:3000', // Add your frontend dev URL here
-  // Add more trusted origins as needed
-];
-app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps, curl, etc.)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      return callback(null, true);
-    } else {
-      return callback(new Error('Not allowed by CORS'));
-    }
-  }
-}));
-app.use(express.json())
-
-// API Routes
-setupFileRoutes(app)
-setupSearchRoutes(app)
-
-// WebSocket routing
-wss.on('connection', (ws, req) => {
-  const url = req.url || ''
-  
-  if (url.startsWith('/terminal')) {
-    setupTerminalServer(ws, req)
-  } else if (url.startsWith('/yjs')) {
-    setupYjsServer(ws, req)
-  }
-})
+app.use(cors());
+app.use(express.json());
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' })
-})
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
 
-const PORT = process.env.PORT || 3001
+// Setup routes
+setupGitRoutes(app);
+setupPackageRoutes(app);
+setupDatabaseRoutes(app);
+
+// Setup WebSocket servers
+setupYjsServer(wss);
+setupTerminalServer(wss);
+setupPreviewServer(app);
 
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
+  console.log(`🚀 Cloud IDE server running on port ${PORT}`);
+  console.log(`📝 Collaborative editing ready`);
+  console.log(`💻 Terminal server ready`);
+  console.log(`🔧 Git integration ready`);
+  console.log(`📦 Package manager ready`);
+  console.log(`🗄️ Database GUI ready`);
+});
 
-export { app, server, wss }
+export default app;

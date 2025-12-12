@@ -1,0 +1,29 @@
+.git-panel {
+  padding: 12px;
+  border-bottom: 1px solid #3e3e42;
+}
+
+.git-section {
+  margin-bottom: 12px;
+}
+
+.git-section button {
+  margin-right: 8px;
+  margin-bottom: 4px;
+}
+
+.git-status {
+  margin-top: 8px;
+  padding: 8px;
+  background-color: #2d2d30;
+  border-radius: 3px;
+  font-size: 12px;
+}
+
+.git-status p {
+  margin: 4px 0;
+}
+
+.git-status strong {
+  color: #4ec9b0;
+}

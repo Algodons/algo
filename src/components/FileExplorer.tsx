@@ -1,103 +1,86 @@
-import { useState } from 'react'
-import './FileExplorer.css'
-import { FileNode } from '../types'
+import React, { useState, useEffect } from 'react';
+import './FileExplorer.css';
 
 interface FileExplorerProps {
-  files: FileNode[]
-  onFileClick: (path: string) => void
-  onRefresh: () => void
+  workspaceId: string;
+  onFileSelect: (path: string) => void;
 }
 
-const FileExplorer = ({ files, onFileClick, onRefresh }: FileExplorerProps) => {
-  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set())
+interface FileNode {
+  name: string;
+  path: string;
+  type: 'file' | 'directory';
+  children?: FileNode[];
+}
 
-  const toggleFolder = (path: string) => {
-    const newExpanded = new Set(expandedFolders)
+const FileExplorer: React.FC<FileExplorerProps> = ({ workspaceId, onFileSelect }) => {
+  const [files, setFiles] = useState<FileNode[]>([]);
+  const [expandedDirs, setExpandedDirs] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    fetchFiles();
+  }, [workspaceId]);
+
+  const fetchFiles = async () => {
+    try {
+      const response = await fetch(`/api/preview/files?workspaceId=${workspaceId}`);
+      const data = await response.json();
+      if (data.success) {
+        setFiles(data.files);
+      }
+    } catch (error) {
+      console.error('Failed to fetch files:', error);
+    }
+  };
+
+  const toggleDirectory = (path: string) => {
+    const newExpanded = new Set(expandedDirs);
     if (newExpanded.has(path)) {
-      newExpanded.delete(path)
+      newExpanded.delete(path);
     } else {
-      newExpanded.add(path)
+      newExpanded.add(path);
     }
-    setExpandedFolders(newExpanded)
-  }
+    setExpandedDirs(newExpanded);
+  };
 
-  const getFileIcon = (node: FileNode) => {
-    if (node.type === 'directory') {
-      return expandedFolders.has(node.path) ? '📂' : '📁'
-    }
-    
-    const ext = node.name.split('.').pop()?.toLowerCase()
-    const iconMap: Record<string, string> = {
-      'js': '📄',
-      'jsx': '⚛️',
-      'ts': '📘',
-      'tsx': '⚛️',
-      'py': '🐍',
-      'go': '🔵',
-      'java': '☕',
-      'cpp': '⚙️',
-      'c': '⚙️',
-      'rs': '🦀',
-      'html': '🌐',
-      'css': '🎨',
-      'json': '📋',
-      'md': '📝',
-      'png': '🖼️',
-      'jpg': '🖼️',
-      'gif': '🖼️',
-      'svg': '🎨',
-      'pdf': '📕'
-    }
-    return iconMap[ext || ''] || '📄'
-  }
-
-  const renderNode = (node: FileNode, level: number = 0) => {
-    const isExpanded = expandedFolders.has(node.path)
-    
-    return (
-      <div key={node.id} className="file-node">
+  const renderFileTree = (nodes: FileNode[], level: number = 0) => {
+    return nodes.map((node) => (
+      <div key={node.path}>
         <div
-          className={`file-item ${node.type}`}
+          className={`file-tree-item ${node.type === 'directory' ? 'directory' : 'file'}`}
           style={{ paddingLeft: `${level * 16 + 8}px` }}
           onClick={() => {
             if (node.type === 'directory') {
-              toggleFolder(node.path)
+              toggleDirectory(node.path);
             } else {
-              onFileClick(node.path)
+              onFileSelect(node.path);
             }
           }}
         >
-          <span className="file-icon">{getFileIcon(node)}</span>
+          <span className="file-icon">
+            {node.type === 'directory' 
+              ? (expandedDirs.has(node.path) ? '📂' : '📁') 
+              : '📄'}
+          </span>
           <span className="file-name">{node.name}</span>
         </div>
-        {node.type === 'directory' && isExpanded && node.children && (
-          <div className="folder-children">
-            {node.children.map(child => renderNode(child, level + 1))}
-          </div>
+        {node.type === 'directory' && expandedDirs.has(node.path) && node.children && (
+          <div>{renderFileTree(node.children, level + 1)}</div>
         )}
       </div>
-    )
-  }
+    ));
+  };
 
   return (
     <div className="file-explorer">
-      <div className="explorer-header">
-        <span className="explorer-title">EXPLORER</span>
-        <button className="refresh-button" onClick={onRefresh} title="Refresh">
-          🔄
-        </button>
-      </div>
-      <div className="explorer-content">
-        {files.map(node => renderNode(node))}
-        {files.length === 0 && (
-          <div className="empty-state">
-            <p>No files in workspace</p>
-            <button onClick={onRefresh}>Refresh</button>
-          </div>
+      <div className="panel-title">Files</div>
+      <div className="file-tree">
+        {files.length > 0 ? renderFileTree(files) : (
+          <div className="empty-state">No files in workspace</div>
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default FileExplorer
+export default FileExplorer;

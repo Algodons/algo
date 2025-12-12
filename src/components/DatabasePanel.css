@@ -1,0 +1,57 @@
+.database-panel {
+  padding: 12px;
+}
+
+.db-section {
+  margin-bottom: 12px;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  padding: 8px;
+  background-color: #2d2d30;
+  border-radius: 3px;
+}
+
+.status-indicator {
+  font-size: 10px;
+}
+
+.status-indicator.connected {
+  color: #89d185;
+}
+
+.db-result {
+  margin-top: 12px;
+  background-color: #1e1e1e;
+  border: 1px solid #3e3e42;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.result-header {
+  padding: 8px;
+  background-color: #2d2d30;
+  border-bottom: 1px solid #3e3e42;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.db-result pre {
+  padding: 8px;
+  margin: 0;
+  font-size: 11px;
+  overflow-x: auto;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}

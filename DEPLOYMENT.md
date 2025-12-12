@@ -1,350 +1,378 @@
-# Production Deployment Guide
+# Deployment Guide
 
-This guide covers deploying the Algo Cloud IDE platform to production environments.
+## Table of Contents
+1. [Development Setup](#development-setup)
+2. [Production Deployment](#production-deployment)
+3. [Docker Deployment](#docker-deployment)
+4. [Cloud Platform Deployment](#cloud-platform-deployment)
+5. [Troubleshooting](#troubleshooting)
 
-## Prerequisites
+## Development Setup
 
-- Kubernetes cluster (1.24+)
-- kubectl configured
-- Docker registry access
-- Domain name with DNS access
-- SSL certificates or cert-manager
+### Prerequisites
+- Node.js 18 or higher
+- npm or yarn
+- Git
+- (Optional) Docker and Docker Compose
 
-## Step 1: Prepare Container Images
+### Step-by-Step Setup
 
-### Build and Tag Images
+1. **Clone the Repository**
+```bash
+git clone https://github.com/Algodons/algo.git
+cd algo
+```
+
+2. **Install Dependencies**
+```bash
+npm install
+```
+
+3. **Configure Environment**
+```bash
+cp .env.example .env
+```
+
+Edit `.env` file:
+```env
+PORT=5000
+WORKSPACE_DIR=./workspaces
+```
+
+4. **Start Development Servers**
+```bash
+npm run dev
+```
+
+This starts:
+- Frontend (Vite): http://localhost:3000
+- Backend (Express): http://localhost:5000
+
+### Development Workflow
+
+- **Hot Reload**: Both frontend and backend support hot reload
+- **TypeScript**: Type checking happens during build
+- **Terminal**: WebSocket connects to backend terminal server
+- **Editor**: Yjs provides collaborative editing via WebSocket
+
+## Production Deployment
+
+### Build for Production
+
+1. **Build the Application**
+```bash
+npm run build
+```
+
+This creates:
+- `dist/client/` - Frontend static files
+- `dist/server/` - Compiled backend code
+
+2. **Start Production Server**
+```bash
+npm start
+```
+
+### Environment Variables for Production
+
+```env
+NODE_ENV=production
+PORT=5000
+WORKSPACE_DIR=/var/lib/cloud-ide/workspaces
+
+# Optional: Database connections
+POSTGRES_HOST=your-db-host
+POSTGRES_PORT=5432
+POSTGRES_DB=mydb
+POSTGRES_USER=user
+POSTGRES_PASSWORD=secure_password
+
+MYSQL_HOST=your-db-host
+MYSQL_PORT=3306
+MYSQL_DB=mydb
+MYSQL_USER=user
+MYSQL_PASSWORD=secure_password
+
+MONGODB_URI=mongodb://user:password@host:27017
+MONGODB_DB=mydb
+```
+
+### Nginx Configuration
+
+For production, use Nginx as reverse proxy:
+
+```nginx
+server {
+    listen 80;
+    server_name your-domain.com;
+
+    # Frontend static files
+    location / {
+        root /path/to/algo/dist/client;
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Backend API
+    location /api {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # WebSocket connections
+    location /yjs {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+    }
+
+    location /terminal {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+    }
+}
+```
+
+### PM2 Process Manager
+
+Use PM2 for process management:
 
 ```bash
-# Build frontend
-cd frontend
-docker build -t your-registry.com/algo-frontend:v1.0.0 .
-docker push your-registry.com/algo-frontend:v1.0.0
+npm install -g pm2
 
-# Build backend
-cd ../backend
-docker build -t your-registry.com/algo-backend:v1.0.0 .
-docker push your-registry.com/algo-backend:v1.0.0
+# Start application
+pm2 start dist/server/index.js --name cloud-ide
+
+# Save process list
+pm2 save
+
+# Setup startup script
+pm2 startup
 ```
 
-## Step 2: Configure Kubernetes
+## Docker Deployment
 
-### Update Image References
+### Using Docker Compose (Recommended)
 
-Edit `k8s/frontend.yaml` and `k8s/backend.yaml` to use your registry:
-
-```yaml
-spec:
-  containers:
-  - name: frontend
-    image: your-registry.com/algo-frontend:v1.0.0
+1. **Start all services**
+```bash
+docker-compose up -d
 ```
 
-### Update Secrets
+Services included:
+- Cloud IDE application (ports 3000, 5000)
+- PostgreSQL (port 5432)
+- MySQL (port 3306)
+- MongoDB (port 27017)
 
-Edit `k8s/secrets.yaml` with production values:
+2. **View logs**
+```bash
+docker-compose logs -f app
+```
+
+3. **Stop services**
+```bash
+docker-compose down
+```
+
+### Using Docker Only
+
+1. **Build image**
+```bash
+docker build -t cloud-ide .
+```
+
+2. **Run container**
+```bash
+docker run -d \
+  -p 3000:3000 \
+  -p 5000:5000 \
+  -v $(pwd)/workspaces:/app/workspaces \
+  --name cloud-ide \
+  cloud-ide
+```
+
+## Cloud Platform Deployment
+
+### AWS (EC2 + RDS)
+
+1. **Launch EC2 instance** (t3.medium or larger)
+2. **Install dependencies**
+```bash
+sudo apt update
+sudo apt install -y nodejs npm git nginx
+```
+
+3. **Clone and build**
+```bash
+git clone https://github.com/Algodons/algo.git
+cd algo
+npm install
+npm run build
+```
+
+4. **Configure RDS** for PostgreSQL/MySQL
+5. **Setup Nginx** (see configuration above)
+6. **Use PM2** for process management
+
+### Heroku
+
+1. **Create app**
+```bash
+heroku create your-cloud-ide
+```
+
+2. **Add buildpack**
+```bash
+heroku buildpacks:add heroku/nodejs
+```
+
+3. **Configure environment**
+```bash
+heroku config:set NODE_ENV=production
+```
+
+4. **Deploy**
+```bash
+git push heroku main
+```
+
+### DigitalOcean
+
+1. **Create Droplet** (2GB RAM minimum)
+2. **Use Docker Compose** method (recommended)
+3. **Configure domain** and SSL with Let's Encrypt
 
 ```bash
-# Generate secure secrets
-openssl rand -base64 32  # For JWT_SECRET
-openssl rand -base64 32  # For NEXTAUTH_SECRET
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d your-domain.com
 ```
 
-### Update Ingress
+### Kubernetes
 
-Edit `k8s/ingress.yaml` with your domain:
+See `k8s/` directory for Kubernetes manifests (if provided).
 
-```yaml
-spec:
-  rules:
-  - host: your-domain.com
-```
+## Troubleshooting
 
-## Step 3: Set Up cert-manager (SSL)
+### Common Issues
 
-### Install cert-manager
+**1. WebSocket Connection Failed**
+- Check if backend is running on correct port
+- Verify no firewall blocking WebSocket connections
+- Ensure Nginx WebSocket proxy is configured
 
+**2. Terminal Not Working**
+- Ensure node-pty is properly installed
+- Check platform compatibility (Windows/Linux/Mac)
+- Verify shell path in terminal-server.ts
+
+**3. Yjs Sync Issues**
+- Check WebSocket connection to /yjs endpoint
+- Verify document names are correct
+- Check browser console for errors
+
+**4. Database Connection Failed**
+- Verify database credentials
+- Check network connectivity
+- Ensure database server is running
+
+**5. Build Errors**
+- Clear node_modules: `rm -rf node_modules && npm install`
+- Check Node.js version: `node -v` (should be 18+)
+- Verify TypeScript is installed
+
+### Debug Mode
+
+Enable debug logging:
 ```bash
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
+DEBUG=* npm run dev
 ```
 
-### Create ClusterIssuer
+### Health Check
 
+Check if services are running:
 ```bash
-cat <<EOF | kubectl apply -f -
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
-  name: letsencrypt-prod
-spec:
-  acme:
-    server: https://acme-v02.api.letsencrypt.org/directory
-    email: your-email@example.com
-    privateKeySecretRef:
-      name: letsencrypt-prod
-    solvers:
-    - http01:
-        ingress:
-          class: nginx
-EOF
+curl http://localhost:5000/api/health
 ```
 
-## Step 4: Deploy to Kubernetes
-
-```bash
-# Apply all manifests
-kubectl apply -f k8s/
-
-# Wait for deployments
-kubectl wait --for=condition=available --timeout=600s \
-  deployment/frontend deployment/backend -n algo-ide
-
-# Check status
-kubectl get pods -n algo-ide
-kubectl get ingress -n algo-ide
+Expected response:
+```json
+{
+  "status": "ok",
+  "timestamp": "2024-01-01T00:00:00.000Z"
+}
 ```
 
-## Step 5: Configure DNS
+## Performance Optimization
 
-Point your domain to the LoadBalancer IP:
+### Production Tips
 
-```bash
-# Get LoadBalancer IP
-kubectl get ingress -n algo-ide
-
-# Add A record in your DNS provider:
-# A record: your-domain.com -> LoadBalancer-IP
+1. **Enable compression**
+```javascript
+// In server/index.ts
+import compression from 'compression';
+app.use(compression());
 ```
 
-## Step 6: Verify Deployment
-
+2. **Use CDN** for static assets
+3. **Enable caching** for API responses
+4. **Monitor with PM2**
 ```bash
-# Check all pods are running
-kubectl get pods -n algo-ide
+pm2 monit
+```
 
-# Check logs
-kubectl logs -f deployment/frontend -n algo-ide
-kubectl logs -f deployment/backend -n algo-ide
+5. **Database connection pooling**
+- Configure max connections in database clients
 
-# Test endpoints
-curl https://your-domain.com/health
+## Security Considerations
+
+1. **Enable HTTPS** in production
+2. **Set CORS** appropriately
+3. **Validate all inputs**
+4. **Use environment variables** for secrets
+5. **Regular security updates**
+```bash
+npm audit
+npm audit fix
 ```
 
 ## Scaling
 
 ### Horizontal Scaling
-
-```bash
-# Scale frontend
-kubectl scale deployment/frontend --replicas=5 -n algo-ide
-
-# Scale backend
-kubectl scale deployment/backend --replicas=3 -n algo-ide
-```
+- Use Redis for session storage
+- Implement sticky sessions for WebSocket
+- Use load balancer (Nginx/HAProxy)
 
 ### Vertical Scaling
-
-Edit resource limits in deployment manifests:
-
-```yaml
-resources:
-  requests:
-    memory: "512Mi"
-    cpu: "500m"
-  limits:
-    memory: "1Gi"
-    cpu: "1000m"
-```
+- Increase server resources (CPU/RAM)
+- Optimize database queries
+- Use caching (Redis/Memcached)
 
 ## Monitoring
 
-### Set Up Prometheus & Grafana
+Recommended tools:
+- **PM2**: Process monitoring
+- **Prometheus**: Metrics collection
+- **Grafana**: Visualization
+- **Sentry**: Error tracking
 
-```bash
-# Install Prometheus operator
-kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml
+## Backup
 
-# Create ServiceMonitor
-kubectl apply -f k8s/monitoring/
-```
+Important directories to backup:
+- `workspaces/` - User workspaces
+- Database backups
+- Configuration files
 
-### View Metrics
+## Support
 
-```bash
-kubectl port-forward svc/prometheus 9090:9090 -n monitoring
-# Access: http://localhost:9090
-
-kubectl port-forward svc/grafana 3001:3000 -n monitoring
-# Access: http://localhost:3001
-```
-
-## Backup & Recovery
-
-### Database Backups
-
-```bash
-# Backup PostgreSQL
-kubectl exec -n algo-ide postgres-0 -- pg_dump -U algo_user algo_ide > backup.sql
-
-# Restore PostgreSQL
-kubectl exec -i -n algo-ide postgres-0 -- psql -U algo_user algo_ide < backup.sql
-```
-
-### Storage Backups
-
-Configure S3 bucket versioning and lifecycle policies:
-
-```bash
-aws s3api put-bucket-versioning \
-  --bucket algo-projects \
-  --versioning-configuration Status=Enabled
-```
-
-## Security Hardening
-
-### Network Policies
-
-```bash
-kubectl apply -f k8s/security/network-policies.yaml
-```
-
-### Pod Security Policies
-
-```bash
-kubectl apply -f k8s/security/pod-security-policies.yaml
-```
-
-### Secrets Management
-
-Consider using external secrets management:
-- AWS Secrets Manager
-- HashiCorp Vault
-- Azure Key Vault
-
-## Troubleshooting
-
-### Pods Not Starting
-
-```bash
-kubectl describe pod <pod-name> -n algo-ide
-kubectl logs <pod-name> -n algo-ide
-```
-
-### Database Connection Issues
-
-```bash
-# Test PostgreSQL connection
-kubectl exec -it postgres-0 -n algo-ide -- psql -U algo_user -d algo_ide
-
-# Test Redis connection
-kubectl exec -it redis-0 -n algo-ide -- redis-cli
-```
-
-### Ingress Issues
-
-```bash
-# Check ingress controller
-kubectl get pods -n ingress-nginx
-
-# Check ingress logs
-kubectl logs -n ingress-nginx <ingress-controller-pod>
-```
-
-## Performance Optimization
-
-### Enable Caching
-
-Configure Redis caching for API responses:
-
-```javascript
-// In backend configuration
-app.use(cacheMiddleware({
-  ttl: 300, // 5 minutes
-  redis: redisClient
-}));
-```
-
-### CDN Integration
-
-Configure CloudFlare or AWS CloudFront for static assets:
-
-```yaml
-# In frontend deployment
-env:
-- name: NEXT_PUBLIC_CDN_URL
-  value: https://cdn.your-domain.com
-```
-
-## Updates & Rollbacks
-
-### Rolling Update
-
-```bash
-# Update frontend
-kubectl set image deployment/frontend \
-  frontend=your-registry.com/algo-frontend:v1.1.0 -n algo-ide
-
-# Monitor rollout
-kubectl rollout status deployment/frontend -n algo-ide
-```
-
-### Rollback
-
-```bash
-# Rollback to previous version
-kubectl rollout undo deployment/frontend -n algo-ide
-
-# Rollback to specific revision
-kubectl rollout undo deployment/frontend --to-revision=2 -n algo-ide
-```
-
-## Maintenance Windows
-
-### Planned Downtime
-
-```bash
-# Drain nodes
-kubectl drain <node-name> --ignore-daemonsets --delete-emptydir-data
-
-# Perform maintenance
-
-# Uncordon nodes
-kubectl uncordon <node-name>
-```
-
-## Cost Optimization
-
-1. **Right-size resources**: Monitor actual usage and adjust limits
-2. **Use node autoscaling**: Enable cluster autoscaler
-3. **Schedule non-critical workloads**: Use lower-cost instances for dev/test
-4. **Implement resource quotas**: Prevent resource sprawl
-
-## Compliance & Auditing
-
-### Enable Audit Logging
-
-```yaml
-# In backend configuration
-auditLog:
-  enabled: true
-  level: metadata
-  destination: /var/log/audit/audit.log
-```
-
-### GDPR Compliance
-
-- Implement data deletion endpoints
-- Add data export functionality
-- Document data retention policies
-
-## Support & Escalation
-
-For production issues:
-1. Check monitoring dashboards
-2. Review application logs
-3. Check system metrics
-4. Contact DevOps team
-5. Escalate to development team if needed
-
----
-
-Last updated: December 2024
+For issues and questions:
+- GitHub Issues: https://github.com/Algodons/algo/issues
+- Documentation: See README.md

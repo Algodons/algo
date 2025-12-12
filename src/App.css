@@ -1,22 +1,169 @@
 .app {
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  width: 100vw;
-  background: #1e1e1e;
+  background-color: #1e1e1e;
   color: #d4d4d4;
 }
 
-.main-container {
+.app-header {
+  background-color: #2d2d30;
+  padding: 8px 16px;
   display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid #3e3e42;
+}
+
+.app-header h1 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.btn {
+  background-color: #3e3e42;
+  border: 1px solid #555;
+  color: #d4d4d4;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background-color 0.2s;
+}
+
+.btn:hover {
+  background-color: #505050;
+}
+
+.btn:active {
+  background-color: #2a2a2a;
+}
+
+.app-body {
   flex: 1;
+  display: flex;
   overflow: hidden;
 }
 
-.editor-container {
+.sidebar {
+  width: 280px;
+  background-color: #252526;
+  border-right: 1px solid #3e3e42;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  position: relative;
+}
+
+.editor-section {
+  flex: 1;
+  border-bottom: 1px solid #3e3e42;
+  overflow: hidden;
+}
+
+.preview-section {
+  height: 300px;
+  border-bottom: 1px solid #3e3e42;
+  overflow: hidden;
+}
+
+.terminal-section {
+  height: 250px;
+  overflow: hidden;
+}
+
+.right-sidebar {
+  width: 300px;
+  background-color: #252526;
+  border-left: 1px solid #3e3e42;
+  overflow-y: auto;
+}
+
+.panel {
+  padding: 12px;
+  border-bottom: 1px solid #3e3e42;
+}
+
+.panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #cccccc;
+}
+
+.panel-content {
+  font-size: 13px;
+}
+
+input, textarea, select {
+  background-color: #3c3c3c;
+  border: 1px solid #555;
+  color: #d4d4d4;
+  padding: 6px 8px;
+  border-radius: 3px;
+  font-size: 13px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #007acc;
+}
+
+.file-tree {
+  list-style: none;
+  padding: 0;
+}
+
+.file-tree-item {
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 3px;
+  user-select: none;
+}
+
+.file-tree-item:hover {
+  background-color: #2a2d2e;
+}
+
+.file-tree-item.active {
+  background-color: #37373d;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: #888;
+}
+
+.error {
+  color: #f48771;
+  padding: 8px;
+  background-color: #5a1d1d;
+  border-radius: 3px;
+  margin: 8px 0;
+}
+
+.success {
+  color: #89d185;
+  padding: 8px;
+  background-color: #1e3a1e;
+  border-radius: 3px;
+  margin: 8px 0;
 }

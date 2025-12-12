@@ -1,59 +1,23 @@
-import { useEffect, useRef } from 'react'
-import { Terminal as XTerm } from '@xterm/xterm'
-import { FitAddon } from '@xterm/addon-fit'
-import { WebLinksAddon } from '@xterm/addon-web-links'
-import { SearchAddon } from '@xterm/addon-search'
-import '@xterm/xterm/css/xterm.css'
-import './Terminal.css'
-import { TerminalSession } from '../types'
+import React, { useEffect, useRef } from 'react';
+import { Terminal as XTerm } from 'xterm';
+import { FitAddon } from 'xterm-addon-fit';
+import { WebLinksAddon } from 'xterm-addon-web-links';
+import 'xterm/css/xterm.css';
+import './Terminal.css';
 
-interface TerminalProps {
-  terminals: TerminalSession[]
-  activeTerminal: string | null
-  onTerminalClick: (terminalId: string) => void
-  onTerminalClose: (terminalId: string) => void
-  onNewTerminal: (shell: 'bash' | 'zsh' | 'fish') => void
-}
-
-const Terminal = ({
-  terminals,
-  activeTerminal,
-  onTerminalClick,
-  onTerminalClose,
-  onNewTerminal
-}: TerminalProps) => {
-  const terminalRefs = useRef<Map<string, XTerm>>(new Map())
-  const containerRefs = useRef<Map<string, HTMLDivElement>>(new Map())
-  const socketRefs = useRef<Map<string, WebSocket>>(new Map())
+const Terminal: React.FC = () => {
+  const terminalRef = useRef<HTMLDivElement>(null);
+  const xtermRef = useRef<XTerm | null>(null);
+  const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    // Initialize terminals
-    terminals.forEach(term => {
-      if (!terminalRefs.current.has(term.id)) {
-        initializeTerminal(term)
-      }
-    })
+    if (!terminalRef.current) return;
 
-    // Cleanup removed terminals
-    terminalRefs.current.forEach((xterm, id) => {
-      if (!terminals.find(t => t.id === id)) {
-        xterm.dispose()
-        terminalRefs.current.delete(id)
-        
-        const socket = socketRefs.current.get(id)
-        if (socket) {
-          socket.close()
-          socketRefs.current.delete(id)
-        }
-      }
-    })
-  }, [terminals])
-
-  const initializeTerminal = (termSession: TerminalSession) => {
-    const container = containerRefs.current.get(termSession.id)
-    if (!container) return
-
-    const xterm = new XTerm({
+    // Create terminal instance
+    const term = new XTerm({
+      cursorBlink: true,
+      fontSize: 14,
+      fontFamily: 'Consolas, Monaco, "Courier New", monospace',
       theme: {
         background: '#1e1e1e',
         foreground: '#d4d4d4',
@@ -74,129 +38,91 @@ const Terminal = ({
         brightMagenta: '#d670d6',
         brightCyan: '#29b8db',
         brightWhite: '#e5e5e5'
-      },
-      fontFamily: '"Cascadia Code", "Fira Code", Menlo, Monaco, "Courier New", monospace',
-      fontSize: 13,
-      cursorBlink: true,
-      cursorStyle: 'block',
-      scrollback: 10000,
-      allowProposedApi: true
-    })
-
-    const fitAddon = new FitAddon()
-    const webLinksAddon = new WebLinksAddon()
-    const searchAddon = new SearchAddon()
-
-    xterm.loadAddon(fitAddon)
-    xterm.loadAddon(webLinksAddon)
-    xterm.loadAddon(searchAddon)
-
-    xterm.open(container)
-    fitAddon.fit()
-
-    // Connect to WebSocket
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    const wsUrl = `${protocol}//${window.location.host}/terminal?id=${termSession.id}&shell=${termSession.shell}`
-    const socket = new WebSocket(wsUrl)
-
-    socket.onopen = () => {
-      xterm.writeln('Terminal connected...\r\n')
-    }
-
-    socket.onmessage = (event) => {
-      xterm.write(event.data)
-    }
-
-    socket.onerror = (error) => {
-      console.error('WebSocket error:', error)
-      xterm.writeln('\r\n\x1b[31mTerminal connection error\x1b[0m\r\n')
-    }
-
-    socket.onclose = () => {
-      xterm.writeln('\r\n\x1b[33mTerminal connection closed\x1b[0m\r\n')
-    }
-
-    xterm.onData((data) => {
-      if (socket.readyState === WebSocket.OPEN) {
-        socket.send(data)
       }
-    })
+    });
 
-    // Handle resize
-    const resizeObserver = new ResizeObserver(() => {
-      fitAddon.fit()
-      if (socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({
-          type: 'resize',
-          cols: xterm.cols,
-          rows: xterm.rows
-        }))
+    const fitAddon = new FitAddon();
+    const webLinksAddon = new WebLinksAddon();
+    
+    term.loadAddon(fitAddon);
+    term.loadAddon(webLinksAddon);
+    term.open(terminalRef.current);
+    fitAddon.fit();
+
+    xtermRef.current = term;
+
+    // Connect to WebSocket terminal server - dynamically construct URL
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsHost = window.location.hostname;
+    const wsPort = window.location.port ? `:${window.location.port}` : '';
+    const wsUrl = `${wsProtocol}//${wsHost}${wsPort}/terminal`;
+    
+    const ws = new WebSocket(wsUrl);
+    wsRef.current = ws;
+
+    ws.onopen = () => {
+      console.log('Terminal WebSocket connected');
+    };
+
+    ws.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      
+      if (message.type === 'data') {
+        term.write(message.data);
+      } else if (message.type === 'ready') {
+        console.log('Terminal ready:', message.terminalId);
+      } else if (message.type === 'exit') {
+        term.writeln(`\r\nProcess exited with code ${message.exitCode}`);
       }
-    })
-    resizeObserver.observe(container)
+    };
 
-    terminalRefs.current.set(termSession.id, xterm)
-    socketRefs.current.set(termSession.id, socket)
-  }
+    ws.onerror = (error) => {
+      console.error('Terminal WebSocket error:', error);
+      term.writeln('\r\nWebSocket connection error');
+    };
+
+    ws.onclose = () => {
+      console.log('Terminal WebSocket closed');
+      term.writeln('\r\nConnection closed');
+    };
+
+    // Handle terminal input
+    term.onData((data) => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'input', data }));
+      }
+    });
+
+    // Handle terminal resize
+    term.onResize(({ cols, rows }) => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'resize', cols, rows }));
+      }
+    });
+
+    // Resize on window resize
+    const handleResize = () => {
+      fitAddon.fit();
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      term.dispose();
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
+    };
+  }, []);
 
   return (
-    <div className="terminal-panel">
+    <div className="terminal-container">
       <div className="terminal-header">
-        <div className="terminal-tabs">
-          {terminals.map(term => (
-            <div
-              key={term.id}
-              className={`terminal-tab ${term.id === activeTerminal ? 'active' : ''}`}
-              onClick={() => onTerminalClick(term.id)}
-            >
-              <span className="terminal-icon">$</span>
-              <span className="terminal-title">{term.title}</span>
-              <button
-                className="terminal-close"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onTerminalClose(term.id)
-                }}
-              >
-                ×
-              </button>
-            </div>
-          ))}
-        </div>
-        <div className="terminal-actions">
-          <button onClick={() => onNewTerminal('bash')} title="New Terminal (bash)">
-            +
-          </button>
-          <select 
-            onChange={(e) => onNewTerminal(e.target.value as 'bash' | 'zsh' | 'fish')}
-            value=""
-          >
-            <option value="" disabled>Shell</option>
-            <option value="bash">bash</option>
-            <option value="zsh">zsh</option>
-            <option value="fish">fish</option>
-          </select>
-        </div>
+        <span>Terminal</span>
       </div>
-      <div className="terminal-content">
-        {terminals.map(term => (
-          <div
-            key={term.id}
-            ref={(el) => {
-              if (el) containerRefs.current.set(term.id, el)
-            }}
-            className={`terminal-container ${term.id === activeTerminal ? 'active' : ''}`}
-          />
-        ))}
-        {terminals.length === 0 && (
-          <div className="no-terminal">
-            <p>No terminal sessions</p>
-            <button onClick={() => onNewTerminal('bash')}>Create Terminal</button>
-          </div>
-        )}
-      </div>
+      <div ref={terminalRef} className="terminal" />
     </div>
-  )
-}
+  );
+};
 
-export default Terminal
+export default Terminal;

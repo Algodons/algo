@@ -1,93 +1,88 @@
-import { WebSocket } from 'ws'
-import { IncomingMessage } from 'http'
-import { spawn } from 'node-pty'
-import url from 'url'
+import { WebSocketServer, WebSocket } from 'ws';
+import * as pty from 'node-pty';
+import { IPty } from 'node-pty';
 
-interface TerminalProcess {
-  ptyProcess: any
-  shell: string
+interface TerminalSession {
+  pty: IPty;
+  ws: WebSocket;
 }
 
-const terminals = new Map<string, TerminalProcess>()
+const terminals = new Map<string, TerminalSession>();
 
-export function setupTerminalServer(ws: WebSocket, req: IncomingMessage) {
-  const query = url.parse(req.url || '', true).query
-  const terminalId = query.id as string
-  const shell = (query.shell as string) || 'bash'
+export function setupTerminalServer(wss: WebSocketServer) {
+  wss.on('connection', (ws: WebSocket, req) => {
+    const url = new URL(req.url || '', `http://${req.headers.host}`);
+    
+    if (url.pathname === '/terminal') {
+      const terminalId = url.searchParams.get('id') || generateId();
+      
+      // Create new terminal session
+      const shell = process.platform === 'win32' ? 'powershell.exe' : 'bash';
+      const ptyProcess = pty.spawn(shell, [], {
+        name: 'xterm-color',
+        cols: 80,
+        rows: 30,
+        cwd: process.env.HOME || process.cwd(),
+        env: process.env as { [key: string]: string }
+      });
 
-  if (!terminalId) {
-    ws.close(1008, 'Terminal ID required')
-    return
-  }
+      terminals.set(terminalId, { pty: ptyProcess, ws });
 
-  try {
-    // Check if shell exists, fallback to bash
-    const availableShells = ['bash', 'zsh', 'fish', 'sh']
-    const selectedShell = availableShells.includes(shell) ? shell : 'bash'
-
-    // Create PTY process
-    const ptyProcess = spawn(selectedShell, [], {
-      name: 'xterm-256color',
-      cols: 80,
-      rows: 24,
-      cwd: process.env.WORKSPACE_DIR || process.cwd(),
-      env: process.env as any
-    })
-
-    terminals.set(terminalId, { ptyProcess, shell: selectedShell })
-
-    // Send terminal output to WebSocket
-    ptyProcess.onData((data: string) => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(data)
-      }
-    })
-
-    ptyProcess.onExit(({ exitCode, signal }: any) => {
-      console.log(`Terminal ${terminalId} exited with code ${exitCode}`)
-      terminals.delete(terminalId)
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.close()
-      }
-    })
-
-    // Handle WebSocket messages (terminal input)
-    ws.on('message', (data: Buffer) => {
-      try {
-        const message = data.toString()
-        
-        // Check if it's a resize command
-        try {
-          const parsed = JSON.parse(message)
-          if (parsed.type === 'resize') {
-            ptyProcess.resize(parsed.cols, parsed.rows)
-            return
-          }
-        } catch {
-          // Not JSON, treat as regular input
+      // Send data from terminal to client
+      ptyProcess.onData((data: string) => {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'data', data }));
         }
+      });
 
-        ptyProcess.write(message)
-      } catch (error) {
-        console.error('Error writing to terminal:', error)
-      }
-    })
+      // Handle exit
+      ptyProcess.onExit(({ exitCode, signal }) => {
+        ws.send(JSON.stringify({ type: 'exit', exitCode, signal }));
+        terminals.delete(terminalId);
+        ws.close();
+      });
 
-    // Handle WebSocket close
-    ws.on('close', () => {
-      const terminal = terminals.get(terminalId)
-      if (terminal) {
-        terminal.ptyProcess.kill()
-        terminals.delete(terminalId)
-      }
-    })
+      // Receive data from client
+      ws.on('message', (message: string) => {
+        try {
+          const msg = JSON.parse(message);
+          
+          if (msg.type === 'input') {
+            ptyProcess.write(msg.data);
+          } else if (msg.type === 'resize') {
+            ptyProcess.resize(msg.cols, msg.rows);
+          }
+        } catch (error) {
+          console.error('Terminal message error:', error);
+        }
+      });
 
-    ws.on('error', (error) => {
-      console.error('WebSocket error:', error)
-    })
+      ws.on('close', () => {
+        ptyProcess.kill();
+        terminals.delete(terminalId);
+        console.log(`🔌 Terminal session closed: ${terminalId}`);
+      });
 
-  } catch (error) {
-    console.error('Error creating terminal:', error)
-    ws.close(1011, 'Failed to create terminal')
+      ws.send(JSON.stringify({ type: 'ready', terminalId }));
+      console.log(`💻 Terminal session started: ${terminalId}`);
+    }
+  });
+}
+
+function generateId(): string {
+  return Math.random().toString(36).substring(2, 15);
+}
+
+export function getTerminal(id: string): TerminalSession | undefined {
+  return terminals.get(id);
+}
+
+export function killTerminal(id: string): boolean {
+  const terminal = terminals.get(id);
+  if (terminal) {
+    terminal.pty.kill();
+    terminals.delete(id);
+    return true;
   }
+  return false;
 }
