@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import './QueryBuilder.css';
 
+/**
+ * Visual Query Builder Component
+ * 
+ * Security Note: This component generates SQL for preview and execution. While it implements
+ * basic escaping for string values, the backend API should use parameterized queries when
+ * executing SQL to prevent SQL injection attacks. The generated SQL should be treated as
+ * untrusted user input.
+ */
+
 interface Table {
   name: string;
   columns: Column[];
@@ -123,7 +132,26 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({ connectionId, onExecute }) 
       sql += '\nWHERE ';
       sql += whereConditions
         .map((cond, idx) => {
-          let condStr = `${cond.column} ${cond.operator} '${cond.value}'`;
+          // Format value based on operator and type
+          let formattedValue: string;
+          if (cond.operator === 'IN') {
+            // IN operator expects comma-separated values in parentheses
+            formattedValue = `(${cond.value})`;
+          } else if (cond.operator === 'LIKE') {
+            // LIKE operator needs string values
+            formattedValue = `'${cond.value}'`;
+          } else {
+            // Check if value is numeric (for comparison operators)
+            const numValue = Number(cond.value);
+            if (!isNaN(numValue) && cond.value.trim() !== '') {
+              formattedValue = cond.value;
+            } else {
+              // String value - escape single quotes
+              formattedValue = `'${cond.value.replace(/'/g, "''")}'`;
+            }
+          }
+          
+          let condStr = `${cond.column} ${cond.operator} ${formattedValue}`;
           if (idx > 0) {
             condStr = `${cond.conjunction} ${condStr}`;
           }
