@@ -7,46 +7,46 @@
 
 # Default owners for everything in the repo
 # These users will be requested for review when someone opens a pull request
-*       @Algodons/maintainers
+*       @alice @bob
 
 # Frontend code
-/src/                   @Algodons/frontend-team
-/src/components/        @Algodons/frontend-team
-/src/pages/            @Algodons/frontend-team
-/public/               @Algodons/frontend-team
-*.tsx                  @Algodons/frontend-team
-*.jsx                  @Algodons/frontend-team
-*.css                  @Algodons/frontend-team
-vite.config.ts         @Algodons/frontend-team
+/src/                   @carol @dave
+/src/components/        @carol @dave
+/src/pages/            @carol @dave
+/public/               @carol @dave
+*.tsx                  @carol @dave
+*.jsx                  @carol @dave
+*.css                  @carol @dave
+vite.config.ts         @carol @dave
 
 # Backend code
-/server/               @Algodons/backend-team
-*.server.ts            @Algodons/backend-team
-*.server.js            @Algodons/backend-team
+/server/               @eve
+*.server.ts            @eve
+*.server.js            @eve
 
 # Configuration files
-package.json           @Algodons/maintainers
-package-lock.json      @Algodons/maintainers
-tsconfig.json          @Algodons/maintainers
-.eslintrc*             @Algodons/maintainers
-.prettierrc*           @Algodons/maintainers
+package.json           @alice @bob
+package-lock.json      @alice @bob
+tsconfig.json          @alice @bob
+.eslintrc*             @alice @bob
+.prettierrc*           @alice @bob
 
 # CI/CD and GitHub workflows
-/.github/              @Algodons/devops-team
-/.github/workflows/    @Algodons/devops-team
+/.github/              @frank
+/.github/workflows/    @frank
 
 # Documentation
-*.md                   @Algodons/docs-team
-/docs/                 @Algodons/docs-team
+*.md                   @grace
+/docs/                 @grace
 
 # Security-sensitive files
-/server/auth/          @Algodons/security-team
-/server/middleware/    @Algodons/security-team
-*.env.example          @Algodons/security-team
+/server/auth/          @bob
+/server/middleware/    @bob
+*.env.example          @bob
 
 # Test files
-*.test.ts              @Algodons/qa-team
-*.test.tsx             @Algodons/qa-team
-*.spec.ts              @Algodons/qa-team
-*.spec.tsx             @Algodons/qa-team
-/__tests__/            @Algodons/qa-team
+*.test.ts              @alice
+*.test.tsx             @alice
+*.spec.ts              @alice
+*.spec.tsx             @alice
+/__tests__/            @alice
