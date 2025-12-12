@@ -103,10 +103,65 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('editor:change', data);
   });
 
+  // Resource monitoring subscriptions
+  socket.on('subscribe:resources', (data) => {
+    const room = data.projectId ? `resources:${data.projectId}` : 'resources:global';
+    socket.join(room);
+    console.log(`Client subscribed to ${room}`);
+  });
+
+  socket.on('unsubscribe:resources', (data) => {
+    const room = data.projectId ? `resources:${data.projectId}` : 'resources:global';
+    socket.leave(room);
+    console.log(`Client unsubscribed from ${room}`);
+  });
+
+  // Notification subscriptions
+  socket.on('subscribe:notifications', (data) => {
+    const room = `notifications:${data.userId}`;
+    socket.join(room);
+    console.log(`Client subscribed to ${room}`);
+  });
+
+  socket.on('unsubscribe:notifications', (data) => {
+    const room = `notifications:${data.userId}`;
+    socket.leave(room);
+    console.log(`Client unsubscribed from ${room}`);
+  });
+
+  // Deployment status subscriptions
+  socket.on('subscribe:deployment', (data) => {
+    const room = `deployment:${data.projectId}`;
+    socket.join(room);
+    console.log(`Client subscribed to ${room}`);
+  });
+
+  socket.on('unsubscribe:deployment', (data) => {
+    const room = `deployment:${data.projectId}`;
+    socket.leave(room);
+    console.log(`Client unsubscribed from ${room}`);
+  });
+
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
   });
 });
+
+// Helper function to broadcast resource updates
+export function broadcastResourceUpdate(projectId: string | null, metric: any) {
+  const room = projectId ? `resources:${projectId}` : 'resources:global';
+  io.to(room).emit('resource:update', metric);
+}
+
+// Helper function to send notifications
+export function sendNotification(userId: string, notification: any) {
+  io.to(`notifications:${userId}`).emit('notification', notification);
+}
+
+// Helper function to broadcast deployment status
+export function broadcastDeploymentStatus(projectId: string, status: any) {
+  io.to(`deployment:${projectId}`).emit('deployment:status', status);
+}
 
 // Start server
 httpServer.listen(PORT, () => {
