@@ -30,6 +30,33 @@ Algo is a powerful platform that integrates various AI models and provides tools
 - Version control for configurations
 - Marketplace for sharing custom agents
 
+### Database Tooling
+
+Algo provides comprehensive database tooling to manage and interact with various database systems.
+
+#### Supported Databases
+- **Relational Databases**: PostgreSQL, MySQL, SQLite
+- **NoSQL Databases**: MongoDB, Redis
+- **Vector Databases**: Pinecone, Weaviate for AI applications
+
+#### Database Features
+- **Visual Query Builder**: No-code interface for generating SQL queries
+- **Schema Designer**: ER diagram visualization and schema management
+- **Data Browser**: Paginated data viewing with advanced filtering
+- **Import/Export Tools**: Support for CSV, JSON, and SQL dump formats
+- **Migration Manager**: Version-controlled schema changes with rollback
+- **Backup Automation**: Scheduled backups with point-in-time recovery
+- **Connection Pooling**: Optimized connection management
+- **Query Performance Analyzer**: Detailed query execution analysis
+- **Index Optimization**: AI-powered recommendations for index creation
+
+#### Database Provisioning
+- **One-Click Creation**: Automatic database setup with optimal configurations
+- **Instance Types**: Choose between shared (free tier) or dedicated instances
+- **Auto-Scaling**: Storage-based scaling for growing data needs
+- **High Availability**: Replica configuration for failover and read scaling
+- **Environment Cloning**: Easy database duplication for staging and testing
+
 ### Free Tier Strategy
 - Free unlimited usage with your own API keys
 - Limited monthly credits for platform models
@@ -91,4 +118,7 @@ Algo includes a comprehensive one-click deployment system for easy application d
 4. Monitor your application through the dashboard
 
 Current Date and Time (UTC - YYYY-MM-DD HH:MM:SS formatted): 2025-12-12 05:05:45
+Current User's Login: SMSDAO
+
+Current Date and Time (UTC - YYYY-MM-DD HH:MM:SS formatted): 2025-12-12 05:14:40
 Current User's Login: SMSDAO
