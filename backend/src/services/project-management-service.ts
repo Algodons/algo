@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import { ProjectWithStats, ProjectTemplate, ProjectCollaborator, ProjectFavorite } from '../types/dashboard';
+import { ProjectWithStats, ProjectTemplate, ProjectCollaborator } from '../types/dashboard';
 
 export class ProjectManagementService {
   constructor(private pool: Pool) {}
