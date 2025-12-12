@@ -1,0 +1,127 @@
+name: Auto-Approve Trusted PRs
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+    types: [opened, synchronize, reopened]
+
+jobs:
+  auto-approve:
+    name: Auto-Approve PR
+    runs-on: ubuntu-latest
+    # Only run if all conditions are met
+    if: |
+      github.event.pull_request.draft == false &&
+      github.actor != 'dependabot[bot]'
+    
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Check if contributor is trusted
+        id: check-trusted
+        run: |
+          # List of trusted contributors (GitHub usernames)
+          TRUSTED_USERS=(
+            "owner-username"
+            "maintainer-username"
+          )
+          
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+          IS_TRUSTED=false
+          
+          for user in "${TRUSTED_USERS[@]}"; do
+            if [[ "$PR_AUTHOR" == "$user" ]]; then
+              IS_TRUSTED=true
+              break
+            fi
+          done
+          
+          echo "is_trusted=$IS_TRUSTED" >> $GITHUB_OUTPUT
+          echo "PR Author: $PR_AUTHOR"
+          echo "Is Trusted: $IS_TRUSTED"
+
+      - name: Wait for CI checks
+        if: steps.check-trusted.outputs.is_trusted == 'true'
+        uses: lewagon/wait-on-check-action@v1.3.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          check-name: 'CI Success'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          allowed-conclusions: success
+
+      - name: Wait for CodeQL scan
+        if: steps.check-trusted.outputs.is_trusted == 'true'
+        uses: lewagon/wait-on-check-action@v1.3.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          check-name: 'Analyze Code'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          allowed-conclusions: success
+        continue-on-error: true
+
+      - name: Check for security vulnerabilities
+        if: steps.check-trusted.outputs.is_trusted == 'true'
+        id: check-vulnerabilities
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: alerts } = await github.rest.codeScanning.listAlertsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.payload.pull_request.head.ref,
+              state: 'open',
+              severity: 'error,high,critical'
+            });
+            
+            console.log(`Found ${alerts.length} high/critical security alerts`);
+            
+            if (alerts.length > 0) {
+              core.setFailed('Security vulnerabilities found');
+              return false;
+            }
+            return true;
+
+      - name: Auto-approve PR
+        if: |
+          steps.check-trusted.outputs.is_trusted == 'true' &&
+          steps.check-vulnerabilities.outcome == 'success'
+        uses: hmarr/auto-approve-action@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          review-message: |
+            ✅ Auto-approved by GitHub Actions
+            
+            This PR has been automatically approved because:
+            - Author is a trusted contributor
+            - All CI checks passed
+            - No security vulnerabilities detected
+            
+            A human reviewer should still verify the changes before merging.
+
+      - name: Add approval comment
+        if: |
+          steps.check-trusted.outputs.is_trusted == 'true' &&
+          steps.check-vulnerabilities.outcome == 'success'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: '🤖 This PR has been auto-approved as all checks passed and the author is trusted. However, a final human review is recommended before merging.'
+            });
+
+      - name: Skip auto-approval
+        if: steps.check-trusted.outputs.is_trusted != 'true'
+        run: |
+          echo "::notice::Skipping auto-approval - contributor is not in the trusted list"
+          echo "PR author ${{ github.event.pull_request.user.login }} is not a trusted contributor"

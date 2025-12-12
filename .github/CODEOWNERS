@@ -1,0 +1,48 @@
+# CODEOWNERS file for automatic review assignments
+# See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything in the repo
+# These users will be requested for review when someone opens a pull request
+*       @Algodons/maintainers
+
+# Frontend code
+/src/                   @Algodons/frontend-team
+/src/components/        @Algodons/frontend-team
+/src/pages/            @Algodons/frontend-team
+/public/               @Algodons/frontend-team
+*.tsx                  @Algodons/frontend-team
+*.jsx                  @Algodons/frontend-team
+*.css                  @Algodons/frontend-team
+vite.config.ts         @Algodons/frontend-team
+
+# Backend code
+/server/               @Algodons/backend-team
+*.server.ts            @Algodons/backend-team
+*.server.js            @Algodons/backend-team
+
+# Configuration files
+package.json           @Algodons/maintainers
+package-lock.json      @Algodons/maintainers
+tsconfig.json          @Algodons/maintainers
+.eslintrc*             @Algodons/maintainers
+.prettierrc*           @Algodons/maintainers
+
+# CI/CD and GitHub workflows
+/.github/              @Algodons/devops-team
+/.github/workflows/    @Algodons/devops-team
+
+# Documentation
+*.md                   @Algodons/docs-team
+/docs/                 @Algodons/docs-team
+
+# Security-sensitive files
+/server/auth/          @Algodons/security-team
+/server/middleware/    @Algodons/security-team
+*.env.example          @Algodons/security-team
+
+# Test files
+*.test.ts              @Algodons/qa-team
+*.test.tsx             @Algodons/qa-team
+*.spec.ts              @Algodons/qa-team
+*.spec.tsx             @Algodons/qa-team
+/__tests__/            @Algodons/qa-team
