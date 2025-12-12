@@ -3,9 +3,10 @@ import './DatabasePanel.css';
 import QueryBuilder from './database/QueryBuilder';
 import DataBrowser from './database/DataBrowser';
 import MigrationManager from './database/MigrationManager';
+import BackupManager from './database/BackupManager';
 
 type DatabaseType = 'postgresql' | 'mysql' | 'mongodb' | 'redis' | 'sqlite' | 'pinecone' | 'weaviate';
-type TabType = 'query' | 'visual-builder' | 'data-browser' | 'migrations' | 'schema';
+type TabType = 'query' | 'visual-builder' | 'data-browser' | 'migrations' | 'backups';
 
 const DatabasePanel: React.FC = () => {
   const [dbType, setDbType] = useState<DatabaseType>('postgresql');
@@ -214,6 +215,12 @@ const DatabasePanel: React.FC = () => {
             >
               Migrations
             </button>
+            <button
+              className={`db-tab ${activeTab === 'backups' ? 'active' : ''}`}
+              onClick={() => setActiveTab('backups')}
+            >
+              Backups
+            </button>
           </div>
 
           <div className="db-tab-content">
@@ -250,6 +257,10 @@ const DatabasePanel: React.FC = () => {
 
             {activeTab === 'migrations' && (
               <MigrationManager connectionId={connectionId} />
+            )}
+
+            {activeTab === 'backups' && (
+              <BackupManager connectionId={connectionId} />
             )}
           </div>
         </>
