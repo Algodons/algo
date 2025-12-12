@@ -110,8 +110,19 @@ const getContainerStats = async (projectId) => {
 };
 
 const calculateCPUPercent = (stats) => {
+  if (
+    !stats.precpu_stats ||
+    !stats.precpu_stats.cpu_usage ||
+    typeof stats.precpu_stats.cpu_usage.total_usage !== 'number' ||
+    typeof stats.precpu_stats.system_cpu_usage !== 'number'
+  ) {
+    return 0;
+  }
   const cpuDelta = stats.cpu_stats.cpu_usage.total_usage - stats.precpu_stats.cpu_usage.total_usage;
   const systemDelta = stats.cpu_stats.system_cpu_usage - stats.precpu_stats.system_cpu_usage;
+  if (systemDelta === 0) {
+    return 0;
+  }
   const cpuPercent = (cpuDelta / systemDelta) * stats.cpu_stats.online_cpus * 100;
   return cpuPercent || 0;
 };
