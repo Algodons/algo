@@ -1,5 +1,44 @@
 # Dependencies
 node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS files
+Thumbs.db
 .pnp
 .pnp.js
 
@@ -21,6 +60,15 @@ out/
 .env.development.local
 .env.test.local
 .env.production.local
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Environment variables
+.env
+.env*.local
 
 # Debug
 npm-debug.log*
@@ -28,6 +76,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # IDE
+# IDEs
 .vscode/
 .idea/
 *.swp
@@ -52,3 +101,12 @@ logs/
 # Temporary files
 tmp/
 temp/
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.pem
+.vercel

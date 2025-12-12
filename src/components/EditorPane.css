@@ -1,0 +1,174 @@
+.editor-pane {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  background: #1e1e1e;
+}
+
+.tabs-bar {
+  display: flex;
+  background: #2d2d30;
+  border-bottom: 1px solid #3e3e42;
+  overflow-x: auto;
+  overflow-y: hidden;
+  height: 35px;
+}
+
+.tabs-bar::-webkit-scrollbar {
+  height: 0;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  min-width: 120px;
+  max-width: 200px;
+  background: #2d2d30;
+  border-right: 1px solid #252526;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+  font-size: 13px;
+  color: #969696;
+  transition: background 0.1s;
+}
+
+.tab:hover {
+  background: #1e1e1e;
+}
+
+.tab.active {
+  background: #1e1e1e;
+  color: #ffffff;
+  border-top: 1px solid #007acc;
+}
+
+.tab-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.modified-indicator {
+  color: #ffffff;
+  margin: 0 4px;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.tab-close {
+  background: none;
+  border: none;
+  color: #858585;
+  cursor: pointer;
+  padding: 0 4px;
+  margin-left: 4px;
+  font-size: 20px;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.1s, color 0.1s;
+}
+
+.tab:hover .tab-close {
+  opacity: 1;
+}
+
+.tab-close:hover {
+  color: #ffffff;
+}
+
+.editor-content {
+  flex: 1;
+  overflow: hidden;
+}
+
+.editor-content.single {
+  display: flex;
+}
+
+.editor-content.horizontal {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: #3e3e42;
+}
+
+.editor-content.vertical {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 1px;
+  background: #3e3e42;
+}
+
+.editor-content.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1px;
+  background: #3e3e42;
+}
+
+.no-file-open {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: #1e1e1e;
+}
+
+.welcome-message {
+  text-align: center;
+  color: #cccccc;
+  max-width: 600px;
+  padding: 40px;
+}
+
+.welcome-message h2 {
+  color: #ffffff;
+  margin-bottom: 16px;
+  font-size: 24px;
+  font-weight: 300;
+}
+
+.welcome-message p {
+  color: #969696;
+  margin-bottom: 32px;
+  font-size: 14px;
+}
+
+.shortcuts {
+  text-align: left;
+  margin-top: 32px;
+}
+
+.shortcuts h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #cccccc;
+}
+
+.shortcuts ul {
+  list-style: none;
+  padding: 0;
+}
+
+.shortcuts li {
+  margin: 8px 0;
+  font-size: 13px;
+  color: #969696;
+}
+
+.shortcuts kbd {
+  background: #3e3e42;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 11px;
+  color: #cccccc;
+  border: 1px solid #555555;
+}

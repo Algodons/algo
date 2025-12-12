@@ -2,6 +2,9 @@
   "name": "algo-cloud-ide",
   "version": "1.0.0",
   "description": "Production-grade cloud IDE and deployment platform",
+  "name": "algo",
+  "version": "1.0.0",
+  "description": "Cloud IDE Platform",
   "private": true,
   "workspaces": [
     "frontend",
@@ -34,4 +37,18 @@
   "devDependencies": {
     "npm-run-all": "^4.1.5"
   }
+    "dev": "npm run dev --workspace=frontend & npm run dev --workspace=backend",
+    "build": "npm run build --workspace=frontend && npm run build --workspace=backend",
+    "start": "npm run start --workspace=frontend & npm run start --workspace=backend",
+    "lint": "npm run lint --workspace=frontend && npm run lint --workspace=backend"
+  },
+  "keywords": [
+    "cloud",
+    "ide",
+    "editor",
+    "nextjs",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT"
 }

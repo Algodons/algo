@@ -1,6 +1,8 @@
 {
   "name": "algo-frontend",
   "version": "1.0.0",
+  "name": "frontend",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -56,5 +58,26 @@
     "tailwindcss": "^3.4.1",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.1.0"
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "^15.1.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@monaco-editor/react": "^4.6.0",
+    "@xterm/xterm": "^5.5.0",
+    "@xterm/addon-fit": "^0.10.0",
+    "socket.io-client": "^4.7.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.6",
+    "@types/react-dom": "^19.0.2",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^15.1.2",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "typescript": "^5.7.2"
   }
 }

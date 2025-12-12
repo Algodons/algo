@@ -35,5 +35,47 @@
   },
   "devDependencies": {
     "nodemon": "^3.0.3"
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend server for Algo IDE",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "@pinecone-database/pinecone": "^6.1.3",
+    "@types/bcrypt": "^6.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.0.0",
+    "bcrypt": "^6.0.0",
+    "better-sqlite3": "^12.5.0",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.2.0",
+    "csv-stringify": "^6.6.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.1",
+    "ioredis": "^5.8.2",
+    "jsonwebtoken": "^9.0.3",
+    "mongodb": "^7.0.0",
+    "multer": "^2.0.2",
+    "mysql2": "^3.15.3",
+    "pg": "^8.16.3",
+    "socket.io": "^4.7.5",
+    "weaviate-ts-client": "^2.2.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.0",
+    "@types/pg": "^8.16.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.2",
+    "@typescript-eslint/parser": "^8.18.2",
+    "eslint": "^8.57.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.7.2"
   }
 }
