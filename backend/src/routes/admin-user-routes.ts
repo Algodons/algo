@@ -1,9 +1,9 @@
-import express, { Request, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import { Pool } from 'pg';
 import { requireAdmin, requireSuperAdmin, require2FA, logAdminAction } from '../middleware/admin-auth';
 
 export function createAdminUserRoutes(pool: Pool) {
-  const router = express.Router();
+  const router = Router();
 
   // Apply admin authentication and logging to all routes
   router.use(requireAdmin);
@@ -296,7 +296,8 @@ export function createAdminUserRoutes(pool: Pool) {
       }
 
       // Generate session token
-      const sessionToken = require('crypto').randomBytes(32).toString('hex');
+      const crypto = require('crypto');
+      const sessionToken = crypto.randomBytes(32).toString('hex');
 
       // Create impersonation session
       await pool.query(

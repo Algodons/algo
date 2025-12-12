@@ -1,9 +1,9 @@
-import express, { Request, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import { Pool } from 'pg';
 import { requireAdmin, requireSuperAdmin, require2FA, logAdminAction } from '../middleware/admin-auth';
 
 export function createAdminSystemRoutes(pool: Pool) {
-  const router = express.Router();
+  const router = Router();
 
   // Apply admin authentication and logging to all routes
   router.use(requireAdmin);
