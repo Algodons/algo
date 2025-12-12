@@ -17,7 +17,6 @@ import {
 } from 'lucide-react';
 
 export function ResourcesSection() {
-  const [timeRange, setTimeRange] = useState('24h');
 
   // Mock data - would come from API
   const currentUsage = {
