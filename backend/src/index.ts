@@ -22,12 +22,12 @@ app.use(cors());
 app.use(express.json());
 
 // Health check endpoint
-app.get('/health', (req: Request, res: Response) => {
+app.get('/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
 // API endpoints
-app.get('/api/files', (req: Request, res: Response) => {
+app.get('/api/files', (_req: Request, res: Response) => {
   // Placeholder for file system operations
   res.json({
     files: [

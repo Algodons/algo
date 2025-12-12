@@ -1,7 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import MonacoEditor from '@monaco-editor/react'
+import dynamic from 'next/dynamic'
+
+// Dynamically import Monaco Editor with no SSR
+const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center h-full bg-gray-900 text-gray-400">
+      Loading editor...
+    </div>
+  ),
+})
 
 const Editor = () => {
   const [code, setCode] = useState<string>(`// Welcome to Algo IDE
