@@ -15,7 +15,7 @@ jobs:
     if: |
       github.event.pull_request.draft == false &&
       github.actor != 'dependabot[bot]'
-    
+
     permissions:
       contents: read
       pull-requests: write
@@ -29,17 +29,17 @@ jobs:
             "owner-username"
             "maintainer-username"
           )
-          
+
           PR_AUTHOR="${{ github.event.pull_request.user.login }}"
           IS_TRUSTED=false
-          
+
           for user in "${TRUSTED_USERS[@]}"; do
             if [[ "$PR_AUTHOR" == "$user" ]]; then
               IS_TRUSTED=true
               break
             fi
           done
-          
+
           echo "is_trusted=$IS_TRUSTED" >> $GITHUB_OUTPUT
           echo "PR Author: $PR_AUTHOR"
           echo "Is Trusted: $IS_TRUSTED"
@@ -79,9 +79,9 @@ jobs:
               state: 'open',
               severity: 'error,high,critical'
             });
-            
+
             console.log(`Found ${alerts.length} high/critical security alerts`);
-            
+
             if (alerts.length > 0) {
               core.setFailed('Security vulnerabilities found');
               return false;
@@ -97,12 +97,12 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           review-message: |
             ✅ Auto-approved by GitHub Actions
-            
+
             This PR has been automatically approved because:
             - Author is a trusted contributor
             - All CI checks passed
             - No security vulnerabilities detected
-            
+
             A human reviewer should still verify the changes before merging.
 
       - name: Add approval comment
