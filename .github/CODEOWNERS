@@ -1,0 +1,52 @@
+# CODEOWNERS file for automatic review assignments
+# See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# TODO: Replace @Algodons/* team references with actual GitHub team names or individual usernames
+# Example: *  @username1 @username2 (for individual users)
+#          *  @OrgName/team-name (for teams)
+
+# Default owners for everything in the repo
+# These users will be requested for review when someone opens a pull request
+*       @alice @bob
+
+# Frontend code
+/src/                   @carol @dave
+/src/components/        @carol @dave
+/src/pages/            @carol @dave
+/public/               @carol @dave
+*.tsx                  @carol @dave
+*.jsx                  @carol @dave
+*.css                  @carol @dave
+vite.config.ts         @carol @dave
+
+# Backend code
+/server/               @eve
+*.server.ts            @eve
+*.server.js            @eve
+
+# Configuration files
+package.json           @alice @bob
+package-lock.json      @alice @bob
+tsconfig.json          @alice @bob
+.eslintrc*             @alice @bob
+.prettierrc*           @alice @bob
+
+# CI/CD and GitHub workflows
+/.github/              @frank
+/.github/workflows/    @frank
+
+# Documentation
+*.md                   @grace
+/docs/                 @grace
+
+# Security-sensitive files
+/server/auth/          @bob
+/server/middleware/    @bob
+*.env.example          @bob
+
+# Test files
+*.test.ts              @alice
+*.test.tsx             @alice
+*.spec.ts              @alice
+*.spec.tsx             @alice
+/__tests__/            @alice
