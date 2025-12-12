@@ -3,6 +3,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import databaseRoutes from './routes/database-routes';
 
 dotenv.config();
 
@@ -25,6 +26,9 @@ app.use(express.json());
 app.get('/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// Database management routes
+app.use('/api/databases', databaseRoutes);
 
 // API endpoints
 app.get('/api/files', (_req: Request, res: Response) => {
