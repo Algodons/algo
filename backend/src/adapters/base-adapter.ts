@@ -99,15 +99,7 @@ export abstract class BaseAdapter implements IDatabaseAdapter {
   abstract beginTransaction(): Promise<void>;
   abstract commitTransaction(): Promise<void>;
   abstract rollbackTransaction(): Promise<void>;
-
-  async healthCheck(): Promise<boolean> {
-    try {
-      await this.executeQuery('SELECT 1');
-      return true;
-    } catch {
-      return false;
-    }
-  }
+  abstract healthCheck(): Promise<boolean>;
 
   getStatus(): ConnectionStatus {
     return this.status;

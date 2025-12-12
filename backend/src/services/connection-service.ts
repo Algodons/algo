@@ -179,22 +179,18 @@ export class ConnectionService {
   private encryptCredentials(credentials: DatabaseCredentials): DatabaseCredentials {
     const algorithm = 'aes-256-cbc';
     const key = crypto.scryptSync(this.encryptionKey, 'salt', 32);
-    const iv = crypto.randomBytes(16);
 
-    const cipher = crypto.createCipheriv(algorithm, key, iv);
-    const encrypted = Buffer.concat([
-      cipher.update(JSON.stringify(credentials)),
-      cipher.final(),
-    ]);
+    const encryptField = (value: string): string => {
+      const iv = crypto.randomBytes(16);
+      const cipher = crypto.createCipheriv(algorithm, key, iv);
+      const encrypted = Buffer.concat([cipher.update(value), cipher.final()]);
+      return `encrypted:${iv.toString('hex')}:${encrypted.toString('hex')}`;
+    };
 
     return {
       ...credentials,
-      password: credentials.password
-        ? `encrypted:${iv.toString('hex')}:${encrypted.toString('hex')}`
-        : undefined,
-      apiKey: credentials.apiKey
-        ? `encrypted:${iv.toString('hex')}:${encrypted.toString('hex')}`
-        : undefined,
+      password: credentials.password ? encryptField(credentials.password) : undefined,
+      apiKey: credentials.apiKey ? encryptField(credentials.apiKey) : undefined,
     };
   }
 
@@ -217,8 +213,7 @@ export class ConnectionService {
       const decipher = crypto.createDecipheriv(algorithm, key, iv);
       const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
 
-      const parsed = JSON.parse(decrypted.toString());
-      return parsed.password || parsed.apiKey;
+      return decrypted.toString();
     };
 
     return {

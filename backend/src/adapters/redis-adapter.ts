@@ -11,6 +11,7 @@ import {
 
 export class RedisAdapter extends BaseAdapter {
   private client: Redis | null = null;
+  private pipeline: any = null;
 
   constructor(credentials: DatabaseCredentials) {
     super(credentials);
@@ -196,23 +197,23 @@ export class RedisAdapter extends BaseAdapter {
     if (!this.client) {
       throw new Error('Not connected to database');
     }
-    await this.client.multi();
+    this.pipeline = this.client.multi();
   }
 
   async commitTransaction(): Promise<void> {
-    if (!this.client) {
-      throw new Error('Not connected to database');
+    if (!this.client || !this.pipeline) {
+      throw new Error('Not connected to database or no active transaction');
     }
-    // Redis transactions are executed with EXEC
-    await this.client.exec();
+    await this.pipeline.exec();
+    this.pipeline = null;
   }
 
   async rollbackTransaction(): Promise<void> {
-    if (!this.client) {
-      throw new Error('Not connected to database');
+    if (!this.client || !this.pipeline) {
+      throw new Error('Not connected to database or no active transaction');
     }
-    // Redis transactions can be discarded
-    await this.client.discard();
+    await this.pipeline.discard();
+    this.pipeline = null;
   }
 
   async healthCheck(): Promise<boolean> {

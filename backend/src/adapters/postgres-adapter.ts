@@ -264,4 +264,16 @@ export class PostgresAdapter extends BaseAdapter {
     this.client.release();
     this.client = null;
   }
+
+  async healthCheck(): Promise<boolean> {
+    try {
+      if (!this.pool) {
+        return false;
+      }
+      await this.pool.query('SELECT 1');
+      return true;
+    } catch {
+      return false;
+    }
+  }
 }

@@ -337,14 +337,22 @@ export class ImportExportService {
     const columns = Object.keys(rows[0]);
     const values = rows.map((row) => columns.map((col) => row[col]));
 
-    const placeholders = values
-      .map((_, i) => `(${columns.map((_, j) => `$${i * columns.length + j + 1}`).join(', ')})`)
+    // Use simple INSERT with multiple VALUES for better compatibility
+    const valueStrings = values
+      .map((rowValues) => {
+        const escapedValues = rowValues.map((val) => {
+          if (val === null || val === undefined) return 'NULL';
+          if (typeof val === 'string') return `'${val.replace(/'/g, "''")}'`;
+          if (typeof val === 'number') return val;
+          return `'${String(val).replace(/'/g, "''")}'`;
+        });
+        return `(${escapedValues.join(', ')})`;
+      })
       .join(', ');
 
-    const flatValues = values.flat();
-    const query = `INSERT INTO ${tableName} (${columns.join(', ')}) VALUES ${placeholders}`;
+    const query = `INSERT INTO ${tableName} (${columns.join(', ')}) VALUES ${valueStrings}`;
 
-    await adapter.executeQuery(query, flatValues);
+    await adapter.executeQuery(query);
   }
 
   /**

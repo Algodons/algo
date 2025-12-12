@@ -326,24 +326,30 @@ export class MigrationService {
       throw new Error(`Connection ${connectionId} not found`);
     }
 
-    const sql = `
+    const connection = this.connectionService.getConnection(connectionId);
+    if (!connection) {
+      throw new Error(`Connection ${connectionId} not found`);
+    }
+
+    // Use simple INSERT/UPDATE logic that works across databases
+    // First try to delete existing record, then insert new one
+    const deleteSQL = `DELETE FROM ${this.historyTable} WHERE id = '${migration.id}'`;
+    await adapter.executeQuery(deleteSQL);
+
+    const insertSQL = `
       INSERT INTO ${this.historyTable} (id, name, version, up_sql, down_sql, applied_at, status, error)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      ON CONFLICT(id) DO UPDATE SET
-        applied_at = excluded.applied_at,
-        status = excluded.status,
-        error = excluded.error
+      VALUES (
+        '${migration.id}',
+        '${migration.name.replace(/'/g, "''")}',
+        ${migration.version},
+        '${migration.up.replace(/'/g, "''")}',
+        '${migration.down.replace(/'/g, "''")}',
+        ${migration.appliedAt ? `'${migration.appliedAt.toISOString()}'` : 'NULL'},
+        '${migration.status}',
+        ${migration.error ? `'${migration.error.replace(/'/g, "''")}'` : 'NULL'}
+      )
     `;
 
-    await adapter.executeQuery(sql, [
-      migration.id,
-      migration.name,
-      migration.version,
-      migration.up,
-      migration.down,
-      migration.appliedAt?.toISOString(),
-      migration.status,
-      migration.error,
-    ]);
+    await adapter.executeQuery(insertSQL);
   }
 }
