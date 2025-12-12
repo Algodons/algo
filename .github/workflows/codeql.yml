@@ -48,8 +48,8 @@ jobs:
 
       - name: Build project
         run: |
-          npm run build || echo "Build completed with warnings"
-          npm run build:server || echo "Server build completed with warnings"
+          npm run build
+          npm run build:server
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
