@@ -15,7 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Key, Webhook, BarChart3, Copy, Trash2, Plus, CheckCircle2, XCircle } from 'lucide-react';
+import { Key, Webhook, Copy, Trash2, Plus } from 'lucide-react';
 
 export function ApiManagementSection() {
   const [showCreateKey, setShowCreateKey] = useState(false);
