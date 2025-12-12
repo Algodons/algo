@@ -1,0 +1,151 @@
+.query-builder {
+  padding: 16px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.qb-section {
+  margin-bottom: 24px;
+  background: #1e1e1e;
+  border: 1px solid #3e3e42;
+  border-radius: 4px;
+  padding: 16px;
+}
+
+.qb-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #cccccc;
+}
+
+.qb-section h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #aaaaaa;
+}
+
+.qb-field {
+  margin-bottom: 12px;
+}
+
+.qb-field label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: #aaaaaa;
+}
+
+.qb-field select,
+.qb-field input {
+  width: 100%;
+  padding: 6px 8px;
+  background: #2d2d30;
+  border: 1px solid #3e3e42;
+  border-radius: 3px;
+  color: #cccccc;
+  font-size: 13px;
+}
+
+.qb-subsection {
+  margin: 16px 0;
+  padding: 12px;
+  background: #252526;
+  border-radius: 4px;
+}
+
+.subsection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.qb-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.qb-row select,
+.qb-row input {
+  flex: 1;
+  padding: 6px 8px;
+  background: #2d2d30;
+  border: 1px solid #3e3e42;
+  border-radius: 3px;
+  color: #cccccc;
+  font-size: 12px;
+}
+
+.btn-small {
+  padding: 4px 12px;
+  font-size: 12px;
+  background: #0e639c;
+  color: #ffffff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-small:hover {
+  background: #1177bb;
+}
+
+.btn-remove {
+  padding: 4px 8px;
+  background: #c42b1c;
+  color: #ffffff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  transition: background 0.2s;
+}
+
+.btn-remove:hover {
+  background: #e81123;
+}
+
+.sql-preview {
+  background: #1e1e1e;
+  border: 1px solid #3e3e42;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 12px;
+  max-height: 300px;
+  overflow: auto;
+}
+
+.sql-preview pre {
+  margin: 0;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 12px;
+  color: #d4d4d4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.btn-primary {
+  padding: 8px 16px;
+  background: #0e639c;
+  color: #ffffff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #1177bb;
+}
+
+.btn-primary:active {
+  background: #0d5a8f;
+}
