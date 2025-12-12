@@ -8,6 +8,7 @@
     "build": "tsc && vite build",
     "build:server": "tsc -p server/tsconfig.json",
     "preview": "vite preview",
+    "postinstall": "node -e \"const fs=require('fs');const path=require('path');const hasSrc=fs.existsSync('src');const hasViteConfig=fs.existsSync('vite.config.js')||fs.existsSync('vite.config.ts');if(!hasSrc||!hasViteConfig){console.warn('\\u001b[33m[WARNING] The project requires a src/ directory and a Vite config file (vite.config.js or vite.config.ts) before running build scripts. Please set up the project structure.\\u001b[0m');}\"",
     "lint": "dirs=\"\"; [ -d src ] && dirs=\"$dirs src\"; [ -d server ] && dirs=\"$dirs server\"; [ -n \"$dirs\" ] && eslint $dirs --ext .js,.jsx,.ts,.tsx || echo 'No src/ or server/ directory to lint.'",
     "lint:fix": "dirs=\"\"; [ -d src ] && dirs=\"$dirs src\"; [ -d server ] && dirs=\"$dirs server\"; [ -n \"$dirs\" ] && eslint $dirs --ext .js,.jsx,.ts,.tsx --fix || echo 'No src/ or server/ directory to lint.'",
     "format": "prettier --write 'src/**/*.{ts,tsx,js,jsx,css,json}' 'server/**/*.{ts,js,json}' '*.{json,md}'",
