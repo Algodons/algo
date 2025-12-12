@@ -69,7 +69,7 @@ echo "Step 2: Creating necessary directories..."
 # Create directories
 mkdir -p backend/logs
 mkdir -p frontend/.next
-mkdir -p /tmp/git-repos
+mkdir -p data/git-repos
 mkdir -p data/postgres
 mkdir -p data/redis
 mkdir -p data/mongodb

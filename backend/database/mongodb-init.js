@@ -1,4 +1,4 @@
--- MongoDB Collections and Indexes for Algo Cloud IDE
+// MongoDB Collections and Indexes for Algo Cloud IDE
 
 // Switch to algo_logs database
 use algo_logs;

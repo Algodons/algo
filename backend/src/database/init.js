@@ -28,11 +28,7 @@ redisClient.on('connect', () => logger.info('Redis connected'));
 const connectMongoDB = async () => {
   try {
     await mongoose.connect(
-      process.env.MONGODB_URI || 'mongodb://localhost:27017/algo_logs',
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      }
+      process.env.MONGODB_URI || 'mongodb://localhost:27017/algo_logs'
     );
     logger.info('MongoDB connected');
   } catch (error) {

@@ -12,8 +12,9 @@ interface CodeEditorProps {
 
 export function CodeEditor({ projectId }: CodeEditorProps) {
   const editorRef = useRef<any>(null);
-  const [language, setLanguage] = useState('javascript');
+  const [language] = useState('javascript');
   const [code, setCode] = useState('// Start coding...\n\nconsole.log("Hello from Algo Cloud IDE!");');
+  const bindingRef = useRef<MonacoBinding | null>(null);
 
   useEffect(() => {
     // Initialize Yjs for collaborative editing
@@ -24,7 +25,20 @@ export function CodeEditor({ projectId }: CodeEditorProps) {
       ydoc
     );
 
+    const ytext = ydoc.getText('monaco');
+
+    // Connect Monaco Editor to Yjs when editor is ready
+    if (editorRef.current) {
+      bindingRef.current = new MonacoBinding(
+        ytext,
+        editorRef.current.getModel(),
+        new Set([editorRef.current]),
+        provider.awareness
+      );
+    }
+
     return () => {
+      bindingRef.current?.destroy();
       provider.destroy();
       ydoc.destroy();
     };
@@ -50,6 +64,22 @@ export function CodeEditor({ projectId }: CodeEditorProps) {
       allowJs: true,
       typeRoots: ['node_modules/@types'],
     });
+
+    // Initialize Yjs binding if Yjs is already set up
+    const ydoc = new Y.Doc();
+    const ytext = ydoc.getText('monaco');
+    const provider = new WebsocketProvider(
+      process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:4000',
+      `project-${projectId}`,
+      ydoc
+    );
+
+    bindingRef.current = new MonacoBinding(
+      ytext,
+      editor.getModel(),
+      new Set([editor]),
+      provider.awareness
+    );
   };
 
   return (

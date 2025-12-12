@@ -2,7 +2,7 @@ const simpleGit = require('simple-git');
 const path = require('path');
 const { logger } = require('../utils/logger');
 
-const GIT_BASE_PATH = process.env.GIT_BASE_PATH || '/tmp/git-repos';
+const GIT_BASE_PATH = process.env.GIT_BASE_PATH || './data/git-repos';
 
 const getGitPath = (projectId) => {
   return path.join(GIT_BASE_PATH, projectId.toString());
@@ -13,7 +13,16 @@ const cloneRepository = async (projectId, repoUrl, credentials = {}) => {
     const gitPath = getGitPath(projectId);
     const git = simpleGit();
 
-    await git.clone(repoUrl, gitPath);
+    // If credentials are provided, incorporate them into the URL
+    let cloneUrl = repoUrl;
+    if (credentials.username && credentials.password) {
+      const url = new URL(repoUrl);
+      url.username = credentials.username;
+      url.password = credentials.password;
+      cloneUrl = url.toString();
+    }
+
+    await git.clone(cloneUrl, gitPath);
 
     logger.info(`Repository cloned: ${repoUrl} to ${gitPath}`);
   } catch (error) {
