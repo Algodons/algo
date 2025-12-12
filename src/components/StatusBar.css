@@ -1,0 +1,28 @@
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 12px;
+  background: #007acc;
+  color: white;
+  font-size: 12px;
+  height: 24px;
+}
+
+.status-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-section.right {
+  margin-left: auto;
+}
+
+.status-item {
+  white-space: nowrap;
+}
+
+.status-separator {
+  color: rgba(255, 255, 255, 0.5);
+}
