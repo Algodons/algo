@@ -99,6 +99,9 @@ export class ResourceMonitoringService {
     metricType: string,
     hours: number = 24
   ): Promise<{ timestamp: Date; value: number }[]> {
+    // Validate hours parameter to prevent SQL injection
+    const validHours = Math.max(1, Math.min(parseInt(String(hours), 10), 8760)); // Max 1 year
+    
     const result = await this.pool.query(
       `SELECT 
         date_trunc('hour', timestamp) as hour,
@@ -106,10 +109,11 @@ export class ResourceMonitoringService {
        FROM resource_metrics
        WHERE user_id = $1
          AND metric_type = $2
-         AND timestamp > NOW() - INTERVAL '${hours} hours'
+         AND timestamp > NOW() - INTERVAL '1 hour' * $3
        GROUP BY hour
-       ORDER BY hour ASC`
-    , [userId, metricType]);
+       ORDER BY hour ASC`,
+      [userId, metricType, validHours]
+    );
 
     return result.rows.map((row) => ({
       timestamp: row.hour,

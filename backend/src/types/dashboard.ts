@@ -299,7 +299,7 @@ export interface ApiUsageAnalytics {
 }
 
 export interface UsageForecast {
-  metricType: string;
+  metricType: 'cpu' | 'memory' | 'storage' | 'bandwidth' | 'build_minutes';
   currentValue: number;
   forecastedValue: number;
   forecastDate: Date;

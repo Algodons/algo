@@ -2,6 +2,10 @@ import { Pool } from 'pg';
 import crypto from 'crypto';
 import { ApiKey, ApiKeyCreate, Webhook, ApiUsage, ApiUsageAnalytics, WebhookDelivery } from '../types/dashboard';
 
+// HTTP status code constants
+const HTTP_STATUS_SUCCESS_MIN = 200;
+const HTTP_STATUS_SUCCESS_MAX = 300;
+
 export class ApiManagementService {
   constructor(private pool: Pool) {}
 
@@ -283,8 +287,8 @@ export class ApiManagementService {
       `SELECT COUNT(*) as success FROM api_usage
        WHERE user_id = $1
          AND timestamp BETWEEN $2 AND $3
-         AND status_code >= 200 AND status_code < 300`,
-      [userId, startDate, endDate]
+         AND status_code >= $4 AND status_code < $5`,
+      [userId, startDate, endDate, HTTP_STATUS_SUCCESS_MIN, HTTP_STATUS_SUCCESS_MAX]
     );
 
     const successCount = parseInt(successResult.rows[0].success);
