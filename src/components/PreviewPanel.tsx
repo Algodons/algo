@@ -47,9 +47,21 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({ workspaceId }) => {
   };
 
   useEffect(() => {
+    let isMounted = true;
+    
     startWatching();
+    
     return () => {
-      stopWatching();
+      isMounted = false;
+      // Fire and forget - don't await in cleanup
+      fetch('/api/preview/unwatch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ workspaceId })
+      }).catch(error => {
+        // Ignore errors during cleanup
+        console.error('Failed to stop watching during cleanup:', error);
+      });
     };
   }, [workspaceId]);
 

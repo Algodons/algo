@@ -5,7 +5,7 @@ type DatabaseType = 'postgres' | 'mysql' | 'mongodb';
 
 const DatabasePanel: React.FC = () => {
   const [dbType, setDbType] = useState<DatabaseType>('postgres');
-  const [connectionId] = useState('db-' + Math.random().toString(36).substring(7));
+  const [connectionId] = useState('db-' + crypto.randomUUID());
   const [connected, setConnected] = useState(false);
   const [host, setHost] = useState('localhost');
   const [port, setPort] = useState('5432');
