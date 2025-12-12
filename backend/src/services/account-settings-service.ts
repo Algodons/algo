@@ -1,6 +1,5 @@
 import { Pool } from 'pg';
 import crypto from 'crypto';
-import bcrypt from 'bcrypt';
 import {
   Organization,
   OrganizationMember,
