@@ -2,11 +2,9 @@ import { Pool } from 'pg';
 import crypto from 'crypto';
 import {
   Organization,
-  OrganizationMember,
   PaymentMethod,
   Invoice,
   NotificationPreferences,
-  TwoFactorAuth,
   SshKey,
   PersonalAccessToken,
 } from '../types/dashboard';
