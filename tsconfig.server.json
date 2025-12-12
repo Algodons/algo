@@ -2,9 +2,11 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
+    "moduleResolution": "node",
     "outDir": "./dist/server",
     "rootDir": "./server",
     "noEmit": false,
+    "allowImportingTsExtensions": false,
     "lib": ["ES2020"],
     "types": ["node"]
   },
