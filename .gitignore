@@ -8,6 +8,7 @@ dist/
 build/
 *.d.ts
 !vite.config.ts
+!server/types/**/*.d.ts
 
 # Ignore compiled JS files but keep source examples
 /server/**/*.js
