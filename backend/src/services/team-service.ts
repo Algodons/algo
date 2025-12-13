@@ -535,7 +535,13 @@ export class TeamService {
    * Get encryption key from environment
    */
   private getEncryptionKey(): Buffer {
-    const secret = process.env.ENCRYPTION_SECRET || 'default-secret-key-change-in-production';
+    const secret = process.env.ENCRYPTION_SECRET;
+    if (!secret) {
+      throw new Error('ENCRYPTION_SECRET environment variable is required for secure operation');
+    }
+    if (secret.length < 32) {
+      throw new Error('ENCRYPTION_SECRET must be at least 32 characters long');
+    }
     return crypto.createHash('sha256').update(secret).digest();
   }
 

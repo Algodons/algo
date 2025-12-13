@@ -359,7 +359,8 @@ export class CollaborationService {
   }
 
   /**
-   * Store terminal session info in memory (would use Redis in production)
+   * Store terminal session info in memory
+   * TODO: Replace with Redis for production to support horizontal scaling
    */
   private terminalSessions = new Map<string, TerminalShareSession>();
 
@@ -416,7 +417,8 @@ export class CollaborationService {
   }
 
   /**
-   * Store debug session info in memory (would use Redis in production)
+   * Store debug session info in memory
+   * TODO: Replace with Redis for production to support horizontal scaling
    */
   private debugSessions = new Map<string, DebugSession>();
 
@@ -456,7 +458,8 @@ export class CollaborationService {
   }
 
   /**
-   * Store voice/video sessions in memory (would use Redis in production)
+   * Store voice/video sessions in memory
+   * TODO: Replace with Redis for production to support horizontal scaling
    */
   private voiceSessions = new Map<string, VoiceChatSession>();
 

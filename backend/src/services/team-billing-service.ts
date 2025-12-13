@@ -1,5 +1,6 @@
 import { Pool } from 'pg';
 import { TeamBilling, MemberUsage } from '../types/collaboration';
+import { getPricingConfig, calculateCost } from '../config/pricing';
 
 /**
  * Service for managing team billing and usage tracking
@@ -119,21 +120,17 @@ export class TeamBillingService {
       [organizationId, startDate.toISOString().split('T')[0], endDate.toISOString().split('T')[0]]
     );
 
-    // Calculate estimated costs (example pricing)
-    const COMPUTE_COST_PER_HOUR = 0.10; // $0.10 per hour
-    const STORAGE_COST_PER_GB = 0.02; // $0.02 per GB
-    const BANDWIDTH_COST_PER_GB = 0.05; // $0.05 per GB
-
     return result.rows.map((row: any) => ({
       userId: row.user_id,
       userName: row.user_name,
       totalComputeHours: parseFloat(row.total_compute_hours),
       totalStorageGb: parseFloat(row.total_storage_gb),
       totalBandwidthGb: parseFloat(row.total_bandwidth_gb),
-      estimatedCost:
-        parseFloat(row.total_compute_hours) * COMPUTE_COST_PER_HOUR +
-        parseFloat(row.total_storage_gb) * STORAGE_COST_PER_GB +
-        parseFloat(row.total_bandwidth_gb) * BANDWIDTH_COST_PER_GB,
+      estimatedCost: calculateCost(
+        parseFloat(row.total_compute_hours),
+        parseFloat(row.total_storage_gb),
+        parseFloat(row.total_bandwidth_gb)
+      ),
     }));
   }
 
@@ -172,20 +169,17 @@ export class TeamBillingService {
       [organizationId, startDate.toISOString().split('T')[0], endDate.toISOString().split('T')[0]]
     );
 
-    const COMPUTE_COST_PER_HOUR = 0.10;
-    const STORAGE_COST_PER_GB = 0.02;
-    const BANDWIDTH_COST_PER_GB = 0.05;
-
     return result.rows.map((row: any) => ({
       projectId: row.project_id,
       projectName: row.project_name,
       totalComputeHours: parseFloat(row.total_compute_hours),
       totalStorageGb: parseFloat(row.total_storage_gb),
       totalBandwidthGb: parseFloat(row.total_bandwidth_gb),
-      estimatedCost:
-        parseFloat(row.total_compute_hours) * COMPUTE_COST_PER_HOUR +
-        parseFloat(row.total_storage_gb) * STORAGE_COST_PER_GB +
-        parseFloat(row.total_bandwidth_gb) * BANDWIDTH_COST_PER_GB,
+      estimatedCost: calculateCost(
+        parseFloat(row.total_compute_hours),
+        parseFloat(row.total_storage_gb),
+        parseFloat(row.total_bandwidth_gb)
+      ),
     }));
   }
 
@@ -215,14 +209,13 @@ export class TeamBillingService {
       );
 
       const usage = usageResult.rows[0];
-      const COMPUTE_COST_PER_HOUR = 0.10;
-      const STORAGE_COST_PER_GB = 0.02;
-      const BANDWIDTH_COST_PER_GB = 0.05;
+      const pricing = getPricingConfig();
 
-      const totalCost =
-        parseFloat(usage.total_compute_hours || 0) * COMPUTE_COST_PER_HOUR +
-        parseFloat(usage.total_storage_gb || 0) * STORAGE_COST_PER_GB +
-        parseFloat(usage.total_bandwidth_gb || 0) * BANDWIDTH_COST_PER_GB;
+      const totalCost = calculateCost(
+        parseFloat(usage.total_compute_hours || 0),
+        parseFloat(usage.total_storage_gb || 0),
+        parseFloat(usage.total_bandwidth_gb || 0)
+      );
 
       // Create billing record
       const result = await client.query(
@@ -241,7 +234,7 @@ export class TeamBillingService {
           usage.total_storage_gb || 0,
           usage.total_bandwidth_gb || 0,
           totalCost,
-          'USD',
+          pricing.currency,
           'pending',
         ]
       );
@@ -314,18 +307,16 @@ export class TeamBillingService {
     );
 
     const usage = result.rows[0];
-    const COMPUTE_COST_PER_HOUR = 0.10;
-    const STORAGE_COST_PER_GB = 0.02;
-    const BANDWIDTH_COST_PER_GB = 0.05;
 
     return {
       computeHours: parseFloat(usage.compute_hours),
       storageGb: parseFloat(usage.storage_gb),
       bandwidthGb: parseFloat(usage.bandwidth_gb),
-      estimatedCost:
-        parseFloat(usage.compute_hours) * COMPUTE_COST_PER_HOUR +
-        parseFloat(usage.storage_gb) * STORAGE_COST_PER_GB +
-        parseFloat(usage.bandwidth_gb) * BANDWIDTH_COST_PER_GB,
+      estimatedCost: calculateCost(
+        parseFloat(usage.compute_hours),
+        parseFloat(usage.storage_gb),
+        parseFloat(usage.bandwidth_gb)
+      ),
       periodStart,
       periodEnd,
     };

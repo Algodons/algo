@@ -1,6 +1,7 @@
 import { Pool } from 'pg';
 import simpleGit, { SimpleGit } from 'simple-git';
 import * as path from 'path';
+import * as crypto from 'crypto';
 import {
   PullRequest,
   PullRequestReview,
@@ -521,7 +522,8 @@ export class VersionControlService {
 
     try {
       // Create a temporary branch to test merge
-      const tempBranch = `temp-merge-test-${Date.now()}`;
+      // Use crypto.randomUUID() for uniqueness instead of timestamp
+      const tempBranch = `temp-merge-test-${crypto.randomUUID().substring(0, 8)}`;
       await git.checkout(targetBranch);
       await git.checkoutBranch(tempBranch, targetBranch);
 
