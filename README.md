@@ -48,6 +48,14 @@ A production-grade cloud IDE and deployment platform similar to Replit, built wi
 - **System Administration** - Server health monitoring, deployment queue, feature flags
 - **Security Features** - Role-based access control (RBAC), 2FA, audit logging, IP whitelisting
 
+### 8. **Intelligent Automation System** 🆕
+- **Auto-Detection** - Automatically detect frameworks, build commands, ports, and dependencies
+- **IaC Generation** - Generate Dockerfiles, Kubernetes manifests, Terraform configs, nginx configurations
+- **Server Setup** - One-command server installation script with Docker, Node.js, Python, nginx, SSL
+- **Project Templates** - 50+ pre-configured starter templates for React, Vue, Express, Django, and more
+- **GitHub Import** - Clone and analyze existing repositories with auto-configuration
+- **Environment Detection** - Automatic detection of environment variables and secrets
+
 ## 🛠️ Tech Stack
 
 ### Frontend
@@ -211,7 +219,13 @@ npm test
 
 ## 📝 API Documentation
 
-For detailed Admin Control System API documentation, see [ADMIN_API.md](./ADMIN_API.md)
+### Comprehensive Documentation
+- [Admin Control System API](./ADMIN_API.md)
+- [Intelligent Automation System](./AUTOMATION_SYSTEM.md)
+- [Automation System Examples](./AUTOMATION_EXAMPLES.md)
+- [Database Platform](./DATABASE_PLATFORM.md)
+- [Team Collaboration](./TEAM_COLLABORATION_API.md)
+- [Monetization System](./MONETIZATION_SYSTEM.md)
 
 ### Git API
 - `POST /api/git/clone` - Clone repository
@@ -233,6 +247,15 @@ For detailed Admin Control System API documentation, see [ADMIN_API.md](./ADMIN_
 - `POST /api/db/{type}/query` - Execute query
 - `GET /api/db/{type}/tables` - List tables/collections
 - `POST /api/db/disconnect` - Disconnect
+
+### Automation API
+- `POST /api/automation/detect` - Auto-detect project configuration
+- `POST /api/automation/install` - Install project dependencies
+- `POST /api/automation/generate-iac` - Generate infrastructure as code
+- `GET /api/automation/templates` - List available templates
+- `POST /api/automation/init-template` - Initialize from template
+- `POST /api/automation/import-github` - Import from GitHub repository
+- `POST /api/automation/setup` - Full project setup
 
 ### Preview API
 - `GET /api/preview/:workspaceId/*` - Serve preview files
