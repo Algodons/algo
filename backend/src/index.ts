@@ -31,6 +31,7 @@ import { createCollaborationRoutes } from './routes/collaboration-routes';
 import { createVersionControlRoutes } from './routes/version-control-routes';
 import { createTeamBillingRoutes } from './routes/team-billing-routes';
 import { RealtimeCollaborationService } from './services/realtime-collaboration-service';
+import automationRoutes from './routes/automation-routes';
 import * as path from 'path';
 
 dotenv.config();
@@ -103,6 +104,9 @@ app.use('/api/teams', createTeamRoutes(dashboardPool));
 app.use('/api/collaboration', createCollaborationRoutes(dashboardPool));
 app.use('/api/version-control', createVersionControlRoutes(dashboardPool, WORKSPACE_DIR));
 app.use('/api/team-billing', createTeamBillingRoutes(dashboardPool));
+
+// Automation system routes
+app.use('/api/automation', automationRoutes);
 
 // Initialize real-time collaboration service
 const realtimeCollaboration = new RealtimeCollaborationService(io, dashboardPool);
