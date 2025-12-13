@@ -1,0 +1,286 @@
+# Cloudflare DDoS Protection Configuration
+# Configuration for DDoS protection and traffic filtering
+
+cloudflare:
+  # Account settings
+  account:
+    zone_id: "${CLOUDFLARE_ZONE_ID:-}"
+    api_token: "${CLOUDFLARE_API_TOKEN:-}"
+    email: "${CLOUDFLARE_EMAIL:-}"
+
+  # DDoS Protection settings
+  ddos_protection:
+    enabled: true
+    
+    # Attack mode
+    security_level: "high"  # off, essentially_off, low, medium, high, under_attack
+    
+    # Challenge settings
+    challenge_passage: 1800  # 30 minutes
+    browser_integrity_check: true
+    
+    # Threat categories to block
+    threat_score_threshold: 50  # 0-100 (higher = more strict)
+
+  # Rate limiting rules
+  rate_limiting:
+    enabled: true
+    
+    rules:
+      # API endpoints
+      - id: "api-rate-limit"
+        description: "Rate limit for API endpoints"
+        match:
+          request:
+            url_pattern: "*/api/*"
+        threshold: 100          # requests per period
+        period: 60              # seconds
+        action: "challenge"     # block, challenge, js_challenge, managed_challenge
+        
+      # Authentication endpoints
+      - id: "auth-rate-limit"
+        description: "Rate limit for authentication"
+        match:
+          request:
+            url_pattern: "*/auth/*"
+        threshold: 10
+        period: 60
+        action: "block"
+        block_duration: 300     # 5 minutes
+        
+      # Login endpoint
+      - id: "login-rate-limit"
+        description: "Strict rate limit for login"
+        match:
+          request:
+            url_pattern: "*/api/auth/login"
+        threshold: 5
+        period: 300             # 5 minutes
+        action: "block"
+        block_duration: 900     # 15 minutes
+
+  # Firewall rules
+  firewall:
+    enabled: true
+    
+    rules:
+      # Block known bad bots
+      - id: "block-bad-bots"
+        description: "Block known malicious bots"
+        expression: "(cf.client.bot) and not (cf.verified_bot_category in {\"Search Engine Crawler\" \"Page Preview\"})"
+        action: "block"
+        priority: 1
+        
+      # Block countries (if needed)
+      - id: "geo-block"
+        description: "Block traffic from specific countries"
+        enabled: false
+        expression: "(ip.geoip.country in {\"XX\" \"YY\"})"
+        action: "block"
+        priority: 2
+        
+      # Challenge suspicious traffic
+      - id: "challenge-suspicious"
+        description: "Challenge suspicious traffic patterns"
+        expression: "(cf.threat_score gt 50)"
+        action: "managed_challenge"
+        priority: 3
+        
+      # Allow verified bots
+      - id: "allow-verified-bots"
+        description: "Allow verified search engine bots"
+        expression: "(cf.verified_bot_category in {\"Search Engine Crawler\"})"
+        action: "allow"
+        priority: 0
+
+  # Bot management
+  bot_management:
+    enabled: true
+    
+    # Bot fight mode
+    fight_mode: true          # Challenge suspected bots
+    
+    # Verified bots
+    allow_verified_bots: true
+    verified_categories:
+      - "Search Engine Crawler"
+      - "Page Preview"
+      - "Monitoring & Analytics"
+    
+    # Super Bot Fight Mode (requires Business or Enterprise plan)
+    super_bot_fight_mode:
+      enabled: false
+      definitely_automated: "block"
+      likely_automated: "managed_challenge"
+      verified_bots: "allow"
+
+  # Cache settings
+  cache:
+    enabled: true
+    
+    # Browser cache TTL
+    browser_cache_ttl: 14400  # 4 hours
+    
+    # Edge cache TTL
+    edge_cache_ttl: 7200      # 2 hours
+    
+    # Cache level
+    cache_level: "aggressive"  # basic, simplified, aggressive
+    
+    # Always online
+    always_online: true
+    
+    # Development mode (bypass cache)
+    development_mode: false
+
+  # SSL/TLS settings
+  ssl:
+    mode: "strict"            # off, flexible, full, strict
+    min_tls_version: "1.3"
+    opportunistic_encryption: true
+    automatic_https_rewrites: true
+    tls_1_3: true
+
+  # Page rules
+  page_rules:
+    - id: "api-security"
+      url_pattern: "*/api/*"
+      settings:
+        security_level: "high"
+        cache_level: "bypass"
+        disable_apps: true
+        
+    - id: "static-assets"
+      url_pattern: "*/static/*"
+      settings:
+        cache_level: "cache_everything"
+        edge_cache_ttl: 604800  # 1 week
+        browser_cache_ttl: 604800
+
+  # Web Application Firewall (WAF)
+  waf:
+    enabled: true
+    
+    # Managed rulesets
+    managed_rulesets:
+      - "Cloudflare Managed Ruleset"
+      - "OWASP Core Ruleset"
+    
+    # Custom rules
+    custom_rules:
+      - id: "block-sql-injection"
+        description: "Block SQL injection attempts"
+        expression: "(http.request.uri.query contains \"UNION SELECT\" or http.request.uri.query contains \"DROP TABLE\")"
+        action: "block"
+        
+      - id: "block-xss"
+        description: "Block XSS attempts"
+        expression: "(http.request.uri.query contains \"<script\" or http.request.body contains \"<script\")"
+        action: "block"
+        
+      - id: "block-path-traversal"
+        description: "Block path traversal attempts"
+        expression: "(http.request.uri.path contains \"../\" or http.request.uri.path contains \"..\\\")"
+        action: "block"
+
+  # Load balancing (for multi-region)
+  load_balancing:
+    enabled: false
+    
+    pools:
+      - name: "primary-pool"
+        origin_servers:
+          - address: "origin1.example.com"
+            weight: 1
+          - address: "origin2.example.com"
+            weight: 1
+        health_check:
+          path: "/health"
+          interval: 60
+          retries: 2
+          timeout: 5
+          
+      - name: "failover-pool"
+        origin_servers:
+          - address: "failover.example.com"
+            weight: 1
+
+  # Analytics and monitoring
+  analytics:
+    enabled: true
+    
+    # Log retention
+    log_retention_days: 30
+    
+    # Alerts
+    alerts:
+      - type: "traffic_spike"
+        threshold: 150          # % increase
+        notification: "email"
+        
+      - type: "ddos_attack"
+        threshold: 1000         # requests per second
+        notification: "pagerduty"
+        
+      - type: "error_rate"
+        threshold: 5            # % of requests
+        notification: "slack"
+
+  # IP Access Rules
+  ip_access:
+    enabled: true
+    
+    # Whitelist
+    whitelist:
+      - ip: "10.0.0.0/8"
+        description: "Internal network"
+      - ip: "172.16.0.0/12"
+        description: "Internal network"
+    
+    # Blacklist
+    blacklist: []
+    
+    # Challenge list
+    challenge_list: []
+
+  # Zone Lockdown (restrict access to specific URLs)
+  zone_lockdown:
+    enabled: false
+    
+    rules:
+      - urls:
+          - "*/admin/*"
+        allowed_ips:
+          - "203.0.113.0/24"
+        description: "Restrict admin access"
+
+  # Custom error pages
+  custom_error_pages:
+    enabled: true
+    
+    pages:
+      - status_code: 403
+        page_url: "https://example.com/errors/403.html"
+      - status_code: 429
+        page_url: "https://example.com/errors/429.html"
+      - status_code: 503
+        page_url: "https://example.com/errors/503.html"
+
+# Monitoring and alerting
+monitoring:
+  metrics:
+    - requests_per_second
+    - bandwidth_usage
+    - threats_blocked
+    - cache_hit_ratio
+    - origin_response_time
+  
+  dashboards:
+    - "Security Events"
+    - "Traffic Analytics"
+    - "Performance Metrics"
+  
+  alerts:
+    email: "${ALERT_EMAIL:-ops@example.com}"
+    slack_webhook: "${SLACK_WEBHOOK_URL:-}"
+    pagerduty_key: "${PAGERDUTY_KEY:-}"

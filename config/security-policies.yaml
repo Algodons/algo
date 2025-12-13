@@ -1,0 +1,458 @@
+# Security Policies Configuration
+# Centralized security settings and policies
+
+security:
+  # Authentication policies
+  authentication:
+    # JWT settings
+    jwt:
+      secret: "${JWT_SECRET}"
+      expiration: "7d"
+      refresh_token_expiration: "30d"
+      algorithm: "HS256"
+      issuer: "algo-cloud-ide"
+      
+    # Password policies
+    password:
+      min_length: 12
+      require_uppercase: true
+      require_lowercase: true
+      require_numbers: true
+      require_special: true
+      special_chars: "!@#$%^&*()_+-=[]{}|;:,.<>?"
+      max_age_days: 90
+      password_history: 5
+      lockout_threshold: 5
+      lockout_duration_minutes: 30
+      
+    # Multi-factor authentication
+    mfa:
+      enabled: true
+      required_for_admin: true
+      methods:
+        - "totp"
+        - "sms"
+        - "email"
+      backup_codes: 10
+      
+    # Session management
+    session:
+      timeout_minutes: 30
+      absolute_timeout_minutes: 480  # 8 hours
+      concurrent_sessions: 3
+      idle_timeout_minutes: 15
+
+  # Authorization policies
+  authorization:
+    # Role-based access control
+    rbac:
+      enabled: true
+      default_role: "user"
+      
+      roles:
+        - name: "user"
+          permissions:
+            - "read:own_projects"
+            - "write:own_projects"
+            - "execute:own_projects"
+            
+        - name: "premium"
+          inherits: ["user"]
+          permissions:
+            - "create:unlimited_projects"
+            - "access:advanced_features"
+            
+        - name: "admin"
+          inherits: ["premium"]
+          permissions:
+            - "read:all_projects"
+            - "write:all_projects"
+            - "manage:users"
+            - "manage:system"
+            - "view:audit_logs"
+            
+        - name: "moderator"
+          inherits: ["user"]
+          permissions:
+            - "read:all_projects"
+            - "suspend:users"
+            - "view:reports"
+    
+    # Permission checks
+    strict_mode: true
+    cache_permissions: true
+    cache_ttl_seconds: 300
+
+  # Encryption settings
+  encryption:
+    # At rest
+    at_rest:
+      enabled: true
+      algorithm: "AES-256-GCM"
+      key_rotation_days: 90
+      
+    # In transit
+    in_transit:
+      tls_min_version: "1.3"
+      cipher_suites:
+        - "TLS_AES_256_GCM_SHA384"
+        - "TLS_AES_128_GCM_SHA256"
+        - "TLS_CHACHA20_POLY1305_SHA256"
+      require_https: true
+      hsts_enabled: true
+      hsts_max_age_seconds: 31536000  # 1 year
+      
+    # Key management
+    kms:
+      provider: "local"  # local, aws, vault
+      key_store_path: "/etc/algo/.keys"
+      master_key_backup: true
+
+  # IP whitelisting
+  ip_whitelist:
+    enabled: false
+    admin_only: true
+    
+    # Enterprise IP ranges
+    allowed_ranges:
+      - "192.168.0.0/16"
+      - "10.0.0.0/8"
+      - "172.16.0.0/12"
+    
+    # Specific IPs
+    allowed_ips: []
+    
+    # Bypass for certain paths
+    bypass_paths:
+      - "/health"
+      - "/api/public"
+
+  # Rate limiting
+  rate_limiting:
+    enabled: true
+    
+    # Global limits
+    global:
+      window_ms: 60000        # 1 minute
+      max_requests: 100
+      
+    # Per-endpoint limits
+    endpoints:
+      "/api/auth/login":
+        window_ms: 900000     # 15 minutes
+        max_requests: 5
+        block_duration_ms: 900000
+        
+      "/api/auth/register":
+        window_ms: 3600000    # 1 hour
+        max_requests: 3
+        
+      "/api/*":
+        window_ms: 60000
+        max_requests: 100
+        
+      "/api/admin/*":
+        window_ms: 60000
+        max_requests: 50
+    
+    # Rate limit by IP
+    by_ip: true
+    
+    # Rate limit by user
+    by_user: true
+    
+    # Response headers
+    headers: true
+    
+    # Skip successful requests
+    skip_successful_requests: false
+
+  # CORS policies
+  cors:
+    enabled: true
+    
+    # Allowed origins
+    origins:
+      - "https://algo.example.com"
+      - "https://app.algo.example.com"
+    
+    # Development origins
+    dev_origins:
+      - "http://localhost:3000"
+      - "http://localhost:5000"
+    
+    # Allowed methods
+    methods:
+      - "GET"
+      - "POST"
+      - "PUT"
+      - "DELETE"
+      - "PATCH"
+      - "OPTIONS"
+    
+    # Allowed headers
+    allowed_headers:
+      - "Content-Type"
+      - "Authorization"
+      - "X-Requested-With"
+      - "X-CSRF-Token"
+    
+    # Exposed headers
+    exposed_headers:
+      - "X-RateLimit-Limit"
+      - "X-RateLimit-Remaining"
+      - "X-RateLimit-Reset"
+    
+    # Credentials
+    credentials: true
+    
+    # Preflight cache
+    max_age: 86400  # 24 hours
+
+  # Security headers
+  headers:
+    # Content Security Policy
+    # Note: 'unsafe-inline' and 'unsafe-eval' weaken XSS protection
+    # TODO: Replace with nonces or hashes for inline scripts
+    # TODO: Remove 'unsafe-eval' and refactor code that requires it
+    csp:
+      enabled: true
+      directives:
+        default_src: ["'self'"]
+        script_src: ["'self'", "'unsafe-inline'", "'unsafe-eval'"]  # TODO: Use nonces
+        style_src: ["'self'", "'unsafe-inline'"]  # TODO: Use hashes
+        img_src: ["'self'", "data:", "https:"]
+        font_src: ["'self'", "data:"]
+        connect_src: ["'self'", "wss:", "ws:"]
+        frame_ancestors: ["'none'"]
+        base_uri: ["'self'"]
+        form_action: ["'self'"]
+        
+    # Other security headers
+    x_frame_options: "DENY"
+    x_content_type_options: "nosniff"
+    x_xss_protection: "1; mode=block"
+    referrer_policy: "strict-origin-when-cross-origin"
+    permissions_policy:
+      geolocation: []
+      microphone: []
+      camera: []
+      payment: []
+
+  # Input validation
+  validation:
+    # SQL injection prevention
+    sql_injection:
+      enabled: true
+      patterns:
+        - "UNION.*SELECT"
+        - "DROP.*TABLE"
+        - "INSERT.*INTO"
+        - "DELETE.*FROM"
+        
+    # XSS prevention
+    xss:
+      enabled: true
+      sanitize_html: true
+      escape_output: true
+      
+    # Path traversal prevention
+    path_traversal:
+      enabled: true
+      patterns:
+        - "../"
+        - "..%2F"
+        - "..%5C"
+        
+    # Command injection prevention
+    command_injection:
+      enabled: true
+      dangerous_commands:
+        - "rm"
+        - "sudo"
+        - "eval"
+        - "exec"
+
+  # Audit logging
+  audit:
+    enabled: true
+    
+    # Events to log
+    events:
+      - "authentication"
+      - "authorization"
+      - "data_access"
+      - "data_modification"
+      - "admin_actions"
+      - "security_events"
+      - "configuration_changes"
+    
+    # Log retention
+    retention_days: 365
+    
+    # Log destinations
+    destinations:
+      - type: "database"
+        enabled: true
+      - type: "file"
+        enabled: true
+        path: "/var/log/algo/audit.log"
+      - type: "siem"
+        enabled: false
+        endpoint: "${SIEM_ENDPOINT}"
+    
+    # Tamper detection
+    hash_chain: true
+    
+    # Performance
+    async_logging: true
+    buffer_size: 1000
+
+  # Compliance
+  compliance:
+    # SOC 2
+    soc2:
+      enabled: true
+      automated_checks: true
+      evidence_collection: true
+      
+    # GDPR
+    gdpr:
+      enabled: true
+      consent_management: true
+      right_to_erasure: true
+      data_portability: true
+      data_retention_days: 365
+      
+    # HIPAA (if handling health data)
+    hipaa:
+      enabled: false
+      
+    # PCI DSS (if handling payment data)
+    pci_dss:
+      enabled: false
+
+  # Vulnerability management
+  vulnerability:
+    # Dependency scanning
+    dependency_scanning:
+      enabled: true
+      schedule: "daily"
+      auto_update: false
+      severity_threshold: "high"
+      
+    # Container scanning
+    container_scanning:
+      enabled: true
+      schedule: "daily"
+      registries:
+        - "docker.io"
+      
+    # Code scanning
+    code_scanning:
+      enabled: true
+      tools:
+        - "semgrep"
+        - "codeql"
+      
+    # Penetration testing
+    penetration_testing:
+      schedule: "quarterly"
+      external_audits: true
+
+  # Incident response
+  incident_response:
+    # Detection
+    detection:
+      enabled: true
+      anomaly_detection: true
+      threat_intelligence: true
+      
+    # Response procedures
+    procedures:
+      containment: true
+      eradication: true
+      recovery: true
+      post_incident_review: true
+      
+    # Notification
+    notification:
+      security_team: "${SECURITY_TEAM_EMAIL}"
+      management: "${MANAGEMENT_EMAIL}"
+      customers: false  # Notify customers if breach affects them
+
+  # Data classification
+  data_classification:
+    levels:
+      - name: "public"
+        encryption_required: false
+        access_logging: false
+        
+      - name: "internal"
+        encryption_required: true
+        access_logging: true
+        
+      - name: "confidential"
+        encryption_required: true
+        access_logging: true
+        mfa_required: true
+        
+      - name: "restricted"
+        encryption_required: true
+        access_logging: true
+        mfa_required: true
+        admin_approval_required: true
+
+  # Secrets management
+  secrets:
+    # Provider
+    provider: "env"  # env, vault, aws_secrets_manager
+    
+    # Vault configuration
+    vault:
+      address: "${VAULT_ADDR}"
+      token: "${VAULT_TOKEN}"
+      mount_path: "algo"
+      
+    # Rotation
+    rotation:
+      enabled: true
+      schedule: "quarterly"
+      
+    # Detection
+    secret_scanning:
+      enabled: true
+      pre_commit_hook: true
+
+# Monitoring
+monitoring:
+  # Security metrics
+  metrics:
+    - "failed_login_attempts"
+    - "unauthorized_access_attempts"
+    - "rate_limit_exceeded"
+    - "suspicious_activity"
+    - "encryption_key_rotations"
+    
+  # Alerting
+  alerts:
+    channels:
+      - type: "email"
+        recipients: ["${SECURITY_TEAM_EMAIL}"]
+      - type: "slack"
+        webhook: "${SLACK_SECURITY_WEBHOOK}"
+      - type: "pagerduty"
+        integration_key: "${PAGERDUTY_SECURITY_KEY}"
+    
+    rules:
+      - name: "Multiple failed logins"
+        condition: "failed_logins > 10 in 5m"
+        severity: "warning"
+        
+      - name: "Admin action outside business hours"
+        condition: "admin_action AND (hour < 8 OR hour > 18)"
+        severity: "info"
+        
+      - name: "Suspected data breach"
+        condition: "large_data_export OR unusual_access_pattern"
+        severity: "critical"
