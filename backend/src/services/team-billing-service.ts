@@ -124,7 +124,7 @@ export class TeamBillingService {
     const STORAGE_COST_PER_GB = 0.02; // $0.02 per GB
     const BANDWIDTH_COST_PER_GB = 0.05; // $0.05 per GB
 
-    return result.rows.map((row) => ({
+    return result.rows.map((row: any) => ({
       userId: row.user_id,
       userName: row.user_name,
       totalComputeHours: parseFloat(row.total_compute_hours),
@@ -176,7 +176,7 @@ export class TeamBillingService {
     const STORAGE_COST_PER_GB = 0.02;
     const BANDWIDTH_COST_PER_GB = 0.05;
 
-    return result.rows.map((row) => ({
+    return result.rows.map((row: any) => ({
       projectId: row.project_id,
       projectName: row.project_name,
       totalComputeHours: parseFloat(row.total_compute_hours),
@@ -364,7 +364,7 @@ export class TeamBillingService {
       [organizationId, startDate.toISOString().split('T')[0], endDate.toISOString().split('T')[0]]
     );
 
-    return result.rows.map((row) => ({
+    return result.rows.map((row: any) => ({
       date: row.date,
       computeHours: parseFloat(row.compute_hours),
       storageGb: parseFloat(row.storage_gb),

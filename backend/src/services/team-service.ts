@@ -1,5 +1,5 @@
-import { Pool } from 'pg';
-import crypto from 'crypto';
+import { Pool, PoolClient } from 'pg';
+import * as crypto from 'crypto';
 import {
   Organization,
   OrganizationMember,
@@ -285,7 +285,7 @@ export class TeamService {
       return true;
     }
 
-    const role = result.rows[0].role;
+    const role = result.rows[0].role as OrganizationRole;
     const roleHierarchy: Record<OrganizationRole, number> = {
       owner: 4,
       admin: 3,
@@ -344,8 +344,11 @@ export class TeamService {
       [projectId, userId]
     );
 
-    if (orgResult.rows.length > 0 && orgResult.rows[0].permissions[permission]) {
-      return true;
+    if (orgResult.rows.length > 0) {
+      const perms = orgResult.rows[0].permissions as any;
+      if (perms[permission]) {
+        return true;
+      }
     }
 
     // Check if user is project owner
@@ -540,7 +543,7 @@ export class TeamService {
    * Log team activity
    */
   private async logActivity(
-    client: any,
+    client: PoolClient,
     data: Partial<TeamActivityLog>
   ): Promise<void> {
     await client.query(

@@ -13,7 +13,6 @@ import {
   CreateBranchProtectionRequest,
   RequestDeploymentApprovalRequest,
   PullRequestStatus,
-  ReviewStatus,
 } from '../types/collaboration';
 
 /**
@@ -589,9 +588,9 @@ export class VersionControlService {
       // Get conflict markers version (if in conflict state)
       let conflictMarkers = '';
       try {
-        const fs = await import('fs/promises');
+        const { readFile } = await import('fs/promises');
         const fullPath = path.join(this.workspaceDir, projectId.toString(), filePath);
-        conflictMarkers = await fs.readFile(fullPath, 'utf-8');
+        conflictMarkers = await readFile(fullPath, 'utf-8');
       } catch (e) {
         // File might not be in conflict state
       }
