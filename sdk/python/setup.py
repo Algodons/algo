@@ -27,7 +27,6 @@ setup(
     python_requires=">=3.8",
     install_requires=[
         "requests>=2.31.0",
-        "aiohttp>=3.9.0",
         "pydantic>=2.5.0",
     ],
     extras_require={

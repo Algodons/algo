@@ -61,7 +61,12 @@ class AIAgent(BaseModel):
 
 
 class MLModel(BaseModel):
-    """ML Model."""
+    """
+    ML Model representation.
+    
+    Represents a machine learning model in the platform, including metadata
+    about its type, version, and schema definitions for inputs and outputs.
+    """
     id: str
     name: str
     description: Optional[str] = None

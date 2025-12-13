@@ -40,10 +40,16 @@ export class OracleConnector {
 
   /**
    * Initialize connection pool
+   * 
+   * Note: This is a stub implementation. To use Oracle Database:
+   * 1. Install oracledb: npm install oracledb
+   * 2. Uncomment the implementation code below
+   * 3. Configure Oracle client libraries on your system
    */
   async initialize(): Promise<void> {
     try {
-      // In a real implementation, use oracledb package
+      // STUB: Uncomment to enable Oracle connectivity
+      // Requires: npm install oracledb
       // const oracledb = require('oracledb');
       // this.connectionPool = await oracledb.createPool({
       //   user: this.config.user,
@@ -54,7 +60,8 @@ export class OracleConnector {
       //   poolIncrement: this.config.poolIncrement,
       // });
       
-      console.log('Oracle connection pool initialized');
+      console.log('Oracle connection pool initialized (stub mode)');
+      console.log('To enable Oracle, install oracledb package and uncomment implementation');
     } catch (error) {
       console.error('Failed to initialize Oracle connection pool:', error);
       throw error;

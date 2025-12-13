@@ -37,7 +37,7 @@ export function createUsersRoutes(pool: Pool): Router {
           });
         }
 
-        // Hash password (in production, use bcrypt)
+        // Hash password with bcrypt
         const bcrypt = require('bcrypt');
         const hashedPassword = await bcrypt.hash(password, 10);
 
