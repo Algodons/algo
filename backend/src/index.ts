@@ -36,6 +36,7 @@ import { createV1Routes } from './routes/v1/index';
 import * as path from 'path';
 import { initializeRedisCache, cacheMiddleware, getCacheStats, clearAllCaches, invalidateCache } from './middleware/caching';
 import { ProjectSuspensionService, wakeOnRequestMiddleware } from './services/project-suspension-service';
+import rateLimit from 'express-rate-limit';
 
 dotenv.config();
 
@@ -69,6 +70,21 @@ const suspensionService = new ProjectSuspensionService(dashboardPool, {
 });
 suspensionService.start();
 
+// Rate limiters
+const apiRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const adminRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50, // Stricter limit for admin endpoints
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -81,18 +97,18 @@ app.get('/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Cache management endpoints (admin only)
-app.get('/api/cache/stats', authenticate(dashboardPool), async (_req: Request, res: Response) => {
+// Cache management endpoints (admin only with rate limiting)
+app.get('/api/cache/stats', adminRateLimiter, authenticate(dashboardPool), async (_req: Request, res: Response) => {
   const stats = await getCacheStats();
   res.json(stats);
 });
 
-app.post('/api/cache/clear', authenticate(dashboardPool), async (_req: Request, res: Response) => {
+app.post('/api/cache/clear', adminRateLimiter, authenticate(dashboardPool), async (_req: Request, res: Response) => {
   await clearAllCaches();
   res.json({ success: true, message: 'All caches cleared' });
 });
 
-app.post('/api/cache/invalidate', authenticate(dashboardPool), async (req: Request, res: Response) => {
+app.post('/api/cache/invalidate', adminRateLimiter, authenticate(dashboardPool), async (req: Request, res: Response) => {
   const { pattern } = req.body;
   if (!pattern) {
     return res.status(400).json({ error: 'Pattern is required' });
@@ -101,8 +117,8 @@ app.post('/api/cache/invalidate', authenticate(dashboardPool), async (req: Reque
   res.json({ success: true, message: `Cache invalidated for pattern: ${pattern}` });
 });
 
-// Project suspension endpoints
-app.get('/api/projects/:projectId/status', authenticate(dashboardPool), async (req: Request, res: Response) => {
+// Project suspension endpoints (with rate limiting)
+app.get('/api/projects/:projectId/status', apiRateLimiter, authenticate(dashboardPool), async (req: Request, res: Response) => {
   const { projectId } = req.params;
   const status = await suspensionService.getProjectStatus(projectId);
   if (!status) {
@@ -111,7 +127,7 @@ app.get('/api/projects/:projectId/status', authenticate(dashboardPool), async (r
   res.json(status);
 });
 
-app.post('/api/projects/:projectId/wake', authenticate(dashboardPool), async (req: Request, res: Response) => {
+app.post('/api/projects/:projectId/wake', apiRateLimiter, authenticate(dashboardPool), async (req: Request, res: Response) => {
   const { projectId } = req.params;
   try {
     await suspensionService.wakeProject(projectId);
@@ -121,7 +137,7 @@ app.post('/api/projects/:projectId/wake', authenticate(dashboardPool), async (re
   }
 });
 
-app.get('/api/suspension/stats', authenticate(dashboardPool), async (_req: Request, res: Response) => {
+app.get('/api/suspension/stats', apiRateLimiter, authenticate(dashboardPool), async (_req: Request, res: Response) => {
   const stats = await suspensionService.getStatistics();
   res.json(stats);
 });
