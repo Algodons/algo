@@ -26,6 +26,12 @@ import { createUsageRoutes } from './routes/usage-routes';
 import { createBillingRoutes } from './routes/billing-routes';
 import { createCreditsRoutes } from './routes/credits-routes';
 import { createAlertsRoutes } from './routes/alerts-routes';
+import { createTeamRoutes } from './routes/team-routes';
+import { createCollaborationRoutes } from './routes/collaboration-routes';
+import { createVersionControlRoutes } from './routes/version-control-routes';
+import { createTeamBillingRoutes } from './routes/team-billing-routes';
+import { RealtimeCollaborationService } from './services/realtime-collaboration-service';
+import * as path from 'path';
 
 dotenv.config();
 
@@ -90,6 +96,19 @@ app.use('/api/usage', authenticate(dashboardPool), createUsageRoutes(dashboardPo
 app.use('/api/billing', authenticate(dashboardPool), createBillingRoutes(dashboardPool));
 app.use('/api/credits', authenticate(dashboardPool), createCreditsRoutes(dashboardPool));
 app.use('/api/alerts', authenticate(dashboardPool), createAlertsRoutes(dashboardPool));
+
+// Team collaboration routes
+const WORKSPACE_DIR = process.env.WORKSPACE_DIR || path.join(process.cwd(), 'workspaces');
+app.use('/api/teams', createTeamRoutes(dashboardPool));
+app.use('/api/collaboration', createCollaborationRoutes(dashboardPool));
+app.use('/api/version-control', createVersionControlRoutes(dashboardPool, WORKSPACE_DIR));
+app.use('/api/team-billing', createTeamBillingRoutes(dashboardPool));
+
+// Initialize real-time collaboration service
+const realtimeCollaboration = new RealtimeCollaborationService(io, dashboardPool);
+
+// Export for use in other modules
+export { realtimeCollaboration };
 
 // API endpoints
 app.get('/api/files', (_req: Request, res: Response) => {
