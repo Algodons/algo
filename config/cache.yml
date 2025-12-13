@@ -1,0 +1,500 @@
+# Comprehensive Caching Strategy Configuration
+# Multi-layer caching for optimal performance
+
+cache:
+  # Enable/disable caching globally
+  enabled: ${CACHE_ENABLED:-true}
+  
+  # Cache layers
+  layers:
+    # L1: In-memory cache (fastest)
+    memory:
+      enabled: true
+      maxSize: 100              # MB
+      ttl: 300                  # 5 minutes in seconds
+      algorithm: "lru"          # lru, lfu, or fifo
+      
+    # L2: Redis cache (distributed)
+    redis:
+      enabled: true
+      ttl: 3600                 # 1 hour in seconds
+      prefix: "cache:"
+      
+    # L3: CDN cache (for static assets)
+    cdn:
+      enabled: true
+      ttl: 86400                # 24 hours in seconds
+      
+  # Cache strategies
+  strategies:
+    # Cache-aside (lazy loading)
+    cacheAside:
+      enabled: true
+      description: "Load data on cache miss"
+      
+    # Write-through
+    writeThrough:
+      enabled: false
+      description: "Write to cache and database simultaneously"
+      
+    # Write-behind (write-back)
+    writeBehind:
+      enabled: false
+      description: "Write to cache immediately, database asynchronously"
+      batchSize: 100
+      flushInterval: 5000       # milliseconds
+      
+    # Read-through
+    readThrough:
+      enabled: true
+      description: "Cache loads data automatically on miss"
+      
+  # Database query result caching
+  database:
+    # Enable query caching
+    enabled: true
+    
+    # Cache configuration
+    config:
+      ttl: 300                  # 5 minutes in seconds
+      maxSize: 10240            # 10KB max per query result
+      prefix: "db:query:"
+      
+    # Query patterns to cache
+    patterns:
+      # SELECT queries
+      - type: "select"
+        tables:
+          - "users"
+          - "projects"
+          - "settings"
+          - "configurations"
+        ttl: 600                # 10 minutes
+        
+      # Aggregation queries
+      - type: "aggregation"
+        tables:
+          - "analytics"
+          - "statistics"
+        ttl: 1800               # 30 minutes
+        
+      # Metadata queries
+      - type: "metadata"
+        tables:
+          - "schema_info"
+          - "table_definitions"
+        ttl: 3600               # 1 hour
+        
+    # Query patterns to exclude from cache
+    exclude:
+      # Real-time data
+      - pattern: "SELECT .* FROM realtime_"
+      - pattern: "SELECT .* FROM live_"
+      
+      # Large result sets
+      - maxRows: 10000
+      
+      # Queries with certain keywords
+      - keywords:
+          - "RANDOM()"
+          - "NOW()"
+          - "CURRENT_TIMESTAMP"
+          
+    # Invalidation rules
+    invalidation:
+      # Invalidate on write operations
+      onWrite: true
+      
+      # Invalidate related queries
+      cascading: true
+      
+      # Patterns for automatic invalidation
+      patterns:
+        - event: "INSERT"
+          invalidate: "db:query:SELECT * FROM {table}*"
+          
+        - event: "UPDATE"
+          invalidate: "db:query:*{table}*"
+          
+        - event: "DELETE"
+          invalidate: "db:query:*{table}*"
+          
+        - event: "TRUNCATE"
+          invalidate: "db:query:*{table}*"
+          
+    # Cache warming
+    warming:
+      enabled: true
+      
+      # Queries to warm on startup
+      startup:
+        - query: "SELECT * FROM users WHERE active = true LIMIT 100"
+          ttl: 3600
+          
+        - query: "SELECT * FROM projects WHERE status = 'active'"
+          ttl: 1800
+          
+      # Schedule for periodic warming
+      schedule:
+        interval: "0 */4 * * *"  # Every 4 hours
+        queries:
+          - "SELECT * FROM popular_projects LIMIT 50"
+          - "SELECT * FROM featured_templates"
+          
+  # API response caching
+  api:
+    # Enable API caching
+    enabled: true
+    
+    # Default TTL for API responses
+    defaultTtl: 60              # 1 minute in seconds
+    
+    # Cache by endpoint
+    endpoints:
+      # Public endpoints (longer cache)
+      - pattern: "^/api/public/"
+        method: "GET"
+        ttl: 3600               # 1 hour
+        varyBy:
+          - "query"
+          
+      # User data (shorter cache)
+      - pattern: "^/api/users/:id"
+        method: "GET"
+        ttl: 300                # 5 minutes
+        varyBy:
+          - "user"
+          - "query"
+          
+      # Dashboard data
+      - pattern: "^/api/dashboard/"
+        method: "GET"
+        ttl: 180                # 3 minutes
+        varyBy:
+          - "user"
+          
+      # Analytics data
+      - pattern: "^/api/analytics/"
+        method: "GET"
+        ttl: 600                # 10 minutes
+        varyBy:
+          - "query"
+          - "dateRange"
+          
+      # Static data
+      - pattern: "^/api/config"
+        method: "GET"
+        ttl: 3600               # 1 hour
+        
+    # Endpoints to exclude from cache
+    exclude:
+      - pattern: "^/api/auth/"
+      - pattern: "^/api/admin/"
+      - pattern: "^/api/realtime/"
+      - method: "POST"
+      - method: "PUT"
+      - method: "DELETE"
+      - method: "PATCH"
+      
+    # Cache key generation
+    cacheKey:
+      # Include in cache key
+      include:
+        - "url"
+        - "method"
+        - "query"
+        - "user_id"
+        
+      # Exclude from cache key
+      exclude:
+        - "timestamp"
+        - "session_id"
+        - "tracking_id"
+        
+    # Response compression
+    compression:
+      enabled: true
+      minSize: 1024             # 1KB
+      
+  # Session caching
+  session:
+    # Enable session caching
+    enabled: true
+    
+    # Session storage
+    storage: "redis"            # redis or memory
+    
+    # Session TTL
+    ttl: 86400                  # 24 hours in seconds
+    
+    # Session prefix
+    prefix: "sess:"
+    
+    # Serialize session data
+    serialize: true
+    
+  # Static asset caching
+  static:
+    # Enable static asset caching
+    enabled: true
+    
+    # Asset types and their TTL
+    types:
+      javascript:
+        extensions: ["js", "mjs"]
+        ttl: 604800             # 7 days
+        compress: true
+        
+      stylesheets:
+        extensions: ["css"]
+        ttl: 604800             # 7 days
+        compress: true
+        
+      images:
+        extensions: ["jpg", "jpeg", "png", "gif", "webp", "svg", "ico"]
+        ttl: 2592000            # 30 days
+        compress: false
+        
+      fonts:
+        extensions: ["woff", "woff2", "ttf", "otf", "eot"]
+        ttl: 31536000           # 1 year
+        compress: false
+        
+      media:
+        extensions: ["mp4", "webm", "mp3", "ogg", "wav"]
+        ttl: 2592000            # 30 days
+        compress: false
+        
+    # Cache headers
+    headers:
+      public: true
+      immutable: true
+      
+  # Build artifact caching
+  build:
+    # Enable build caching
+    enabled: true
+    
+    # Cache locations
+    locations:
+      # Node.js dependencies
+      nodeModules:
+        path: "node_modules"
+        key: "{{ checksum 'package-lock.json' }}"
+        ttl: 604800             # 7 days
+        
+      # Python dependencies
+      pipPackages:
+        path: ".venv"
+        key: "{{ checksum 'requirements.txt' }}"
+        ttl: 604800             # 7 days
+        
+      # Rust dependencies
+      cargo:
+        path: "target"
+        key: "{{ checksum 'Cargo.lock' }}"
+        ttl: 604800             # 7 days
+        
+      # Build output
+      dist:
+        path: "dist"
+        key: "{{ checksum 'src/**/*' }}"
+        ttl: 86400              # 1 day
+        
+    # Docker layer caching
+    docker:
+      enabled: true
+      
+      # Cache base images
+      baseImages:
+        - "node:18-alpine"
+        - "python:3.11-slim"
+        - "rust:1.70-alpine"
+        
+      # Layer caching strategy
+      layerStrategy: "aggressive"  # aggressive or minimal
+      
+      # Build cache
+      buildKit:
+        enabled: true
+        
+    # CI/CD caching
+    ci:
+      # Shared cache across pipelines
+      shared: true
+      
+      # Cache compression
+      compression: true
+      
+      # Cache size limit
+      maxSize: 5120             # 5GB in MB
+      
+      # Cleanup old caches
+      cleanup:
+        enabled: true
+        olderThan: 30           # days
+        
+  # Distributed caching
+  distributed:
+    # Enable distributed caching
+    enabled: true
+    
+    # Consistency model
+    consistency: "eventual"     # strong or eventual
+    
+    # Replication factor
+    replicationFactor: 3
+    
+    # Partitioning strategy
+    partitioning: "consistent-hashing"  # consistent-hashing or range
+    
+  # Cache invalidation
+  invalidation:
+    # Global invalidation strategy
+    strategy: "ttl"             # ttl, manual, or event-driven
+    
+    # Event-driven invalidation
+    events:
+      enabled: true
+      
+      # Events that trigger invalidation
+      triggers:
+        - event: "user.updated"
+          patterns:
+            - "user:{{ user_id }}:*"
+            - "api:/api/users/{{ user_id }}*"
+            
+        - event: "project.updated"
+          patterns:
+            - "project:{{ project_id }}:*"
+            - "db:query:*projects*{{ project_id }}*"
+            
+        - event: "deployment"
+          patterns:
+            - "static:*"
+            - "api:*"
+            
+    # Manual invalidation API
+    api:
+      enabled: true
+      endpoint: "/api/cache/invalidate"
+      requireAuth: true
+      
+  # Cache monitoring
+  monitoring:
+    # Enable monitoring
+    enabled: true
+    
+    # Metrics to collect
+    metrics:
+      - "hit_rate"
+      - "miss_rate"
+      - "eviction_rate"
+      - "memory_usage"
+      - "response_time"
+      - "throughput"
+      
+    # Alerts
+    alerts:
+      - metric: "hit_rate"
+        threshold: 0.7
+        operator: "less_than"
+        severity: "warning"
+        action: "notify"
+        
+      - metric: "memory_usage"
+        threshold: 0.9
+        operator: "greater_than"
+        severity: "critical"
+        action: "notify"
+        
+      - metric: "eviction_rate"
+        threshold: 100
+        operator: "greater_than"
+        period: 60              # per minute
+        severity: "warning"
+        action: "notify"
+        
+    # Logging
+    logging:
+      enabled: true
+      level: "info"             # debug, info, warn, error
+      
+      # Log cache operations
+      operations:
+        - "get"
+        - "set"
+        - "delete"
+        - "invalidate"
+        
+      # Log performance
+      performance: true
+      
+  # Cache optimization
+  optimization:
+    # Automatic optimization
+    auto: true
+    
+    # Prefetching
+    prefetch:
+      enabled: true
+      
+      # Predictive prefetching
+      predictive: true
+      
+    # Cache compression
+    compression:
+      enabled: true
+      algorithm: "lz4"          # lz4, snappy, or gzip
+      
+    # Deduplication
+    deduplication:
+      enabled: true
+      
+  # Graceful degradation
+  degradation:
+    # Fallback when cache unavailable
+    fallback: true
+    
+    # Serve stale data on error
+    staleOnError: true
+    maxStaleTime: 3600          # 1 hour in seconds
+    
+    # Circuit breaker
+    circuitBreaker:
+      enabled: true
+      threshold: 5              # failures before opening
+      timeout: 60000            # milliseconds
+      resetTimeout: 30000       # milliseconds
+
+# Environment-specific overrides
+environments:
+  development:
+    cache:
+      enabled: true
+      layers:
+        memory:
+          maxSize: 50           # MB
+          ttl: 60               # 1 minute
+        redis:
+          enabled: false
+          
+  staging:
+    cache:
+      enabled: true
+      database:
+        config:
+          ttl: 60               # 1 minute
+      api:
+        defaultTtl: 30          # 30 seconds
+        
+  production:
+    cache:
+      enabled: true
+      layers:
+        memory:
+          maxSize: 200          # MB
+        redis:
+          enabled: true
+      distributed:
+        enabled: true

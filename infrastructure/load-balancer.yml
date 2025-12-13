@@ -1,0 +1,502 @@
+# Load Balancer Configuration
+# Intelligent traffic distribution and routing
+
+loadBalancer:
+  # Enable load balancing
+  enabled: ${LB_ENABLED:-true}
+  
+  # Load balancer type
+  type: "application"          # application, network, or classic
+  
+  # Provider
+  provider: "${LB_PROVIDER:-nginx}"  # nginx, haproxy, aws-alb, gcp-lb, azure-lb
+  
+  # Round-Robin Load Balancing
+  roundRobin:
+    # Enable round-robin
+    enabled: true
+    
+    # Backend servers/pool
+    backends:
+      # Web server pool
+      webServers:
+        name: "web-pool"
+        
+        # Server instances
+        servers:
+          - host: "${WEB_SERVER_1_HOST:-web-1}"
+            port: ${WEB_SERVER_1_PORT:-3000}
+            weight: 1
+            maxConnections: 1000
+            
+          - host: "${WEB_SERVER_2_HOST:-web-2}"
+            port: ${WEB_SERVER_2_PORT:-3000}
+            weight: 1
+            maxConnections: 1000
+            
+          - host: "${WEB_SERVER_3_HOST:-web-3}"
+            port: ${WEB_SERVER_3_PORT:-3000}
+            weight: 1
+            maxConnections: 1000
+            
+        # Health check configuration
+        healthCheck:
+          enabled: true
+          endpoint: "/health"
+          interval: 10          # seconds
+          timeout: 5            # seconds
+          healthyThreshold: 2   # consecutive successes
+          unhealthyThreshold: 3 # consecutive failures
+          
+        # Connection settings
+        connections:
+          maxPerServer: 1000
+          keepAlive: true
+          keepAliveTimeout: 60  # seconds
+          
+      # API server pool
+      apiServers:
+        name: "api-pool"
+        
+        servers:
+          - host: "${API_SERVER_1_HOST:-api-1}"
+            port: ${API_SERVER_1_PORT:-4000}
+            weight: 1
+            
+          - host: "${API_SERVER_2_HOST:-api-2}"
+            port: ${API_SERVER_2_PORT:-4000}
+            weight: 1
+            
+        healthCheck:
+          enabled: true
+          endpoint: "/api/health"
+          interval: 10
+          timeout: 5
+          
+    # Load balancing algorithm
+    algorithm: "round-robin"    # round-robin, least-connections, ip-hash, weighted
+    
+    # Session persistence (sticky sessions)
+    stickySession:
+      enabled: true
+      type: "cookie"            # cookie, ip-hash, or header
+      cookieName: "BACKEND_SERVER"
+      timeout: 3600             # 1 hour in seconds
+      
+    # Connection draining
+    connectionDraining:
+      enabled: true
+      timeout: 300              # 5 minutes in seconds
+      
+  # Geographic Routing
+  geographic:
+    # Enable geo-routing
+    enabled: true
+    
+    # Regional endpoints
+    regions:
+      # US East region
+      - name: "us-east"
+        priority: 1
+        
+        endpoints:
+          - host: "${US_EAST_ENDPOINT:-us-east.example.com}"
+            port: 443
+            weight: 100
+            
+        # Countries/states to route
+        locations:
+          - "US"
+          - "CA"
+          - "MX"
+          
+        # Latency threshold
+        maxLatency: 100         # milliseconds
+        
+      # Europe region
+      - name: "eu-west"
+        priority: 2
+        
+        endpoints:
+          - host: "${EU_WEST_ENDPOINT:-eu-west.example.com}"
+            port: 443
+            weight: 100
+            
+        locations:
+          - "GB"
+          - "FR"
+          - "DE"
+          - "IT"
+          - "ES"
+          
+        maxLatency: 100
+        
+      # Asia Pacific region
+      - name: "ap-southeast"
+        priority: 3
+        
+        endpoints:
+          - host: "${AP_SOUTHEAST_ENDPOINT:-ap-southeast.example.com}"
+            port: 443
+            weight: 100
+            
+        locations:
+          - "SG"
+          - "JP"
+          - "AU"
+          - "KR"
+          
+        maxLatency: 100
+        
+    # Latency-based routing
+    latencyBased:
+      enabled: true
+      
+      # Measure latency
+      measureInterval: 60       # seconds
+      
+      # Route to lowest latency endpoint
+      preferLowest: true
+      
+      # Latency tolerance
+      tolerance: 20             # milliseconds
+      
+    # Failover between regions
+    failover:
+      enabled: true
+      
+      # Failover strategy
+      strategy: "priority"      # priority, round-robin, or closest
+      
+      # Health check before failover
+      healthCheck: true
+      
+      # Automatic failback
+      failback:
+        enabled: true
+        delay: 300              # 5 minutes in seconds
+        
+  # Health Check-Based Routing
+  healthCheck:
+    # Enable health-based routing
+    enabled: true
+    
+    # Active health checks
+    active:
+      enabled: true
+      
+      # HTTP health check
+      http:
+        method: "GET"
+        path: "/health"
+        expectedStatus: [200, 204]
+        timeout: 5              # seconds
+        interval: 10            # seconds
+        
+      # TCP health check
+      tcp:
+        enabled: false
+        port: 3000
+        timeout: 3              # seconds
+        interval: 10            # seconds
+        
+      # Custom health check
+      custom:
+        enabled: false
+        script: "/scripts/health-check.sh"
+        
+    # Passive health checks
+    passive:
+      enabled: true
+      
+      # Monitor error rates
+      errorRate:
+        threshold: 0.1          # 10% error rate
+        window: 60              # seconds
+        
+      # Monitor response times
+      responseTime:
+        threshold: 2000         # 2 seconds
+        percentile: 95
+        
+    # Automatic removal of unhealthy instances
+    autoRemove:
+      enabled: true
+      
+      # Consecutive failures before removal
+      failureThreshold: 3
+      
+      # Quarantine period
+      quarantine:
+        enabled: true
+        duration: 300           # 5 minutes in seconds
+        
+    # Gradual traffic restoration
+    gradualRestore:
+      enabled: true
+      
+      # Start with small percentage
+      initialPercentage: 10     # 10% of traffic
+      
+      # Increase rate
+      increaseRate: 10          # 10% every interval
+      
+      # Increase interval
+      increaseInterval: 60      # seconds
+      
+      # Monitor during restoration
+      monitoring:
+        enabled: true
+        rollbackOnError: true
+        
+  # Traffic distribution
+  traffic:
+    # Traffic splitting (A/B testing, canary deployments)
+    splitting:
+      enabled: false
+      
+      rules:
+        - name: "canary-deployment"
+          percentage: 10        # 10% to canary
+          backend: "canary-pool"
+          
+        - name: "stable-deployment"
+          percentage: 90        # 90% to stable
+          backend: "stable-pool"
+          
+    # Rate limiting
+    rateLimit:
+      enabled: true
+      
+      # Global rate limit
+      global:
+        requestsPerSecond: 1000
+        burstSize: 2000
+        
+      # Per-IP rate limit
+      perIp:
+        requestsPerSecond: 100
+        burstSize: 200
+        window: 60              # seconds
+        
+      # Per-user rate limit
+      perUser:
+        requestsPerSecond: 50
+        burstSize: 100
+        
+    # Connection limits
+    connectionLimit:
+      enabled: true
+      
+      # Max concurrent connections
+      maxConnections: 10000
+      
+      # Per-IP connection limit
+      perIp: 100
+      
+  # SSL/TLS termination
+  ssl:
+    # Enable SSL termination at load balancer
+    enabled: true
+    
+    # Certificate configuration
+    certificate:
+      type: "letsencrypt"       # letsencrypt, custom, or acm
+      path: "/etc/ssl/certs/cert.pem"
+      keyPath: "/etc/ssl/private/key.pem"
+      chainPath: "/etc/ssl/certs/chain.pem"
+      
+    # SSL settings
+    protocols:
+      - "TLSv1.2"
+      - "TLSv1.3"
+      
+    ciphers: "HIGH:!aNULL:!MD5"
+    
+    # HSTS
+    hsts:
+      enabled: true
+      maxAge: 31536000          # 1 year
+      includeSubdomains: true
+      preload: true
+      
+    # SSL session caching
+    sessionCache:
+      enabled: true
+      size: "10m"
+      timeout: 300              # 5 minutes in seconds
+      
+  # Request routing rules
+  routing:
+    # Path-based routing
+    paths:
+      - path: "/api/*"
+        backend: "api-pool"
+        
+      - path: "/static/*"
+        backend: "static-pool"
+        
+      - path: "/*"
+        backend: "web-pool"
+        
+    # Host-based routing
+    hosts:
+      - host: "api.example.com"
+        backend: "api-pool"
+        
+      - host: "www.example.com"
+        backend: "web-pool"
+        
+    # Header-based routing
+    headers:
+      - header: "X-API-Version"
+        value: "v2"
+        backend: "api-v2-pool"
+        
+  # Logging and monitoring
+  monitoring:
+    # Enable monitoring
+    enabled: true
+    
+    # Metrics to collect
+    metrics:
+      - "request_count"
+      - "response_time"
+      - "error_rate"
+      - "active_connections"
+      - "backend_health"
+      - "throughput"
+      
+    # Access logs
+    accessLog:
+      enabled: true
+      format: "json"
+      path: "/var/log/lb/access.log"
+      
+    # Error logs
+    errorLog:
+      enabled: true
+      level: "error"
+      path: "/var/log/lb/error.log"
+      
+    # Metrics export
+    export:
+      # Prometheus
+      prometheus:
+        enabled: true
+        port: 9090
+        path: "/metrics"
+        
+      # StatsD
+      statsd:
+        enabled: false
+        host: "statsd.example.com"
+        port: 8125
+        
+    # Alerts
+    alerts:
+      - metric: "error_rate"
+        threshold: 0.05
+        operator: "greater_than"
+        action: "notify"
+        
+      - metric: "response_time_p95"
+        threshold: 2000         # milliseconds
+        operator: "greater_than"
+        action: "notify"
+        
+      - metric: "backend_health"
+        threshold: 0.5
+        operator: "less_than"
+        action: "notify"
+        
+# NGINX-specific configuration
+nginx:
+  # Worker processes
+  workerProcesses: auto
+  workerConnections: 4096
+  
+  # Buffering
+  buffers:
+    proxyBuffering: "on"
+    proxyBufferSize: "4k"
+    proxyBuffers: "8 4k"
+    
+  # Timeouts
+  timeouts:
+    proxyConnectTimeout: 60
+    proxySendTimeout: 60
+    proxyReadTimeout: 60
+    clientBodyTimeout: 60
+    clientHeaderTimeout: 60
+    
+  # Upstream configuration
+  upstream:
+    keepalive: 32
+    keepaliveTimeout: 60
+    
+# HAProxy-specific configuration
+haproxy:
+  # Global settings
+  global:
+    maxconn: 4096
+    nbproc: 1
+    nbthread: 4
+    
+  # Defaults
+  defaults:
+    mode: "http"
+    timeout:
+      connect: 5000
+      client: 50000
+      server: 50000
+      
+# AWS ALB-specific configuration
+aws:
+  alb:
+    # Target groups
+    targetGroups:
+      - name: "web-targets"
+        protocol: "HTTP"
+        port: 3000
+        healthCheck:
+          protocol: "HTTP"
+          path: "/health"
+          interval: 30
+          timeout: 5
+          
+    # Listeners
+    listeners:
+      - protocol: "HTTPS"
+        port: 443
+        certificateArn: "${AWS_CERT_ARN}"
+        
+    # Attributes
+    attributes:
+      idleTimeout: 60
+      deletionProtection: true
+      http2: true
+      
+# Environment-specific overrides
+environments:
+  development:
+    loadBalancer:
+      enabled: false
+      
+  staging:
+    loadBalancer:
+      enabled: true
+      roundRobin:
+        backends:
+          webServers:
+            servers:
+              - host: "staging-web-1"
+                port: 3000
+                
+  production:
+    loadBalancer:
+      enabled: true
+      geographic:
+        enabled: true
+      healthCheck:
+        enabled: true

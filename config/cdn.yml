@@ -1,0 +1,457 @@
+# CDN Configuration for Static Asset Delivery
+# Supports Cloudflare and Fastly CDN providers
+
+cdn:
+  # CDN provider selection
+  provider: "${CDN_PROVIDER:-cloudflare}"  # cloudflare, fastly, or custom
+  
+  # Enable/disable CDN
+  enabled: ${CDN_ENABLED:-true}
+  
+  # CDN URLs
+  urls:
+    primary: "${CDN_PRIMARY_URL:-https://cdn.example.com}"
+    fallback: "${CDN_FALLBACK_URL:-https://assets.example.com}"
+    
+  # Cloudflare configuration
+  cloudflare:
+    # Account settings
+    account:
+      zone_id: "${CLOUDFLARE_ZONE_ID}"
+      api_token: "${CLOUDFLARE_API_TOKEN}"
+      email: "${CLOUDFLARE_EMAIL}"
+      
+    # Cache settings
+    cache:
+      # Default cache TTL
+      defaultTtl: 14400         # 4 hours in seconds
+      
+      # Browser cache TTL
+      browserTtl: 14400         # 4 hours in seconds
+      
+      # Edge cache TTL
+      edgeTtl: 7200            # 2 hours in seconds
+      
+      # Cache level
+      level: "aggressive"       # basic, simplified, aggressive
+      
+      # Cache everything mode
+      cacheEverything: false
+      
+      # Bypass cache on cookie
+      bypassOnCookie: true
+      cookiePatterns:
+        - "session"
+        - "auth"
+        - "user_id"
+        
+    # Cache rules by path/extension
+    rules:
+      # JavaScript and CSS files
+      - pattern: "\\.(js|css)$"
+        browserTtl: 604800      # 7 days
+        edgeTtl: 604800         # 7 days
+        cacheLevel: "aggressive"
+        compress: true
+        minify: true
+        
+      # Images
+      - pattern: "\\.(jpg|jpeg|png|gif|webp|svg|ico)$"
+        browserTtl: 2592000     # 30 days
+        edgeTtl: 2592000        # 30 days
+        cacheLevel: "aggressive"
+        compress: true
+        polish: "lossless"      # lossless or lossy
+        
+      # Fonts
+      - pattern: "\\.(woff|woff2|ttf|otf|eot)$"
+        browserTtl: 31536000    # 1 year
+        edgeTtl: 31536000       # 1 year
+        cacheLevel: "aggressive"
+        cors: true
+        
+      # Media files
+      - pattern: "\\.(mp4|webm|mp3|ogg|wav)$"
+        browserTtl: 2592000     # 30 days
+        edgeTtl: 2592000        # 30 days
+        cacheLevel: "aggressive"
+        
+      # Documents
+      - pattern: "\\.(pdf|doc|docx|xls|xlsx)$"
+        browserTtl: 86400       # 1 day
+        edgeTtl: 86400          # 1 day
+        cacheLevel: "simplified"
+        
+      # API responses (no cache)
+      - pattern: "^/api/"
+        browserTtl: 0
+        edgeTtl: 0
+        cacheLevel: "bypass"
+        
+    # Cache invalidation/purging
+    purge:
+      # Automatic purge on deployment
+      onDeploy: true
+      
+      # Purge strategies
+      strategies:
+        - type: "tag"           # tag, url, or everything
+          tags:
+            - "assets"
+            - "static"
+            
+        - type: "prefix"
+          prefixes:
+            - "/static/"
+            - "/assets/"
+            
+      # Webhook for cache purge
+      webhook:
+        enabled: true
+        url: "${CACHE_PURGE_WEBHOOK_URL}"
+        secret: "${CACHE_PURGE_WEBHOOK_SECRET}"
+        
+    # Image optimization
+    images:
+      # Polish (optimize images)
+      polish: "lossless"        # off, lossless, lossy
+      
+      # Mirage (lazy loading)
+      mirage: true
+      
+      # Responsive images
+      responsive: true
+      
+      # WebP conversion
+      webp: true
+      
+      # Image resizing
+      resizing:
+        enabled: true
+        fit: "scale-down"       # scale-down, contain, cover, crop, pad
+        quality: 85
+        
+    # Performance features
+    performance:
+      # HTTP/2
+      http2: true
+      
+      # HTTP/3 (QUIC)
+      http3: true
+      
+      # Early hints
+      earlyHints: true
+      
+      # Brotli compression
+      brotli: true
+      
+      # Minification
+      minify:
+        javascript: true
+        css: true
+        html: true
+        
+      # Auto minify
+      autoMinify: true
+      
+      # Rocket Loader (async JS)
+      rocketLoader: false       # Can break some sites
+      
+      # Railgun (WAN optimization)
+      railgun: false
+      
+  # Fastly configuration
+  fastly:
+    # Account settings
+    account:
+      api_key: "${FASTLY_API_KEY}"
+      service_id: "${FASTLY_SERVICE_ID}"
+      
+    # Cache settings
+    cache:
+      # Default TTL
+      defaultTtl: 14400         # 4 hours in seconds
+      
+      # Stale-while-revalidate
+      staleWhileRevalidate: 3600  # 1 hour
+      
+      # Stale-if-error
+      staleIfError: 86400       # 24 hours
+      
+    # Cache rules
+    rules:
+      # Static assets
+      - pattern: "^/static/"
+        ttl: 604800             # 7 days
+        staleWhileRevalidate: 86400
+        compress: true
+        
+      # API endpoints
+      - pattern: "^/api/"
+        ttl: 0
+        pass: true              # Bypass cache
+        
+    # VCL (Varnish Configuration Language)
+    vcl:
+      # Custom VCL snippets
+      snippets:
+        - type: "recv"
+          priority: 100
+          content: |
+            # Remove tracking parameters
+            if (req.url ~ "(\?|&)(utm_|fbclid=)") {
+              set req.url = regsuball(req.url, "(utm_|fbclid=)[^&]+&?", "");
+            }
+            
+        - type: "fetch"
+          priority: 100
+          content: |
+            # Set cache headers
+            if (beresp.status == 200) {
+              set beresp.ttl = 1h;
+            }
+            
+    # Purging
+    purge:
+      # Soft purge (serve stale while revalidating)
+      soft: true
+      
+      # Surrogate keys for selective purging
+      surrogateKeys:
+        enabled: true
+        
+      # Instant purge
+      instant: true
+      
+  # Cache busting strategies
+  cacheBusting:
+    # Strategy: versioned URLs
+    strategy: "versioned"       # versioned, query-string, or hash
+    
+    # Version format
+    versionFormat: "v{version}" # e.g., v1.2.3
+    
+    # Asset versioning
+    assets:
+      # Include version in path
+      pathVersioning: true      # /v1.2.3/assets/app.js
+      
+      # Include hash in filename
+      hashVersioning: true      # app.abc123.js
+      
+      # Query string versioning (fallback)
+      queryString: false        # app.js?v=1.2.3
+      
+    # Manifest file for asset mapping
+    manifest:
+      enabled: true
+      path: "/dist/manifest.json"
+      format: "json"            # json or webpack
+      
+  # Static asset hosting
+  static:
+    # Base path for static assets
+    basePath: "/static"
+    
+    # Directories to serve via CDN
+    directories:
+      - path: "/assets"
+        cache: 604800           # 7 days
+        
+      - path: "/images"
+        cache: 2592000          # 30 days
+        
+      - path: "/fonts"
+        cache: 31536000         # 1 year
+        
+      - path: "/downloads"
+        cache: 86400            # 1 day
+        
+    # File types to serve via CDN
+    fileTypes:
+      scripts:
+        - "js"
+        - "mjs"
+        
+      styles:
+        - "css"
+        - "scss"
+        
+      images:
+        - "jpg"
+        - "jpeg"
+        - "png"
+        - "gif"
+        - "webp"
+        - "svg"
+        - "ico"
+        
+      fonts:
+        - "woff"
+        - "woff2"
+        - "ttf"
+        - "otf"
+        - "eot"
+        
+      media:
+        - "mp4"
+        - "webm"
+        - "mp3"
+        - "ogg"
+        - "wav"
+        
+  # Cache headers
+  headers:
+    # Default cache headers
+    default:
+      Cache-Control: "public, max-age=3600"
+      
+    # Custom headers by path
+    custom:
+      - pattern: "\\.(js|css)$"
+        headers:
+          Cache-Control: "public, max-age=604800, immutable"
+          X-Content-Type-Options: "nosniff"
+          
+      - pattern: "\\.(jpg|jpeg|png|gif|webp)$"
+        headers:
+          Cache-Control: "public, max-age=2592000, immutable"
+          
+      - pattern: "\\.(woff|woff2)$"
+        headers:
+          Cache-Control: "public, max-age=31536000, immutable"
+          Access-Control-Allow-Origin: "*"
+          
+    # Security headers
+    security:
+      X-Frame-Options: "SAMEORIGIN"
+      X-Content-Type-Options: "nosniff"
+      Referrer-Policy: "strict-origin-when-cross-origin"
+      Permissions-Policy: "geolocation=(), microphone=(), camera=()"
+      
+  # Compression
+  compression:
+    # Enable compression
+    enabled: true
+    
+    # Compression types
+    types:
+      - "gzip"
+      - "brotli"
+      
+    # Minimum file size for compression
+    minSize: 1024              # 1KB
+    
+    # Compression level
+    level: 6                   # 1-9 (higher = better compression, slower)
+    
+    # File types to compress
+    mimeTypes:
+      - "text/html"
+      - "text/css"
+      - "text/javascript"
+      - "application/javascript"
+      - "application/json"
+      - "application/xml"
+      - "text/xml"
+      - "image/svg+xml"
+      
+  # Monitoring and analytics
+  monitoring:
+    # Enable monitoring
+    enabled: true
+    
+    # Metrics to track
+    metrics:
+      - "cache_hit_ratio"
+      - "bandwidth_usage"
+      - "request_count"
+      - "error_rate"
+      - "response_time"
+      
+    # Alerts
+    alerts:
+      - metric: "cache_hit_ratio"
+        threshold: 0.8
+        operator: "less_than"
+        action: "notify"
+        
+      - metric: "error_rate"
+        threshold: 0.05
+        operator: "greater_than"
+        action: "notify"
+        
+      - metric: "bandwidth_usage"
+        threshold: 1000000000   # 1GB
+        operator: "greater_than"
+        action: "notify"
+        
+    # Logging
+    logging:
+      enabled: true
+      level: "info"             # debug, info, warn, error
+      
+      # Log to external service
+      external:
+        enabled: false
+        service: "datadog"      # datadog, splunk, etc.
+        
+  # Failover and redundancy
+  failover:
+    # Enable failover
+    enabled: true
+    
+    # Fallback to origin on CDN failure
+    fallbackToOrigin: true
+    
+    # Health checks
+    healthCheck:
+      enabled: true
+      interval: 60              # seconds
+      timeout: 5                # seconds
+      
+    # Multi-CDN setup
+    multiCdn:
+      enabled: false
+      providers:
+        - "cloudflare"
+        - "fastly"
+      strategy: "priority"      # priority or round-robin
+      
+  # Cost optimization
+  cost:
+    # Bandwidth limits
+    bandwidthLimit:
+      enabled: false
+      monthlyLimit: 1000000000000  # 1TB in bytes
+      
+    # Request limits
+    requestLimit:
+      enabled: false
+      monthlyLimit: 10000000    # 10M requests
+      
+    # Budget alerts
+    budgetAlerts:
+      enabled: true
+      threshold: 0.8            # Alert at 80% of budget
+      
+# Environment-specific overrides
+environments:
+  development:
+    cdn:
+      enabled: false
+      
+  staging:
+    cdn:
+      enabled: true
+      cloudflare:
+        cache:
+          defaultTtl: 300       # 5 minutes
+          
+  production:
+    cdn:
+      enabled: true
+      cloudflare:
+        cache:
+          defaultTtl: 14400     # 4 hours
+          level: "aggressive"

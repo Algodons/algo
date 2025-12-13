@@ -1,0 +1,615 @@
+# Container Resource Limits Configuration
+# Optimize resource utilization and prevent resource exhaustion
+
+resources:
+  # Enable resource limits
+  enabled: ${RESOURCE_LIMITS_ENABLED:-true}
+  
+  # Default resource configuration
+  defaults:
+    # CPU settings
+    cpu:
+      # CPU request (guaranteed)
+      request: "250m"           # 0.25 CPU cores
+      
+      # CPU limit (max)
+      limit: "500m"             # 0.5 CPU cores
+      
+      # CPU quota per container
+      quota:
+        enabled: true
+        period: "100ms"
+        quota: "50ms"           # 50% of one core
+        
+    # Memory settings
+    memory:
+      # Memory request (guaranteed)
+      request: "256Mi"          # 256 MiB
+      
+      # Memory limit (max)
+      limit: "512Mi"            # 512 MiB
+      
+      # Swap settings
+      swap:
+        enabled: false
+        limit: "0"
+        
+      # OOM (Out of Memory) settings
+      oom:
+        # OOM kill protection
+        killDisable: false
+        
+        # OOM score adjustment (-1000 to 1000)
+        scoreAdj: 0
+        
+    # Storage settings
+    storage:
+      # Ephemeral storage request
+      ephemeralRequest: "1Gi"
+      
+      # Ephemeral storage limit
+      ephemeralLimit: "5Gi"
+      
+    # Network settings
+    network:
+      # Bandwidth limit
+      bandwidthLimit: "100M"    # 100 Mbps
+      
+  # Service-specific resource limits
+  services:
+    # Frontend service
+    frontend:
+      replicas: 2
+      
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "128Mi"
+          ephemeralStorage: "500Mi"
+          
+        limits:
+          cpu: "500m"
+          memory: "512Mi"
+          ephemeralStorage: "2Gi"
+          
+      # Quality of Service class
+      qosClass: "Burstable"     # Guaranteed, Burstable, or BestEffort
+      
+      # Priority class
+      priorityClass: "high"
+      
+    # Backend/API service
+    backend:
+      replicas: 3
+      
+      resources:
+        requests:
+          cpu: "250m"
+          memory: "256Mi"
+          ephemeralStorage: "1Gi"
+          
+        limits:
+          cpu: "1000m"          # 1 CPU core
+          memory: "1Gi"
+          ephemeralStorage: "5Gi"
+          
+      qosClass: "Burstable"
+      priorityClass: "high"
+      
+    # Database service
+    database:
+      replicas: 1
+      
+      resources:
+        requests:
+          cpu: "500m"
+          memory: "512Mi"
+          ephemeralStorage: "2Gi"
+          
+        limits:
+          cpu: "2000m"          # 2 CPU cores
+          memory: "2Gi"
+          ephemeralStorage: "10Gi"
+          
+      qosClass: "Guaranteed"
+      priorityClass: "critical"
+      
+      # Persistent storage
+      persistentStorage:
+        size: "50Gi"
+        storageClass: "fast-ssd"
+        
+    # Redis cache
+    redis:
+      replicas: 1
+      
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "128Mi"
+          
+        limits:
+          cpu: "500m"
+          memory: "512Mi"
+          
+      qosClass: "Burstable"
+      priorityClass: "high"
+      
+      # Memory configuration
+      maxMemory: "256Mi"
+      maxMemoryPolicy: "allkeys-lru"
+      
+    # Worker/job queue
+    worker:
+      replicas: 2
+      
+      resources:
+        requests:
+          cpu: "250m"
+          memory: "256Mi"
+          
+        limits:
+          cpu: "1000m"
+          memory: "1Gi"
+          
+      qosClass: "Burstable"
+      priorityClass: "medium"
+      
+      # Concurrency settings
+      concurrency: 4
+      
+    # Cron jobs
+    cronjobs:
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "128Mi"
+          
+        limits:
+          cpu: "500m"
+          memory: "512Mi"
+          
+      qosClass: "BestEffort"
+      priorityClass: "low"
+      
+  # Resource request/limit ratios
+  ratios:
+    # CPU ratio (limit/request)
+    cpu: 2.0                    # Limit is 2x the request
+    
+    # Memory ratio (limit/request)
+    memory: 2.0                 # Limit is 2x the request
+    
+    # Enforce ratios
+    enforce: true
+    
+  # Resource quotas (namespace level)
+  quotas:
+    # Enable resource quotas
+    enabled: true
+    
+    # Compute quotas
+    compute:
+      # Total CPU across all pods
+      requestsCpu: "10"         # 10 CPU cores
+      limitsCpu: "20"           # 20 CPU cores
+      
+      # Total memory across all pods
+      requestsMemory: "20Gi"
+      limitsMemory: "40Gi"
+      
+    # Storage quotas
+    storage:
+      # Persistent volume claims
+      persistentvolumeclaims: "10"
+      
+      # Total storage
+      requestsStorage: "100Gi"
+      
+    # Object count quotas
+    objects:
+      # Maximum pods
+      pods: "50"
+      
+      # Maximum services
+      services: "20"
+      
+      # Maximum secrets
+      secrets: "100"
+      
+      # Maximum configmaps
+      configmaps: "50"
+      
+  # Limit ranges (pod/container level)
+  limitRanges:
+    # Enable limit ranges
+    enabled: true
+    
+    # Pod limits
+    pod:
+      min:
+        cpu: "10m"
+        memory: "16Mi"
+        
+      max:
+        cpu: "4"                # 4 CPU cores
+        memory: "8Gi"
+        
+    # Container limits
+    container:
+      default:
+        cpu: "500m"
+        memory: "512Mi"
+        
+      defaultRequest:
+        cpu: "100m"
+        memory: "128Mi"
+        
+      min:
+        cpu: "10m"
+        memory: "16Mi"
+        
+      max:
+        cpu: "2"                # 2 CPU cores
+        memory: "4Gi"
+        
+    # Persistent volume claims
+    persistentVolumeClaim:
+      min:
+        storage: "1Gi"
+        
+      max:
+        storage: "100Gi"
+        
+  # Vertical Pod Autoscaler (VPA)
+  vpa:
+    # Enable VPA
+    enabled: ${VPA_ENABLED:-true}
+    
+    # Update mode
+    updateMode: "Auto"          # Off, Initial, Recreate, or Auto
+    
+    # Resource policy
+    resourcePolicy:
+      # CPU
+      cpu:
+        minAllowed: "50m"
+        maxAllowed: "2"
+        
+      # Memory
+      memory:
+        minAllowed: "64Mi"
+        maxAllowed: "4Gi"
+        
+    # Update strategy
+    updateStrategy:
+      # Evict pods to apply recommendations
+      evictionRequirements:
+        - targetAPI: "apps/v1"
+          
+  # Pod Disruption Budget (PDB)
+  pdb:
+    # Enable PDB
+    enabled: true
+    
+    # Budgets per service
+    budgets:
+      frontend:
+        minAvailable: 1
+        
+      backend:
+        minAvailable: 2
+        
+      database:
+        maxUnavailable: 0       # No disruption allowed
+        
+      worker:
+        minAvailable: 1
+        
+  # Resource monitoring
+  monitoring:
+    # Enable monitoring
+    enabled: true
+    
+    # Metrics to collect
+    metrics:
+      - "cpu_usage"
+      - "memory_usage"
+      - "disk_usage"
+      - "network_io"
+      - "cpu_throttling"
+      - "oom_kills"
+      
+    # Collection interval
+    interval: 30                # seconds
+    
+    # Retention period
+    retention: 604800           # 7 days in seconds
+    
+    # Alerts
+    alerts:
+      # CPU alerts
+      - metric: "cpu_usage"
+        threshold: 0.8          # 80%
+        operator: "greater_than"
+        duration: 300           # 5 minutes
+        severity: "warning"
+        action: "notify"
+        
+      - metric: "cpu_throttling"
+        threshold: 0.1          # 10%
+        operator: "greater_than"
+        duration: 300
+        severity: "warning"
+        action: "notify"
+        message: "CPU throttling detected - consider increasing limits"
+        
+      # Memory alerts
+      - metric: "memory_usage"
+        threshold: 0.9          # 90%
+        operator: "greater_than"
+        duration: 300
+        severity: "critical"
+        action: "notify"
+        
+      - metric: "oom_kills"
+        threshold: 1
+        operator: "greater_than"
+        duration: 60
+        severity: "critical"
+        action: "notify"
+        message: "OOM kill detected - increase memory limits"
+        
+      # Disk alerts
+      - metric: "disk_usage"
+        threshold: 0.85         # 85%
+        operator: "greater_than"
+        duration: 300
+        severity: "warning"
+        action: "notify"
+        
+  # Cost optimization
+  cost:
+    # Enable cost optimization
+    enabled: true
+    
+    # Right-sizing recommendations
+    rightSizing:
+      enabled: true
+      
+      # Analysis period
+      analysisPeriod: 604800    # 7 days in seconds
+      
+      # Recommendation threshold
+      threshold: 0.2            # 20% waste
+      
+      # Auto-apply recommendations
+      autoApply: false
+      
+    # Cost allocation
+    allocation:
+      enabled: true
+      
+      # Tags for cost tracking
+      tags:
+        - "team"
+        - "environment"
+        - "project"
+        
+    # Budget alerts
+    budgetAlerts:
+      - threshold: 0.8          # 80% of budget
+        action: "notify"
+        
+# Spot instance configuration
+spot:
+  # Enable spot instances
+  enabled: ${SPOT_INSTANCES_ENABLED:-true}
+  
+  # Spot instance usage strategy
+  strategy:
+    # Percentage of spot instances
+    percentage: 70              # 70% spot, 30% on-demand
+    
+    # Workload types for spot
+    workloads:
+      - "worker"
+      - "batch"
+      - "cronjob"
+      - "development"
+      
+    # Workloads requiring on-demand
+    onDemand:
+      - "database"
+      - "cache"
+      - "critical"
+      
+  # Spot instance handling
+  handling:
+    # Graceful termination
+    gracefulTermination:
+      enabled: true
+      
+      # Termination notice period
+      noticeSeconds: 120        # 2 minutes
+      
+      # Drain connections
+      drainConnections: true
+      
+      # Save state
+      saveState: true
+      
+    # Fallback to on-demand
+    fallback:
+      enabled: true
+      
+      # Fallback timeout
+      timeout: 60               # 1 minute in seconds
+      
+      # Retry spot first
+      retrySpot: true
+      retryAttempts: 3
+      
+  # Spot interruption handling
+  interruption:
+    # Monitor for interruptions
+    monitor: true
+    
+    # Interruption handler
+    handler:
+      # Checkpointing
+      checkpoint:
+        enabled: true
+        interval: 300           # 5 minutes
+        
+      # Job requeueing
+      requeue:
+        enabled: true
+        priority: "high"
+        
+  # Cost savings
+  savings:
+    # Track savings
+    track: true
+    
+    # Target savings
+    target: 0.7                 # 70% cost reduction
+    
+# Docker-specific resource limits
+docker:
+  # CPU settings
+  cpus: "0.5"                   # 0.5 CPU cores
+  cpuShares: 1024               # CPU shares (relative weight)
+  cpuPeriod: 100000             # CPU CFS period (microseconds)
+  cpuQuota: 50000               # CPU CFS quota (microseconds)
+  
+  # Memory settings
+  memory: "512m"                # Memory limit
+  memoryReservation: "256m"     # Memory soft limit
+  memorySwap: "512m"            # Memory + swap limit (-1 for unlimited)
+  memorySwappiness: 0           # Swappiness (0-100)
+  oomKillDisable: false         # Disable OOM killer
+  
+  # Storage settings
+  storageOpt:
+    size: "5G"                  # Storage size limit
+    
+  # Network settings
+  networkMode: "bridge"
+  
+  # PID limits
+  pidsLimit: 100                # Max PIDs
+  
+# Kubernetes-specific resource limits
+kubernetes:
+  # Resource quotas
+  resourceQuotas:
+    - name: "compute-quota"
+      hard:
+        requests.cpu: "10"
+        requests.memory: "20Gi"
+        limits.cpu: "20"
+        limits.memory: "40Gi"
+        
+    - name: "storage-quota"
+      hard:
+        persistentvolumeclaims: "10"
+        requests.storage: "100Gi"
+        
+  # Limit ranges
+  limitRanges:
+    - name: "resource-limits"
+      limits:
+        - type: "Pod"
+          max:
+            cpu: "4"
+            memory: "8Gi"
+          min:
+            cpu: "10m"
+            memory: "16Mi"
+            
+        - type: "Container"
+          default:
+            cpu: "500m"
+            memory: "512Mi"
+          defaultRequest:
+            cpu: "100m"
+            memory: "128Mi"
+          max:
+            cpu: "2"
+            memory: "4Gi"
+          min:
+            cpu: "10m"
+            memory: "16Mi"
+            
+  # Priority classes
+  priorityClasses:
+    - name: "critical"
+      value: 1000000
+      globalDefault: false
+      description: "Critical system components"
+      
+    - name: "high"
+      value: 100000
+      globalDefault: false
+      description: "High priority workloads"
+      
+    - name: "medium"
+      value: 10000
+      globalDefault: true
+      description: "Medium priority workloads"
+      
+    - name: "low"
+      value: 1000
+      globalDefault: false
+      description: "Low priority batch jobs"
+      
+# Environment-specific overrides
+environments:
+  development:
+    resources:
+      defaults:
+        cpu:
+          request: "100m"
+          limit: "500m"
+        memory:
+          request: "128Mi"
+          limit: "512Mi"
+      quotas:
+        enabled: false
+      vpa:
+        enabled: false
+    spot:
+      enabled: false
+      
+  staging:
+    resources:
+      defaults:
+        cpu:
+          request: "200m"
+          limit: "1000m"
+        memory:
+          request: "256Mi"
+          limit: "1Gi"
+    spot:
+      enabled: true
+      strategy:
+        percentage: 50
+        
+  production:
+    resources:
+      defaults:
+        cpu:
+          request: "250m"
+          limit: "1000m"
+        memory:
+          request: "256Mi"
+          limit: "1Gi"
+      quotas:
+        enabled: true
+      vpa:
+        enabled: true
+    spot:
+      enabled: true
+      strategy:
+        percentage: 70
