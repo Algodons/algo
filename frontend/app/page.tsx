@@ -12,6 +12,7 @@ import {
   ContextMenu,
   Tooltip,
 } from '@/components/modern-ui'
+import type { ContextMenuItem } from '@/components/modern-ui/context-menu'
 import { useTheme } from '@/lib/hooks/use-theme'
 import { useKeyboardShortcuts } from '@/lib/hooks/use-keyboard-shortcuts'
 import { FileText, Settings, Plus, Copy, Trash2, Edit } from 'lucide-react'
@@ -52,7 +53,7 @@ export default function Home() {
     { label: 'index.tsx' },
   ]
 
-  const contextMenuItems = [
+  const contextMenuItems: ContextMenuItem[] = [
     {
       label: 'New File',
       icon: Plus,
@@ -71,7 +72,7 @@ export default function Home() {
       onClick: () => toast.success('Rename dialog opened'),
       shortcut: 'F2',
     },
-    { divider: true } as any,
+    { divider: true } as const,
     {
       label: 'Delete',
       icon: Trash2,

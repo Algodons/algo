@@ -4,14 +4,22 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LucideIcon } from 'lucide-react'
 
-export interface ContextMenuItem {
+export type ContextMenuItem = {
   label: string
   icon?: LucideIcon
   onClick: () => void
   shortcut?: string
   disabled?: boolean
   danger?: boolean
-  divider?: boolean
+  divider?: never
+} | {
+  divider: true
+  label?: never
+  icon?: never
+  onClick?: never
+  shortcut?: never
+  disabled?: never
+  danger?: never
 }
 
 interface ContextMenuProps {
@@ -44,10 +52,9 @@ export function ContextMenu({ items, children }: ContextMenuProps) {
   }, [isOpen])
 
   const handleItemClick = (item: ContextMenuItem) => {
-    if (!item.disabled) {
-      item.onClick()
-      setIsOpen(false)
-    }
+    if ('divider' in item || item.disabled) return
+    item.onClick()
+    setIsOpen(false)
   }
 
   return (
@@ -70,11 +77,11 @@ export function ContextMenu({ items, children }: ContextMenuProps) {
             className="min-w-[200px] rounded-lg border border-white/10 bg-gray-900/95 backdrop-blur-xl shadow-2xl py-1"
           >
             {items.map((item, index) => {
-              const Icon = item.icon
-              
-              if (item.divider) {
+              if ('divider' in item && item.divider) {
                 return <div key={index} className="h-px bg-white/10 my-1" />
               }
+
+              const Icon = item.icon
 
               return (
                 <motion.button

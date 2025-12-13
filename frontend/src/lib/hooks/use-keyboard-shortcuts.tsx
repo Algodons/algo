@@ -18,17 +18,19 @@ export function useKeyboardShortcuts(shortcuts: Shortcut[]) {
     const handleKeyDown = (event: KeyboardEvent) => {
       for (const shortcut of shortcuts) {
         const matchesKey = event.key.toLowerCase() === shortcut.key.toLowerCase()
-        const matchesCtrl = shortcut.ctrlKey ? event.ctrlKey : !event.ctrlKey || shortcut.metaKey
-        const matchesMeta = shortcut.metaKey ? event.metaKey : !event.metaKey || shortcut.ctrlKey
+        
+        // Check modifiers exactly as specified
+        const matchesCtrl = shortcut.ctrlKey ? event.ctrlKey : true
+        const matchesMeta = shortcut.metaKey ? event.metaKey : true
         const matchesShift = shortcut.shiftKey ? event.shiftKey : !event.shiftKey
         const matchesAlt = shortcut.altKey ? event.altKey : !event.altKey
 
-        // On Mac, use metaKey (Cmd), on Windows/Linux use ctrlKey
-        const modifierMatch = (shortcut.ctrlKey || shortcut.metaKey)
+        // On Mac, Cmd (metaKey) should work as Ctrl, on Windows/Linux use Ctrl
+        const hasRequiredModifier = (shortcut.ctrlKey || shortcut.metaKey)
           ? (event.metaKey || event.ctrlKey)
-          : true
+          : (!event.metaKey && !event.ctrlKey)
 
-        if (matchesKey && modifierMatch && matchesShift && matchesAlt) {
+        if (matchesKey && hasRequiredModifier && matchesShift && matchesAlt && matchesCtrl && matchesMeta) {
           event.preventDefault()
           shortcut.handler()
           break

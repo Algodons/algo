@@ -17,6 +17,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [systemTheme, setSystemTheme] = useState<'dark' | 'light'>('dark')
 
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return
+
     // Check system preference
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     setSystemTheme(mediaQuery.matches ? 'dark' : 'light')
@@ -27,16 +30,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
     mediaQuery.addEventListener('change', listener)
 
-    // Load saved theme
-    const savedTheme = localStorage.getItem('theme') as Theme
-    if (savedTheme) {
-      setTheme(savedTheme)
+    // Load saved theme with validation
+    const savedTheme = localStorage.getItem('theme')
+    if (savedTheme && (savedTheme === 'dark' || savedTheme === 'light' || savedTheme === 'system')) {
+      setTheme(savedTheme as Theme)
     }
 
     return () => mediaQuery.removeEventListener('change', listener)
   }, [])
 
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return
+
     const root = window.document.documentElement
     const effectiveTheme = theme === 'system' ? systemTheme : theme
 
