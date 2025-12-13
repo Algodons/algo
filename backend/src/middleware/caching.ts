@@ -7,10 +7,12 @@ import { Request, Response, NextFunction } from 'express';
 import Redis from 'ioredis';
 import crypto from 'crypto';
 
-// In-memory cache (L1)
+// In-memory cache (L1) with proper LRU implementation
 class MemoryCache {
-  private cache: Map<string, { data: any; expiry: number }> = new Map();
+  private cache: Map<string, { data: any; expiry: number; size: number }> = new Map();
+  private accessOrder: string[] = []; // Track access order for LRU
   private maxSize: number;
+  private currentSize: number = 0;
 
   constructor(maxSizeMB: number = 100) {
     this.maxSize = maxSizeMB * 1024 * 1024; // Convert to bytes
@@ -21,42 +23,74 @@ class MemoryCache {
     if (!entry) return null;
 
     if (Date.now() > entry.expiry) {
-      this.cache.delete(key);
+      this.delete(key);
       return null;
     }
+
+    // Update access order for LRU
+    this.updateAccessOrder(key);
 
     return entry.data;
   }
 
   set(key: string, data: any, ttl: number): void {
     const expiry = Date.now() + ttl * 1000;
-    this.cache.set(key, { data, expiry });
+    const size = JSON.stringify(data).length;
+
+    // Remove old entry if exists
+    if (this.cache.has(key)) {
+      const oldEntry = this.cache.get(key);
+      if (oldEntry) {
+        this.currentSize -= oldEntry.size;
+      }
+    }
+
+    // Add new entry
+    this.cache.set(key, { data, expiry, size });
+    this.currentSize += size;
+    this.updateAccessOrder(key);
+
+    // Evict if needed
     this.evictIfNeeded();
   }
 
   delete(key: string): void {
-    this.cache.delete(key);
+    const entry = this.cache.get(key);
+    if (entry) {
+      this.currentSize -= entry.size;
+      this.cache.delete(key);
+      // Remove from access order
+      const index = this.accessOrder.indexOf(key);
+      if (index > -1) {
+        this.accessOrder.splice(index, 1);
+      }
+    }
   }
 
   clear(): void {
     this.cache.clear();
+    this.accessOrder = [];
+    this.currentSize = 0;
+  }
+
+  private updateAccessOrder(key: string): void {
+    // Remove from current position
+    const index = this.accessOrder.indexOf(key);
+    if (index > -1) {
+      this.accessOrder.splice(index, 1);
+    }
+    // Add to end (most recently used)
+    this.accessOrder.push(key);
   }
 
   private evictIfNeeded(): void {
-    // Simple LRU eviction
-    const currentSize = this.getSize();
-    if (currentSize > this.maxSize) {
-      const firstKey = this.cache.keys().next().value;
-      if (firstKey) this.cache.delete(firstKey);
+    // Evict least recently used entries until under size limit
+    while (this.currentSize > this.maxSize && this.accessOrder.length > 0) {
+      const keyToEvict = this.accessOrder[0]; // Least recently used
+      if (keyToEvict) {
+        this.delete(keyToEvict);
+      }
     }
-  }
-
-  private getSize(): number {
-    let size = 0;
-    for (const entry of this.cache.values()) {
-      size += JSON.stringify(entry.data).length;
-    }
-    return size;
   }
 }
 

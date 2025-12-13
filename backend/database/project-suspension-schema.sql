@@ -123,6 +123,10 @@ CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status);
 CREATE INDEX IF NOT EXISTS idx_projects_last_activity ON projects(last_activity);
 CREATE INDEX IF NOT EXISTS idx_projects_suspended_at ON projects(suspended_at);
 
+-- Compound index for optimized idle project queries
+CREATE INDEX IF NOT EXISTS idx_projects_status_activity ON projects(status, last_activity)
+WHERE status = 'active';
+
 -- Function to update last_activity timestamp
 CREATE OR REPLACE FUNCTION update_project_activity()
 RETURNS TRIGGER AS $$

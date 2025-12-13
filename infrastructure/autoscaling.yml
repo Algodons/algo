@@ -291,6 +291,8 @@ autoscaling:
             multiplier: 1.5     # holiday traffic
             
       # Special events
+      # NOTE: Update dates annually or move to database/external config
+      # TODO: Implement dynamic date calculation (e.g., last Friday of November for Black Friday)
       - type: "events"
         enabled: true
         events:

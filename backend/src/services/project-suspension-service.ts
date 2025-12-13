@@ -94,7 +94,16 @@ export class ProjectSuspensionService extends EventEmitter {
 
         // Suspend idle projects
         for (const project of idleProjects) {
-          await this.suspendProject(project.id, client);
+          try {
+            await this.suspendProject(project.id, client);
+          } catch (error) {
+            console.error(`Failed to suspend project ${project.id}:`, error);
+            // Emit error but continue processing other projects
+            this.emit('suspension_error', {
+              project_id: project.id,
+              error: (error as Error).message,
+            });
+          }
         }
       } finally {
         client.release();
@@ -102,11 +111,14 @@ export class ProjectSuspensionService extends EventEmitter {
     } catch (error) {
       console.error('Error checking idle projects:', error);
       this.emit('error', error);
+      // TODO: Integrate with monitoring system (PagerDuty, Datadog, etc.)
+      // TODO: Implement retry logic with exponential backoff
     }
   }
 
   /**
    * Find projects that are idle
+   * Note: Requires compound index on (status, last_activity) for optimal performance
    */
   private async findIdleProjects(client: any): Promise<Project[]> {
     const thresholdDate = new Date();
@@ -114,6 +126,7 @@ export class ProjectSuspensionService extends EventEmitter {
       thresholdDate.getDate() - this.config.inactivityThresholdDays
     );
 
+    // Using compound index: idx_projects_status_activity
     const result = await client.query(
       `
       SELECT id, name, user_id, last_activity, status
@@ -287,19 +300,38 @@ export class ProjectSuspensionService extends EventEmitter {
 
   /**
    * Stop project resources
+   * TODO: Integrate with Docker/Kubernetes API
+   * See: https://github.com/Algodons/algo/issues/XXX
    */
   private async stopProjectResources(projectId: string): Promise<void> {
-    // This would integrate with Docker/Kubernetes to stop containers
     console.log(`Stopping resources for project: ${projectId}`);
 
-    // Example: Stop Docker containers
-    // const docker = new Docker();
-    // const containers = await docker.listContainers({
-    //   filters: { label: [`project_id=${projectId}`] }
-    // });
-    // for (const container of containers) {
-    //   await docker.getContainer(container.Id).stop();
-    // }
+    try {
+      // TODO: Implement Docker container management
+      // const docker = new Docker();
+      // const containers = await docker.listContainers({
+      //   filters: { label: [`project_id=${projectId}`] }
+      // });
+      // for (const container of containers) {
+      //   await docker.getContainer(container.Id).stop({ t: 30 }); // 30s graceful shutdown
+      // }
+
+      // TODO: Implement Kubernetes pod management
+      // const k8sApi = new k8s.CoreV1Api();
+      // await k8sApi.deleteNamespacedPod(
+      //   `project-${projectId}`,
+      //   'default',
+      //   undefined,
+      //   undefined,
+      //   30 // 30s grace period
+      // );
+
+      // For now, emit event for manual handling
+      this.emit('resources_stop_requested', { project_id: projectId });
+    } catch (error) {
+      console.error(`Error stopping resources for project ${projectId}:`, error);
+      throw error;
+    }
   }
 
   /**
@@ -384,6 +416,8 @@ export class ProjectSuspensionService extends EventEmitter {
 
   /**
    * Start project resources
+   * TODO: Integrate with Docker/Kubernetes API
+   * See: https://github.com/Algodons/algo/issues/XXX
    */
   private async startProjectResources(
     projectId: string,
@@ -391,23 +425,36 @@ export class ProjectSuspensionService extends EventEmitter {
   ): Promise<void> {
     console.log(`Starting resources for project: ${projectId}`);
 
-    // Cold start optimization
-    if (this.config.coldStartOptimization) {
-      // Use cached images, pre-warmed containers, etc.
-      console.log('Using cold start optimization');
-    }
-
-    // Restore services
-    if (state.services && state.services.length > 0) {
-      for (const service of state.services) {
-        console.log(`Starting service: ${service.name}`);
-        // Start service (Docker/Kubernetes)
+    try {
+      // Cold start optimization
+      if (this.config.coldStartOptimization) {
+        // Use cached images, pre-warmed containers, etc.
+        console.log('Using cold start optimization');
       }
-    }
 
-    // Restore environment variables
-    if (state.environment) {
-      console.log('Restoring environment variables');
+      // TODO: Restore services
+      if (state.services && state.services.length > 0) {
+        for (const service of state.services) {
+          console.log(`Starting service: ${service.name}`);
+          // TODO: Start service (Docker/Kubernetes)
+          // await docker.getContainer(service.container_id).start();
+        }
+      }
+
+      // TODO: Restore environment variables
+      if (state.environment) {
+        console.log('Restoring environment variables');
+        // TODO: Apply environment variables to containers
+      }
+
+      // For now, emit event for manual handling
+      this.emit('resources_start_requested', { 
+        project_id: projectId,
+        state 
+      });
+    } catch (error) {
+      console.error(`Error starting resources for project ${projectId}:`, error);
+      throw error;
     }
   }
 
