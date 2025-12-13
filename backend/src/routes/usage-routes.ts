@@ -2,10 +2,6 @@ import { Router, Request, Response } from 'express';
 import { Pool } from 'pg';
 import { UsageTrackingService } from '../services/usage-tracking-service';
 
-// NOTE: These routes assume authentication middleware is applied globally
-// All routes check req.user which should be set by auth middleware
-// Example: app.use(authenticate) should be added before mounting these routes
-
 export function createUsageRoutes(pool: Pool) {
   const router = Router();
   const usageService = new UsageTrackingService(pool);

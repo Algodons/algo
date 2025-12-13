@@ -1,4 +1,5 @@
 import { Pool } from 'pg';
+import { BillingService } from './billing-service';
 
 export interface CreditBalance {
   userId: number;
@@ -353,7 +354,7 @@ export class CreditsService {
   }
 
   /**
-   * Trigger auto-reload
+   * Trigger auto-reload with payment processing
    */
   private async triggerAutoReload(
     client: any,
@@ -365,37 +366,91 @@ export class CreditsService {
     }
 
     const amount = currentBalance.autoReloadAmount;
-    const newBalance = currentBalance.balance + amount;
 
-    // Update balance
-    await client.query(
-      `UPDATE prepaid_credits
-       SET balance = $1, updated_at = CURRENT_TIMESTAMP
-       WHERE user_id = $2`,
-      [newBalance, userId]
-    );
+    try {
+      // Get user's default payment method
+      const pmResult = await client.query(
+        `SELECT id FROM stored_payment_methods
+         WHERE user_id = $1 AND is_default = true
+         LIMIT 1`,
+        [userId]
+      );
 
-    // Record auto-reload transaction
-    await client.query(
-      `INSERT INTO prepaid_credit_transactions
-        (user_id, amount, type, description, balance_before, balance_after)
-      VALUES ($1, $2, 'auto_reload', $3, $4, $5)`,
-      [
-        userId,
-        amount,
-        `Auto-reload: ${amount} credits`,
-        currentBalance.balance,
-        newBalance,
-      ]
-    );
+      if (pmResult.rows.length === 0) {
+        console.error(`No default payment method for user ${userId} - auto-reload failed`);
+        return;
+      }
 
-    // TODO: IMPORTANT - Implement auto-reload payment processing
-    // This should:
-    // 1. Create an invoice for the auto-reload amount
-    // 2. Charge the user's default payment method
-    // 3. Handle payment failures appropriately
-    // 4. Send notification to user about auto-reload
-    console.warn(`Auto-reload triggered for user ${userId}: ${amount} credits - Payment processing not implemented`);
+      const paymentMethodId = pmResult.rows[0].id;
+
+      // Create billing service to process payment
+      const billingService = new BillingService(this.pool);
+
+      // Generate invoice for auto-reload
+      const invoiceNumber = `AR-${Date.now()}-${userId}`;
+      const dueDate = new Date();
+      
+      const invoiceResult = await client.query(
+        `INSERT INTO invoices 
+          (user_id, invoice_number, amount, currency, status, issued_at, due_at)
+        VALUES ($1, $2, $3, 'USD', 'open', CURRENT_TIMESTAMP, $4)
+        RETURNING id`,
+        [userId, invoiceNumber, amount, dueDate]
+      );
+
+      const invoiceId = invoiceResult.rows[0].id;
+
+      // Add line item
+      await client.query(
+        `INSERT INTO invoice_line_items 
+          (invoice_id, description, item_type, quantity, unit_price, amount)
+        VALUES ($1, 'Auto-reload credits', 'credit', 1, $2, $2)`,
+        [invoiceId, amount]
+      );
+
+      // Process payment
+      const paymentResult = await billingService.processPayment(
+        invoiceId,
+        paymentMethodId,
+        'stripe'
+      );
+
+      if (paymentResult.success) {
+        // Payment successful - add credits
+        const newBalance = currentBalance.balance + amount;
+
+        await client.query(
+          `UPDATE prepaid_credits
+           SET balance = $1, updated_at = CURRENT_TIMESTAMP
+           WHERE user_id = $2`,
+          [newBalance, userId]
+        );
+
+        // Record auto-reload transaction
+        await client.query(
+          `INSERT INTO prepaid_credit_transactions
+            (user_id, amount, type, description, balance_before, balance_after, invoice_id)
+          VALUES ($1, $2, 'auto_reload', $3, $4, $5, $6)`,
+          [
+            userId,
+            amount,
+            `Auto-reload: ${amount} credits`,
+            currentBalance.balance,
+            newBalance,
+            invoiceId,
+          ]
+        );
+
+        console.log(`Auto-reload successful for user ${userId}: ${amount} credits`);
+      } else {
+        console.error(`Auto-reload payment failed for user ${userId}:`, paymentResult.error);
+        // Payment failed - don't add credits
+        // The payment failure is already recorded in billing_history
+      }
+    } catch (error) {
+      console.error(`Auto-reload error for user ${userId}:`, error);
+      // Don't add credits if payment fails
+    }
   }
 
   /**

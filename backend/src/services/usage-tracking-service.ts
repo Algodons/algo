@@ -1,4 +1,5 @@
 import { Pool } from 'pg';
+import { NotificationService } from './notification-service';
 
 export interface UsageMetric {
   id: number;
@@ -12,7 +13,11 @@ export interface UsageMetric {
 }
 
 export class UsageTrackingService {
-  constructor(private pool: Pool) {}
+  private notificationService: NotificationService;
+
+  constructor(private pool: Pool) {
+    this.notificationService = new NotificationService(pool);
+  }
 
   /**
    * Record a usage metric
@@ -334,12 +339,15 @@ export class UsageTrackingService {
       [alertId]
     );
 
-    // TODO: IMPORTANT - Implement actual notification sending
-    // This should integrate with:
-    // - Email service (SendGrid, AWS SES, etc.)
-    // - SMS service (Twilio, AWS SNS, etc.)
-    // - Dashboard real-time notifications (WebSocket)
-    console.warn(`Alert triggered for user ${userId}: ${metricType} at ${percentageUsed.toFixed(2)}% - Notification system not implemented`);
+    // Send notifications via email/SMS/dashboard
+    await this.notificationService.sendUsageAlert(
+      userId,
+      metricType,
+      currentValue,
+      thresholdValue,
+      percentageUsed,
+      notificationChannels
+    );
   }
 
   /**

@@ -20,6 +20,7 @@ import { createAdminAffiliateRoutes } from './routes/admin-affiliate-routes';
 import { createAdminFinancialRoutes } from './routes/admin-financial-routes';
 import { createAdminSystemRoutes } from './routes/admin-system-routes';
 import { handleImpersonation } from './middleware/admin-auth';
+import { authenticate, optionalAuthenticate } from './middleware/auth';
 import { createSubscriptionRoutes } from './routes/subscription-routes';
 import { createUsageRoutes } from './routes/usage-routes';
 import { createBillingRoutes } from './routes/billing-routes';
@@ -81,12 +82,14 @@ app.use('/api/admin/affiliates', createAdminAffiliateRoutes(dashboardPool));
 app.use('/api/admin/financial', createAdminFinancialRoutes(dashboardPool));
 app.use('/api/admin/system', createAdminSystemRoutes(dashboardPool));
 
-// Monetization system routes
-app.use('/api/subscriptions', createSubscriptionRoutes(dashboardPool));
-app.use('/api/usage', createUsageRoutes(dashboardPool));
-app.use('/api/billing', createBillingRoutes(dashboardPool));
-app.use('/api/credits', createCreditsRoutes(dashboardPool));
-app.use('/api/alerts', createAlertsRoutes(dashboardPool));
+// Monetization system routes (with authentication)
+// Plans endpoint can be accessed without auth, others require authentication
+app.use('/api/subscriptions/plans', optionalAuthenticate(dashboardPool), createSubscriptionRoutes(dashboardPool));
+app.use('/api/subscriptions', authenticate(dashboardPool), createSubscriptionRoutes(dashboardPool));
+app.use('/api/usage', authenticate(dashboardPool), createUsageRoutes(dashboardPool));
+app.use('/api/billing', authenticate(dashboardPool), createBillingRoutes(dashboardPool));
+app.use('/api/credits', authenticate(dashboardPool), createCreditsRoutes(dashboardPool));
+app.use('/api/alerts', authenticate(dashboardPool), createAlertsRoutes(dashboardPool));
 
 // API endpoints
 app.get('/api/files', (_req: Request, res: Response) => {

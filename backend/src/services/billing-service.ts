@@ -1,4 +1,6 @@
 import { Pool } from 'pg';
+import Stripe from 'stripe';
+import { NotificationService } from './notification-service';
 
 export interface Invoice {
   id: number;
@@ -24,7 +26,28 @@ export interface PaymentMethod {
 }
 
 export class BillingService {
-  constructor(private pool: Pool) {}
+  private stripe: Stripe | null = null;
+  private notificationService: NotificationService;
+
+  constructor(private pool: Pool) {
+    this.notificationService = new NotificationService(pool);
+    this.initializeStripe();
+  }
+
+  /**
+   * Initialize Stripe SDK
+   */
+  private initializeStripe() {
+    const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+    if (stripeSecretKey) {
+      this.stripe = new Stripe(stripeSecretKey, {
+        apiVersion: '2023-10-16',
+      });
+      console.log('Stripe SDK initialized');
+    } else {
+      console.warn('STRIPE_SECRET_KEY not configured - payment processing disabled');
+    }
+  }
 
   /**
    * Generate invoice for subscription billing
@@ -264,6 +287,15 @@ export class BillingService {
         );
 
         await client.query('COMMIT');
+        
+        // Send payment confirmation email
+        await this.notificationService.sendPaymentConfirmation(
+          invoice.user_id,
+          invoiceId,
+          invoice.amount,
+          invoice.currency
+        );
+        
         return { success: true, transactionId: paymentResult.transactionId };
       } else {
         // Record payment failure
@@ -285,6 +317,16 @@ export class BillingService {
         );
 
         await client.query('COMMIT');
+        
+        // Send payment failure notification
+        await this.notificationService.sendPaymentFailure(
+          invoice.user_id,
+          invoiceId,
+          invoice.amount,
+          invoice.currency,
+          paymentResult.error || 'Payment processing failed'
+        );
+        
         return { success: false, error: paymentResult.error };
       }
     } catch (error) {
@@ -486,9 +528,7 @@ export class BillingService {
   }
 
   /**
-   * Process payment via provider (simplified)
-   * TODO: CRITICAL - Replace with actual payment gateway integration
-   * This is a mock implementation for development only
+   * Process payment via payment provider (Stripe)
    */
   private async processPaymentViaProvider(
     provider: string,
@@ -496,52 +536,108 @@ export class BillingService {
     amount: number,
     currency: string
   ): Promise<{ success: boolean; transactionId?: string; errorCode?: string; error?: string }> {
-    // TODO: Integrate with actual payment providers:
-    // - Stripe: const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-    //           const paymentIntent = await stripe.paymentIntents.create({...});
-    // - PayPal: Use PayPal SDK for payment processing
-    // - Coinbase Commerce: Use Coinbase Commerce API
-    
-    // DEVELOPMENT MOCK - DO NOT USE IN PRODUCTION
-    if (amount > 0) {
+    try {
+      if (provider === 'stripe' && this.stripe) {
+        // Process payment via Stripe
+        const paymentIntent = await this.stripe.paymentIntents.create({
+          amount: Math.round(amount * 100), // Stripe uses cents
+          currency: currency.toLowerCase(),
+          payment_method: paymentMethodId,
+          confirm: true,
+          automatic_payment_methods: {
+            enabled: true,
+            allow_redirects: 'never',
+          },
+        });
+
+        if (paymentIntent.status === 'succeeded') {
+          return {
+            success: true,
+            transactionId: paymentIntent.id,
+          };
+        } else {
+          return {
+            success: false,
+            errorCode: paymentIntent.status,
+            error: `Payment ${paymentIntent.status}`,
+          };
+        }
+      } else if (provider === 'paypal') {
+        // PayPal integration would go here
+        // For now, return error indicating not implemented
+        return {
+          success: false,
+          errorCode: 'not_implemented',
+          error: 'PayPal integration not yet implemented',
+        };
+      } else if (provider === 'crypto') {
+        // Cryptocurrency integration would go here
+        return {
+          success: false,
+          errorCode: 'not_implemented',
+          error: 'Cryptocurrency payment not yet implemented',
+        };
+      } else {
+        return {
+          success: false,
+          errorCode: 'invalid_provider',
+          error: 'Invalid payment provider or Stripe not configured',
+        };
+      }
+    } catch (error: any) {
+      console.error('Payment processing error:', error);
       return {
-        success: true,
-        transactionId: `${provider}_${Date.now()}`,
+        success: false,
+        errorCode: error.code || 'payment_error',
+        error: error.message || 'Payment processing failed',
       };
     }
-
-    return {
-      success: false,
-      errorCode: 'invalid_amount',
-      error: 'Invalid payment amount',
-    };
   }
 
   /**
-   * Verify webhook signature
-   * TODO: CRITICAL - Implement actual signature verification for security
-   * This is a mock implementation for development only
+   * Verify webhook signature from payment provider
    */
   private async verifyWebhookSignature(
     provider: string,
     payload: any,
     signature: string
   ): Promise<boolean> {
-    // TODO: Implement actual provider verification:
-    // For Stripe:
-    //   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-    //   const event = stripe.webhooks.constructEvent(
-    //     JSON.stringify(payload),
-    //     signature,
-    //     process.env.STRIPE_WEBHOOK_SECRET
-    //   );
-    // For PayPal: Verify IPN signature using PayPal SDK
-    // For Coinbase: Verify webhook signature using Coinbase SDK
-    
-    // DEVELOPMENT MOCK - DO NOT USE IN PRODUCTION
-    // This allows any webhook through and is a SECURITY VULNERABILITY
-    console.warn('WARNING: Webhook signature verification is not implemented');
-    return true;
+    try {
+      if (provider === 'stripe' && this.stripe) {
+        const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+        if (!webhookSecret) {
+          console.error('STRIPE_WEBHOOK_SECRET not configured');
+          return false;
+        }
+
+        // Verify Stripe webhook signature
+        try {
+          const event = this.stripe.webhooks.constructEvent(
+            JSON.stringify(payload),
+            signature,
+            webhookSecret
+          );
+          return true;
+        } catch (err: any) {
+          console.error('Stripe webhook signature verification failed:', err.message);
+          return false;
+        }
+      } else if (provider === 'paypal') {
+        // PayPal IPN signature verification would go here
+        console.warn('PayPal webhook verification not implemented');
+        return false;
+      } else if (provider === 'coinbase') {
+        // Coinbase Commerce webhook verification would go here
+        console.warn('Coinbase webhook verification not implemented');
+        return false;
+      } else {
+        console.error(`Unknown provider: ${provider}`);
+        return false;
+      }
+    } catch (error) {
+      console.error('Webhook signature verification error:', error);
+      return false;
+    }
   }
 
   /**
