@@ -238,10 +238,10 @@ export class AuditLogger {
   }
 
   /**
-   * Generate unique event ID
+   * Generate unique event ID using crypto.randomUUID()
    */
   private generateEventId(): string {
-    return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    return crypto.randomUUID();
   }
 
   /**

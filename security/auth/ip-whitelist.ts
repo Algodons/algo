@@ -21,19 +21,20 @@ export interface IPWhitelistConfig {
 
 /**
  * Parse CIDR notation to IP range
+ * Uses unsigned 32-bit operations to avoid JavaScript signed integer issues
  */
 function parseCIDR(cidr: string): IPRange {
   const [ip, prefixLength] = cidr.split('/');
   const prefix = parseInt(prefixLength, 10);
   
-  // Convert IP to number
+  // Convert IP to number using unsigned operations
   const ipParts = ip.split('.').map(p => parseInt(p, 10));
-  const ipNum = (ipParts[0] << 24) | (ipParts[1] << 16) | (ipParts[2] << 8) | ipParts[3];
+  const ipNum = ((ipParts[0] << 24) | (ipParts[1] << 16) | (ipParts[2] << 8) | ipParts[3]) >>> 0;
   
-  // Calculate range
-  const mask = ~((1 << (32 - prefix)) - 1);
-  const startNum = ipNum & mask;
-  const endNum = startNum | ~mask;
+  // Calculate range using unsigned operations
+  const mask = (~((1 << (32 - prefix)) - 1)) >>> 0;
+  const startNum = (ipNum & mask) >>> 0;
+  const endNum = (startNum | (~mask >>> 0)) >>> 0;
   
   // Convert back to IP strings
   const start = [
@@ -55,10 +56,11 @@ function parseCIDR(cidr: string): IPRange {
 
 /**
  * Convert IP address to number for comparison
+ * Uses unsigned 32-bit operations
  */
 function ipToNumber(ip: string): number {
   const parts = ip.split('.').map(p => parseInt(p, 10));
-  return (parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3];
+  return (((parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3]) >>> 0);
 }
 
 /**

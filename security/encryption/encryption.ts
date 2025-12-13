@@ -13,6 +13,7 @@ export interface EncryptedData {
   authTag: string; // Base64 encoded
   keyId: string;
   algorithm: string;
+  encryptedDEK?: string; // Base64 encoded encrypted data encryption key
 }
 
 export interface EncryptionConfig {
@@ -34,7 +35,7 @@ export async function encrypt(
   
   // Get a data encryption key from KMS
   const kms = getKMS();
-  const { plaintext: key, keyId } = await kms.generateDataKey();
+  const { plaintext: key, encrypted: encryptedDEK, keyId } = await kms.generateDataKey();
 
   // Generate IV (12 bytes for GCM)
   const iv = crypto.randomBytes(12);
@@ -58,23 +59,38 @@ export async function encrypt(
     authTag: authTag.toString(DEFAULT_ENCODING),
     keyId,
     algorithm,
+    encryptedDEK: encryptedDEK.toString(DEFAULT_ENCODING), // Store encrypted DEK with data
   };
 }
 
 /**
  * Decrypt data using AES-256-GCM
+ * 
+ * Note: This implementation requires the encrypted DEK to be stored alongside the data.
+ * In a production system, you would:
+ * 1. Store the encrypted DEK with the encrypted data
+ * 2. Retrieve it during decryption
+ * 3. Decrypt the DEK using KMS
+ * 4. Use the decrypted DEK to decrypt the data
  */
 export async function decrypt(
-  encryptedData: EncryptedData,
+  encryptedData: EncryptedData & { encryptedDEK?: string },
   config: EncryptionConfig = {}
 ): Promise<Buffer> {
-  const { encrypted, iv, authTag, keyId, algorithm } = encryptedData;
+  const { encrypted, iv, authTag, keyId, algorithm, encryptedDEK } = encryptedData;
 
   // Get the data encryption key from KMS
   const kms = getKMS();
-  // Note: In production, you'd need to store and retrieve the encrypted DEK
-  // For now, we assume the key is in the KMS cache
-  const key = await kms.generateDataKey().then(k => k.plaintext);
+  
+  // In production, decrypt the stored DEK
+  // For now, this is a limitation - the DEK needs to be stored with the encrypted data
+  // TODO: Implement proper DEK storage and retrieval
+  let key: Buffer;
+  if (encryptedDEK) {
+    key = await kms.decryptDataKey(Buffer.from(encryptedDEK, DEFAULT_ENCODING), keyId);
+  } else {
+    throw new Error('Encrypted DEK not provided. Cannot decrypt data. In production, store encrypted DEK with data.');
+  }
 
   // Create decipher
   const decipher = crypto.createDecipheriv(

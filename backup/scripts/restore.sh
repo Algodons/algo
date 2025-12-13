@@ -144,6 +144,9 @@ decrypt_backup() {
     
     log_info "Decrypting backup: $(basename "$input_file")"
     
+    # Note: Using AES-256-CBC for compatibility with backup.sh
+    # In production, consider upgrading to AES-256-GCM for authenticated encryption
+    # or add HMAC verification to detect tampering
     openssl enc -aes-256-cbc -d -pbkdf2 \
         -in "$input_file" \
         -out "$output_file" \

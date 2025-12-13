@@ -230,8 +230,11 @@ export class GDPRComplianceService {
       )
     );
 
-    // In production, trigger async job to generate export
-    this.generateDataExport(requestId, userId);
+    // In production, use a proper job queue (Bull, BullMQ, etc.) for async processing
+    // For now, fire-and-forget with error logging
+    this.generateDataExport(requestId, userId).catch(error => {
+      console.error(`Failed to generate data export for request ${requestId}:`, error);
+    });
 
     return requestId;
   }

@@ -100,9 +100,29 @@ export class SAMLAuth {
 
   /**
    * Parse SAML response XML
+   * 
+   * WARNING: This is a simplified parser for demonstration purposes.
+   * In production, you MUST use a proper XML parser with security features:
+   * - Use xml2js, xmldom, or fast-xml-parser
+   * - Disable external entities (XXE protection)
+   * - Validate XML structure
+   * - Use schema validation
+   * 
+   * Example production implementation:
+   * ```
+   * import { parseStringPromise } from 'xml2js';
+   * const result = await parseStringPromise(xml, {
+   *   explicitArray: false,
+   *   ignoreAttrs: false,
+   *   tagNameProcessors: [stripPrefix],
+   *   // Disable external entities for XXE protection
+   *   xmlns: false,
+   * });
+   * ```
    */
   private parseSAMLResponse(xml: string): SAMLProfile {
-    // This is a simplified parser. In production, use a proper XML parser like xml2js or xmldom
+    // TODO: Replace with proper XML parser (xml2js, xmldom, fast-xml-parser)
+    // This implementation is vulnerable to XML injection and XXE attacks
     
     // Extract NameID
     const nameIDMatch = xml.match(/<saml:NameID[^>]*>([^<]+)<\/saml:NameID>/);
@@ -152,14 +172,30 @@ export class SAMLAuth {
 
   /**
    * Validate SAML signature
+   * 
+   * CRITICAL SECURITY WARNING: This is a placeholder implementation.
+   * It DOES NOT provide real security and MUST be replaced in production.
+   * 
+   * In production, you MUST:
+   * 1. Use a battle-tested SAML library (passport-saml, @node-saml/node-saml)
+   * 2. Cryptographically verify the XML signature using the IdP certificate
+   * 3. Validate signature algorithm and digest method
+   * 4. Check certificate validity and expiration
+   * 5. Verify the signature covers the Assertion or Response
+   * 
+   * Example production implementation:
+   * ```
+   * import { validateXmlSignature } from '@node-saml/node-saml';
+   * const isValid = validateXmlSignature(xml, this.config.cert);
+   * if (!isValid) throw new Error('Invalid SAML signature');
+   * ```
+   * 
+   * DO NOT USE THIS CODE IN PRODUCTION - It will accept forged SAML responses!
    */
   private validateSignature(xml: string): boolean {
-    // This is a placeholder. In production:
-    // 1. Extract the signature from the XML
-    // 2. Verify it using the IdP certificate
-    // 3. Use a library like xmldsigjs or node-saml for proper signature validation
-    
-    // For now, we'll do a basic check for signature presence
+    // TODO: Implement proper XML signature validation using @node-saml/node-saml or similar
+    // This placeholder only checks for signature presence, NOT validity
+    console.warn('WARNING: Using placeholder SAML signature validation. Replace with proper validation in production!');
     return xml.includes('<ds:Signature') || xml.includes('<Signature');
   }
 

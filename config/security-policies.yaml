@@ -212,12 +212,15 @@ security:
   # Security headers
   headers:
     # Content Security Policy
+    # Note: 'unsafe-inline' and 'unsafe-eval' weaken XSS protection
+    # TODO: Replace with nonces or hashes for inline scripts
+    # TODO: Remove 'unsafe-eval' and refactor code that requires it
     csp:
       enabled: true
       directives:
         default_src: ["'self'"]
-        script_src: ["'self'", "'unsafe-inline'", "'unsafe-eval'"]
-        style_src: ["'self'", "'unsafe-inline'"]
+        script_src: ["'self'", "'unsafe-inline'", "'unsafe-eval'"]  # TODO: Use nonces
+        style_src: ["'self'", "'unsafe-inline'"]  # TODO: Use hashes
         img_src: ["'self'", "data:", "https:"]
         font_src: ["'self'", "data:"]
         connect_src: ["'self'", "wss:", "ws:"]
