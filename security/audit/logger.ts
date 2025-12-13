@@ -13,7 +13,7 @@ export interface AuditLoggerConfig {
   database: Pool;
   enableFileLogging?: boolean;
   logDirectory?: string;
-  enableSIEMIntegration?: bool;
+  enableSIEMIntegration?: boolean;
   siemEndpoint?: string;
   enableCloudStorage?: boolean;
   cloudStorageBucket?: string;
