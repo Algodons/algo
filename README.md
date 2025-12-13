@@ -211,6 +211,50 @@ docker run -p 3000:3000 -p 5000:5000 cloud-ide
 - **File System Isolation** - Workspaces are isolated
 - **Database Connection Management** - Secure credential handling
 
+## 📈 Scalability Architecture
+
+The platform implements a comprehensive scalability strategy designed to handle growth efficiently:
+
+### Multi-Layer Caching
+- **L1 (Memory)**: 100MB in-memory LRU cache for hot data
+- **L2 (Redis)**: Distributed caching for sessions and API responses
+- **L3 (CDN)**: Cloudflare/Fastly for static assets
+- **Query Caching**: Automatic database query result caching
+
+### Intelligent Load Balancing
+- **Round-robin distribution** across backend instances
+- **Geographic routing** to nearest region
+- **Health-based routing** with automatic failover
+- **Sticky sessions** for connection persistence
+
+### Auto-Scaling
+- **CPU-based**: Scale at 70% (up) / 30% (down)
+- **Memory-based**: Dynamic scaling based on usage
+- **Request-based**: Scale with traffic patterns
+- **Predictive scaling**: ML-based anticipation of load
+
+### Resource Management
+- **Container limits**: CPU and memory quotas per service
+- **Spot instances**: 70% cost reduction for non-critical workloads
+- **Quality of Service**: Priority-based resource allocation
+- **Vertical Pod Autoscaler**: Automatic right-sizing
+
+### Project Lifecycle
+- **Idle suspension**: Automatic suspension after 30 days
+- **Wake-on-request**: Fast cold-start (~30 seconds)
+- **State preservation**: Full project state and data maintained
+- **Activity tracking**: Automatic activity monitoring
+
+**Documentation**:
+- [Scalability Architecture](./SCALABILITY.md) - Complete architecture guide
+- [Operations Runbooks](./SCALABILITY_RUNBOOKS.md) - Operational procedures
+
+**Key Metrics**:
+- Cache hit rate: >80%
+- Auto-scaling range: 2-20 instances
+- Cold start time: ~30 seconds
+- Cost reduction: Up to 70% with spot instances
+
 ## 🧪 Testing
 
 ```bash

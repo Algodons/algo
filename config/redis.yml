@@ -1,0 +1,370 @@
+# Redis Configuration for Session Management and Caching
+# Production-grade Redis setup with clustering and high availability
+
+redis:
+  # Connection settings
+  connection:
+    host: "${REDIS_HOST:-redis}"
+    port: ${REDIS_PORT:-6379}
+    password: "${REDIS_PASSWORD}"
+    db: 0
+    
+  # Cluster configuration
+  cluster:
+    enabled: ${REDIS_CLUSTER_ENABLED:-false}
+    nodes:
+      - host: "${REDIS_NODE1_HOST:-redis-0}"
+        port: ${REDIS_NODE1_PORT:-6379}
+      - host: "${REDIS_NODE2_HOST:-redis-1}"
+        port: ${REDIS_NODE2_PORT:-6379}
+      - host: "${REDIS_NODE3_HOST:-redis-2}"
+        port: ${REDIS_NODE3_PORT:-6379}
+    
+    # Cluster options
+    redisOptions:
+      password: "${REDIS_PASSWORD}"
+      connectTimeout: 10000
+      commandTimeout: 5000
+    
+    clusterRetryStrategy: "exponential"  # exponential or linear
+    maxRedirections: 16
+    
+  # Sentinel configuration (for high availability)
+  sentinel:
+    enabled: ${REDIS_SENTINEL_ENABLED:-false}
+    sentinels:
+      - host: "${REDIS_SENTINEL1_HOST:-sentinel-0}"
+        port: ${REDIS_SENTINEL1_PORT:-26379}
+      - host: "${REDIS_SENTINEL2_HOST:-sentinel-1}"
+        port: ${REDIS_SENTINEL2_PORT:-26379}
+      - host: "${REDIS_SENTINEL3_HOST:-sentinel-2}"
+        port: ${REDIS_SENTINEL3_PORT:-26379}
+    
+    name: "${REDIS_SENTINEL_MASTER_NAME:-mymaster}"
+    password: "${REDIS_SENTINEL_PASSWORD}"
+    
+  # Connection pool settings
+  pool:
+    min: 2
+    max: 20
+    acquireTimeoutMillis: 30000
+    idleTimeoutMillis: 30000
+    
+  # Retry strategy
+  retry:
+    maxAttempts: 10
+    retryDelayMs: 200
+    maxRetryDelayMs: 5000
+    reconnectOnError: true
+    
+  # Connection timeout settings
+  timeout:
+    connect: 10000      # 10 seconds
+    command: 5000       # 5 seconds
+    keepAlive: 30000    # 30 seconds
+    
+  # Session management
+  session:
+    prefix: "sess:"
+    
+    # Session TTL (time to live)
+    ttl:
+      default: 86400    # 24 hours in seconds
+      remember_me: 2592000  # 30 days in seconds
+      sliding: true     # Extend TTL on each request
+      
+    # Session serialization
+    serialization:
+      format: "json"    # json or binary
+      compress: true    # Compress session data
+      
+    # Session security
+    security:
+      httpOnly: true
+      secure: true      # HTTPS only
+      sameSite: "strict"  # strict, lax, or none
+      signed: true      # Sign session cookies
+      
+    # Session storage optimization
+    storage:
+      maxSize: 4096     # Max session size in bytes
+      warningSize: 3072 # Warn if session exceeds this size
+      
+  # Caching configuration
+  cache:
+    # Default cache settings
+    default:
+      ttl: 3600         # 1 hour in seconds
+      prefix: "cache:"
+      
+    # Specific cache categories
+    categories:
+      # Query result cache
+      query:
+        prefix: "query:"
+        ttl: 300        # 5 minutes
+        maxSize: 10240  # 10KB max per query
+        
+      # API response cache
+      api:
+        prefix: "api:"
+        ttl: 60         # 1 minute
+        maxSize: 102400 # 100KB max per response
+        
+      # User data cache
+      user:
+        prefix: "user:"
+        ttl: 1800       # 30 minutes
+        maxSize: 5120   # 5KB max per user
+        
+      # Static data cache
+      static:
+        prefix: "static:"
+        ttl: 86400      # 24 hours
+        maxSize: 51200  # 50KB max
+        
+      # Rate limiting data
+      ratelimit:
+        prefix: "ratelimit:"
+        ttl: 60         # 1 minute
+        maxSize: 256    # 256 bytes
+        
+    # Cache invalidation
+    invalidation:
+      strategy: "manual"  # manual, ttl, or lru
+      
+      # Patterns for automatic invalidation
+      patterns:
+        - pattern: "query:*"
+          on_events: ["database_update", "schema_change"]
+          
+        - pattern: "user:*"
+          on_events: ["user_update", "permission_change"]
+          
+    # Cache warming (preload frequently accessed data)
+    warming:
+      enabled: true
+      schedule: "0 */6 * * *"  # Every 6 hours
+      keys:
+        - pattern: "static:*"
+        - pattern: "user:popular:*"
+        
+  # Performance settings
+  performance:
+    # Pipeline batching
+    pipeline:
+      enabled: true
+      batchSize: 100
+      flushInterval: 50  # milliseconds
+      
+    # Lua scripting for atomic operations
+    scripting:
+      enabled: true
+      cacheScripts: true
+      
+    # Pub/Sub for cache invalidation
+    pubsub:
+      enabled: true
+      channels:
+        - "cache:invalidate"
+        - "session:invalidate"
+        
+  # Memory management
+  memory:
+    # Max memory policy
+    maxMemory: "2gb"
+    maxMemoryPolicy: "allkeys-lru"  # noeviction, allkeys-lru, volatile-lru, etc.
+    
+    # Memory sampling
+    maxMemorySamples: 5
+    
+    # Lazy freeing
+    lazyFree:
+      enabled: true
+      lazyEviction: true
+      lazyExpire: true
+      
+  # Persistence settings (for production)
+  persistence:
+    # RDB snapshots
+    rdb:
+      enabled: true
+      save:
+        - "900 1"     # Save after 900 seconds if at least 1 key changed
+        - "300 10"    # Save after 300 seconds if at least 10 keys changed
+        - "60 10000"  # Save after 60 seconds if at least 10000 keys changed
+      filename: "dump.rdb"
+      compression: true
+      
+    # AOF (Append Only File)
+    aof:
+      enabled: true
+      filename: "appendonly.aof"
+      fsync: "everysec"  # always, everysec, or no
+      rewritePolicy: "auto"
+      
+  # Monitoring and metrics
+  monitoring:
+    # Health checks
+    healthCheck:
+      enabled: true
+      interval: 30      # seconds
+      timeout: 5        # seconds
+      
+    # Metrics collection
+    metrics:
+      enabled: true
+      
+      # Metrics to collect
+      collect:
+        - "connections"
+        - "commands_processed"
+        - "memory_usage"
+        - "hit_rate"
+        - "evicted_keys"
+        - "expired_keys"
+        - "keyspace_hits"
+        - "keyspace_misses"
+        
+      # Export to monitoring systems
+      exporters:
+        - type: "prometheus"
+          port: 9121
+          
+    # Alerting
+    alerts:
+      - metric: "hit_rate"
+        threshold: 0.8
+        operator: "less_than"
+        action: "notify"
+        
+      - metric: "memory_usage"
+        threshold: 0.9
+        operator: "greater_than"
+        action: "notify"
+        
+      - metric: "connections"
+        threshold: 100
+        operator: "greater_than"
+        action: "notify"
+        
+  # Security settings
+  security:
+    # Authentication
+    requirePass: true
+    
+    # ACL (Access Control Lists)
+    acl:
+      enabled: true
+      rules:
+        - user: "default"
+          password: "${REDIS_PASSWORD}"
+          permissions: ["~*", "+@all"]
+          
+        - user: "readonly"
+          password: "${REDIS_READONLY_PASSWORD}"
+          permissions: ["~*", "+@read", "-@write", "-@dangerous"]
+          
+        - user: "cache"
+          password: "${REDIS_CACHE_PASSWORD}"
+          permissions: ["~cache:*", "+get", "+set", "+del", "+expire"]
+          
+    # TLS/SSL
+    tls:
+      enabled: ${REDIS_TLS_ENABLED:-false}
+      cert: "/etc/redis/tls/redis.crt"
+      key: "/etc/redis/tls/redis.key"
+      ca: "/etc/redis/tls/ca.crt"
+      
+    # Command renaming (security hardening)
+    rename:
+      enabled: false
+      commands:
+        FLUSHDB: "FLUSHDB_RENAMED"
+        FLUSHALL: "FLUSHALL_RENAMED"
+        KEYS: "KEYS_RENAMED"
+        CONFIG: "CONFIG_RENAMED"
+        
+  # Logging
+  logging:
+    level: "notice"     # debug, verbose, notice, warning
+    file: "/var/log/redis/redis.log"
+    syslog:
+      enabled: false
+      ident: "redis"
+      facility: "local0"
+      
+  # Replication (if using master-slave setup)
+  replication:
+    enabled: ${REDIS_REPLICATION_ENABLED:-false}
+    role: "${REDIS_ROLE:-master}"  # master or slave
+    
+    # Slave settings
+    slaveOf:
+      host: "${REDIS_MASTER_HOST}"
+      port: ${REDIS_MASTER_PORT:-6379}
+      
+    # Replication options
+    slaveReadOnly: true
+    replDisklessSync: true
+    replBacklogSize: "1mb"
+    
+# Application-specific settings
+application:
+  # Session store configuration for Express/Connect
+  expressSession:
+    secret: "${SESSION_SECRET}"
+    resave: false
+    saveUninitialized: false
+    rolling: true
+    
+    cookie:
+      maxAge: 86400000  # 24 hours in milliseconds
+      httpOnly: true
+      secure: true
+      sameSite: "strict"
+      
+  # Rate limiting store
+  rateLimiting:
+    windowMs: 900000    # 15 minutes in milliseconds
+    max: 100            # Max requests per window
+    standardHeaders: true
+    legacyHeaders: false
+    
+  # Bull queue settings (for job queues)
+  queue:
+    defaultJobOptions:
+      attempts: 3
+      backoff:
+        type: "exponential"
+        delay: 1000
+      removeOnComplete: true
+      removeOnFail: false
+      
+# Environment-specific overrides
+environments:
+  development:
+    redis:
+      connection:
+        host: "localhost"
+      persistence:
+        rdb:
+          enabled: false
+        aof:
+          enabled: false
+      logging:
+        level: "debug"
+        
+  production:
+    redis:
+      cluster:
+        enabled: true
+      sentinel:
+        enabled: true
+      persistence:
+        rdb:
+          enabled: true
+        aof:
+          enabled: true
+      logging:
+        level: "notice"
