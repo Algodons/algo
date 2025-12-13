@@ -1,0 +1,27 @@
+{
+  "name": "@algo/github-action",
+  "version": "1.0.0",
+  "description": "GitHub Action for deploying to Algo Cloud IDE Platform",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build src/index.ts -o dist",
+    "test": "jest"
+  },
+  "keywords": [
+    "algo",
+    "github-action",
+    "deployment"
+  ],
+  "author": "Algo Team",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.10.1",
+    "@actions/github": "^6.0.0",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@vercel/ncc": "^0.38.1",
+    "typescript": "^5.3.3"
+  }
+}
