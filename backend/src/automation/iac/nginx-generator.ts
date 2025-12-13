@@ -160,7 +160,7 @@ server {
    * Generate load balancer configuration
    */
   generateLoadBalancer(domain: string, upstreams: Array<{host: string, port: number}>): string {
-    const upstreamConfig = upstreams.map((u, i) => 
+    const upstreamConfig = upstreams.map((u) => 
       `    server ${u.host}:${u.port};`
     ).join('\n');
 

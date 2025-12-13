@@ -18,7 +18,7 @@ export class KubernetesGenerator {
    */
   generateManifests(
     appName: string,
-    frameworks: FrameworkInfo[],
+    _frameworks: FrameworkInfo[],
     ports: PortConfiguration[],
     domain?: string
   ): KubernetesManifests {
@@ -122,7 +122,7 @@ spec:
   /**
    * Generate Ingress manifest
    */
-  private generateIngress(appName: string, domain: string, port: number): string {
+  private generateIngress(appName: string, domain: string, _port: number): string {
     return `apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

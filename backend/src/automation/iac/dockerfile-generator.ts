@@ -111,7 +111,7 @@ CMD ${commands.start.length > 0 ? JSON.stringify(commands.start[0].split(' ')) :
    */
   private generatePythonDockerfile(
     framework: FrameworkInfo,
-    commands: BuildCommands,
+    _commands: BuildCommands,
     ports: PortConfiguration[]
   ): string {
     const port = ports[0]?.port || 8000;
@@ -169,7 +169,7 @@ CMD ${commands.start.length > 0 ? JSON.stringify(commands.start[0].split(' ')) :
    */
   private generateRustDockerfile(
     framework: FrameworkInfo,
-    commands: BuildCommands,
+    _commands: BuildCommands,
     ports: PortConfiguration[]
   ): string {
     const port = ports[0]?.port || 8080;
@@ -230,7 +230,7 @@ CMD ["./main"]
    */
   private generateJavaDockerfile(
     framework: FrameworkInfo,
-    commands: BuildCommands,
+    _commands: BuildCommands,
     ports: PortConfiguration[]
   ): string {
     const port = ports[0]?.port || 8080;
@@ -284,7 +284,7 @@ CMD ["java", "-jar", "app.jar"]
    */
   private generateGoDockerfile(
     framework: FrameworkInfo,
-    commands: BuildCommands,
+    _commands: BuildCommands,
     ports: PortConfiguration[]
   ): string {
     const port = ports[0]?.port || 8080;
