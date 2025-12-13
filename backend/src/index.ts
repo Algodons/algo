@@ -32,6 +32,7 @@ import { createVersionControlRoutes } from './routes/version-control-routes';
 import { createTeamBillingRoutes } from './routes/team-billing-routes';
 import { RealtimeCollaborationService } from './services/realtime-collaboration-service';
 import automationRoutes from './routes/automation-routes';
+import { createV1Routes } from './routes/v1/index';
 import * as path from 'path';
 
 dotenv.config();
@@ -107,6 +108,9 @@ app.use('/api/team-billing', createTeamBillingRoutes(dashboardPool));
 
 // Automation system routes
 app.use('/api/automation', automationRoutes);
+
+// API v1 routes - Comprehensive REST API platform
+app.use('/api/v1', createV1Routes(dashboardPool));
 
 // Initialize real-time collaboration service
 const realtimeCollaboration = new RealtimeCollaborationService(io, dashboardPool);

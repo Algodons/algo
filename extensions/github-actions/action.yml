@@ -1,0 +1,39 @@
+name: 'Algo Deploy'
+description: 'Deploy your project to Algo Cloud IDE Platform'
+author: 'Algo Team'
+
+branding:
+  icon: 'cloud'
+  color: 'blue'
+
+inputs:
+  api-key:
+    description: 'Algo API key'
+    required: true
+  project-id:
+    description: 'Project ID to deploy'
+    required: true
+  api-url:
+    description: 'Algo API URL'
+    required: false
+    default: 'https://api.algo.dev/v1'
+  wait-for-deployment:
+    description: 'Wait for deployment to complete'
+    required: false
+    default: 'true'
+  deployment-timeout:
+    description: 'Deployment timeout in seconds'
+    required: false
+    default: '600'
+
+outputs:
+  deployment-id:
+    description: 'Deployment ID'
+  deployment-url:
+    description: 'Deployment URL'
+  deployment-status:
+    description: 'Deployment status'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

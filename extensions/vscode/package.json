@@ -1,0 +1,94 @@
+{
+  "name": "algo-vscode",
+  "displayName": "Algo Cloud IDE",
+  "description": "VS Code extension for Algo Cloud IDE Platform",
+  "version": "1.0.0",
+  "publisher": "algo",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:algo.deploy",
+    "onCommand:algo.syncFiles"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "algo.deploy",
+        "title": "Algo: Deploy Project"
+      },
+      {
+        "command": "algo.syncFiles",
+        "title": "Algo: Sync Files"
+      },
+      {
+        "command": "algo.viewResources",
+        "title": "Algo: View Resource Usage"
+      },
+      {
+        "command": "algo.invokeAgent",
+        "title": "Algo: Invoke AI Agent"
+      }
+    ],
+    "configuration": {
+      "title": "Algo",
+      "properties": {
+        "algo.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Algo API Key"
+        },
+        "algo.apiUrl": {
+          "type": "string",
+          "default": "https://api.algo.dev/v1",
+          "description": "Algo API URL"
+        },
+        "algo.projectId": {
+          "type": "string",
+          "default": "",
+          "description": "Default Project ID"
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "algo-explorer",
+          "title": "Algo",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "algo-explorer": [
+        {
+          "id": "algoProjects",
+          "name": "Projects"
+        },
+        {
+          "id": "algoResources",
+          "name": "Resources"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3",
+    "vsce": "^2.15.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}
