@@ -121,6 +121,8 @@ install_nodejs() {
     fi
     
     # Install nvm
+    # NOTE: This downloads and executes a script from the internet.
+    # For production use, consider verifying checksums or using package managers.
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
     
     # Load nvm

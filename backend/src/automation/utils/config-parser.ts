@@ -139,26 +139,26 @@ export class ConfigParser {
   extractEnvVariables(content: string): string[] {
     const envVars = new Set<string>();
     
-    // Match process.env.VAR_NAME (JavaScript/TypeScript)
-    const jsMatches = content.matchAll(/process\.env\.([A-Z_][A-Z0-9_]*)/g);
+    // Match process.env.VAR_NAME (JavaScript/TypeScript) - supports both UPPER_CASE and camelCase
+    const jsMatches = content.matchAll(/process\.env\.([A-Z_][A-Za-z0-9_]*)/g);
     for (const match of jsMatches) {
       envVars.add(match[1]);
     }
     
-    // Match os.getenv('VAR_NAME') or os.environ['VAR_NAME'] (Python)
-    const pyMatches = content.matchAll(/(?:os\.getenv|os\.environ(?:\.get)?)\s*\(\s*['"]([A-Z_][A-Z0-9_]*)['"]?\s*\)/g);
+    // Match os.getenv('VAR_NAME') or os.environ['VAR_NAME'] (Python) - flexible casing
+    const pyMatches = content.matchAll(/(?:os\.getenv|os\.environ(?:\.get)?)\s*\(\s*['"]([A-Z_][A-Za-z0-9_]*)['"]?\s*\)/g);
     for (const match of pyMatches) {
       envVars.add(match[1]);
     }
     
-    // Match env::var("VAR_NAME") (Rust)
-    const rustMatches = content.matchAll(/env::var\(\s*"([A-Z_][A-Z0-9_]*)"\s*\)/g);
+    // Match env::var("VAR_NAME") (Rust) - flexible casing
+    const rustMatches = content.matchAll(/env::var\(\s*"([A-Z_][A-Za-z0-9_]*)"\s*\)/g);
     for (const match of rustMatches) {
       envVars.add(match[1]);
     }
     
-    // Match os.Getenv("VAR_NAME") (Go)
-    const goMatches = content.matchAll(/os\.Getenv\(\s*"([A-Z_][A-Z0-9_]*)"\s*\)/g);
+    // Match os.Getenv("VAR_NAME") (Go) - flexible casing
+    const goMatches = content.matchAll(/os\.Getenv\(\s*"([A-Z_][A-Za-z0-9_]*)"\s*\)/g);
     for (const match of goMatches) {
       envVars.add(match[1]);
     }

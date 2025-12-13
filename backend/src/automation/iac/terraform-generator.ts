@@ -3,9 +3,18 @@
  */
 export class TerraformGenerator {
   /**
+   * Sanitize resource names for Terraform
+   */
+  private sanitizeResourceName(name: string): string {
+    // Replace invalid characters with underscores and convert to lowercase
+    return name.toLowerCase().replace(/[^a-z0-9_]/g, '_');
+  }
+
+  /**
    * Generate main Terraform configuration for AWS
    */
   generateAWS(appName: string, region: string = 'us-east-1'): string {
+    const sanitizedName = this.sanitizeResourceName(appName);
     return `terraform {
   required_providers {
     aws = {
@@ -26,7 +35,7 @@ resource "aws_vpc" "main" {
   enable_dns_support   = true
 
   tags = {
-    Name = "${appName}-vpc"
+    Name = "${sanitizedName}-vpc"
   }
 }
 
@@ -35,7 +44,7 @@ resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "${appName}-igw"
+    Name = "${sanitizedName}-igw"
   }
 }
 
@@ -48,7 +57,7 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "${appName}-public-\${count.index}"
+    Name = "${sanitizedName}-public-\${count.index}"
   }
 }
 
@@ -58,8 +67,8 @@ data "aws_availability_zones" "available" {
 
 # Security Group
 resource "aws_security_group" "app" {
-  name        = "${appName}-sg"
-  description = "Security group for ${appName}"
+  name        = "${sanitizedName}-sg"
+  description = "Security group for ${sanitizedName}"
   vpc_id      = aws_vpc.main.id
 
   ingress {
@@ -84,20 +93,20 @@ resource "aws_security_group" "app" {
   }
 
   tags = {
-    Name = "${appName}-sg"
+    Name = "${sanitizedName}-sg"
   }
 }
 
 # Load Balancer
 resource "aws_lb" "main" {
-  name               = "${appName}-lb"
+  name               = "${sanitizedName}-lb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.app.id]
   subnets            = aws_subnet.public[*].id
 
   tags = {
-    Name = "${appName}-lb"
+    Name = "${sanitizedName}-lb"
   }
 }
 
@@ -112,6 +121,7 @@ output "load_balancer_dns" {
    * Generate Terraform for DigitalOcean
    */
   generateDigitalOcean(appName: string, region: string = 'nyc3'): string {
+    const sanitizedName = this.sanitizeResourceName(appName);
     return `terraform {
   required_providers {
     digitalocean = {
@@ -132,15 +142,15 @@ variable "do_token" {
 }
 
 # Droplet
-resource "digitalocean_droplet" "${appName}" {
+resource "digitalocean_droplet" "${sanitizedName}" {
   image  = "ubuntu-22-04-x64"
-  name   = "${appName}"
+  name   = "${sanitizedName}"
   region = "${region}"
   size   = "s-2vcpu-4gb"
 
   ssh_keys = [var.ssh_key_id]
 
-  tags = ["${appName}", "production"]
+  tags = ["${sanitizedName}", "production"]
 }
 
 variable "ssh_key_id" {
@@ -149,10 +159,10 @@ variable "ssh_key_id" {
 }
 
 # Firewall
-resource "digitalocean_firewall" "${appName}" {
-  name = "${appName}-firewall"
+resource "digitalocean_firewall" "${sanitizedName}" {
+  name = "${sanitizedName}-firewall"
 
-  droplet_ids = [digitalocean_droplet.${appName}.id]
+  droplet_ids = [digitalocean_droplet.${sanitizedName}.id]
 
   inbound_rule {
     protocol         = "tcp"
@@ -180,7 +190,7 @@ resource "digitalocean_firewall" "${appName}" {
 }
 
 output "droplet_ip" {
-  value = digitalocean_droplet.${appName}.ipv4_address
+  value = digitalocean_droplet.${sanitizedName}.ipv4_address
 }
 `;
   }

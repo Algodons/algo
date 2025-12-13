@@ -1,9 +1,30 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import * as path from 'path';
 import { FileScanner } from '../utils/file-scanner';
 import { Logger } from '../utils/logger';
 
 const execAsync = promisify(exec);
+
+/**
+ * Validate and sanitize project path to prevent directory traversal
+ */
+function validateProjectPath(projectPath: string): string {
+  // Resolve to absolute path and normalize
+  const resolvedPath = path.resolve(projectPath);
+  
+  // Basic validation - should be an absolute path
+  if (!path.isAbsolute(resolvedPath)) {
+    throw new Error('Project path must be absolute');
+  }
+  
+  // Prevent directory traversal
+  if (resolvedPath.includes('..')) {
+    throw new Error('Invalid project path: directory traversal not allowed');
+  }
+  
+  return resolvedPath;
+}
 
 export interface InstallResult {
   success: boolean;
@@ -72,18 +93,21 @@ export class DependencyInstaller {
    */
   private async installNodeDependencies(projectPath: string): Promise<InstallResult> {
     try {
+      // Validate project path
+      const safePath = validateProjectPath(projectPath);
+      
       // Detect package manager
       let command = 'npm install';
       
-      if (await this.fileScanner.fileExists(projectPath, 'yarn.lock')) {
+      if (await this.fileScanner.fileExists(safePath, 'yarn.lock')) {
         command = 'yarn install';
-      } else if (await this.fileScanner.fileExists(projectPath, 'pnpm-lock.yaml')) {
+      } else if (await this.fileScanner.fileExists(safePath, 'pnpm-lock.yaml')) {
         command = 'pnpm install';
       }
 
       this.logger.debug(`Running: ${command}`);
       const { stdout, stderr } = await execAsync(command, { 
-        cwd: projectPath,
+        cwd: safePath,
         maxBuffer: 10 * 1024 * 1024, // 10MB buffer
       });
 
@@ -108,20 +132,21 @@ export class DependencyInstaller {
    */
   private async installPythonDependencies(projectPath: string): Promise<InstallResult> {
     try {
+      const safePath = validateProjectPath(projectPath);
       let command = 'pip install -r requirements.txt';
 
       // Check for Pipenv
-      if (await this.fileScanner.fileExists(projectPath, 'Pipfile')) {
+      if (await this.fileScanner.fileExists(safePath, 'Pipfile')) {
         command = 'pipenv install';
       }
       // Check for Poetry
-      else if (await this.fileScanner.fileExists(projectPath, 'pyproject.toml')) {
+      else if (await this.fileScanner.fileExists(safePath, 'pyproject.toml')) {
         command = 'poetry install';
       }
 
       this.logger.debug(`Running: ${command}`);
       const { stdout, stderr } = await execAsync(command, { 
-        cwd: projectPath,
+        cwd: safePath,
         maxBuffer: 10 * 1024 * 1024,
       });
 
@@ -146,11 +171,12 @@ export class DependencyInstaller {
    */
   private async installRustDependencies(projectPath: string): Promise<InstallResult> {
     try {
+      const safePath = validateProjectPath(projectPath);
       const command = 'cargo fetch';
       
       this.logger.debug(`Running: ${command}`);
       const { stdout, stderr } = await execAsync(command, { 
-        cwd: projectPath,
+        cwd: safePath,
         maxBuffer: 10 * 1024 * 1024,
       });
 
@@ -175,11 +201,12 @@ export class DependencyInstaller {
    */
   private async installGoDependencies(projectPath: string): Promise<InstallResult> {
     try {
+      const safePath = validateProjectPath(projectPath);
       const command = 'go mod download';
       
       this.logger.debug(`Running: ${command}`);
       const { stdout, stderr } = await execAsync(command, { 
-        cwd: projectPath,
+        cwd: safePath,
         maxBuffer: 10 * 1024 * 1024,
       });
 
@@ -204,11 +231,12 @@ export class DependencyInstaller {
    */
   private async installPhpDependencies(projectPath: string): Promise<InstallResult> {
     try {
+      const safePath = validateProjectPath(projectPath);
       const command = 'composer install';
       
       this.logger.debug(`Running: ${command}`);
       const { stdout, stderr } = await execAsync(command, { 
-        cwd: projectPath,
+        cwd: safePath,
         maxBuffer: 10 * 1024 * 1024,
       });
 
