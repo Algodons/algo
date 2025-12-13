@@ -334,8 +334,12 @@ export class UsageTrackingService {
       [alertId]
     );
 
-    // TODO: Send actual notifications via email/SMS/dashboard
-    console.log(`Alert triggered for user ${userId}: ${metricType} at ${percentageUsed.toFixed(2)}%`);
+    // TODO: IMPORTANT - Implement actual notification sending
+    // This should integrate with:
+    // - Email service (SendGrid, AWS SES, etc.)
+    // - SMS service (Twilio, AWS SNS, etc.)
+    // - Dashboard real-time notifications (WebSocket)
+    console.warn(`Alert triggered for user ${userId}: ${metricType} at ${percentageUsed.toFixed(2)}% - Notification system not implemented`);
   }
 
   /**

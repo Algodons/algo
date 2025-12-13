@@ -487,6 +487,8 @@ export class BillingService {
 
   /**
    * Process payment via provider (simplified)
+   * TODO: CRITICAL - Replace with actual payment gateway integration
+   * This is a mock implementation for development only
    */
   private async processPaymentViaProvider(
     provider: string,
@@ -494,10 +496,13 @@ export class BillingService {
     amount: number,
     currency: string
   ): Promise<{ success: boolean; transactionId?: string; errorCode?: string; error?: string }> {
-    // This is a simplified mock - would integrate with actual payment providers
-    // Stripe, PayPal, Coinbase Commerce, etc.
+    // TODO: Integrate with actual payment providers:
+    // - Stripe: const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    //           const paymentIntent = await stripe.paymentIntents.create({...});
+    // - PayPal: Use PayPal SDK for payment processing
+    // - Coinbase Commerce: Use Coinbase Commerce API
     
-    // Simulate payment processing
+    // DEVELOPMENT MOCK - DO NOT USE IN PRODUCTION
     if (amount > 0) {
       return {
         success: true,
@@ -514,15 +519,28 @@ export class BillingService {
 
   /**
    * Verify webhook signature
+   * TODO: CRITICAL - Implement actual signature verification for security
+   * This is a mock implementation for development only
    */
   private async verifyWebhookSignature(
     provider: string,
     payload: any,
     signature: string
   ): Promise<boolean> {
-    // Simplified - would use actual provider verification
-    // For Stripe: stripe.webhooks.constructEvent()
-    // For PayPal: verify IPN signature
+    // TODO: Implement actual provider verification:
+    // For Stripe:
+    //   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    //   const event = stripe.webhooks.constructEvent(
+    //     JSON.stringify(payload),
+    //     signature,
+    //     process.env.STRIPE_WEBHOOK_SECRET
+    //   );
+    // For PayPal: Verify IPN signature using PayPal SDK
+    // For Coinbase: Verify webhook signature using Coinbase SDK
+    
+    // DEVELOPMENT MOCK - DO NOT USE IN PRODUCTION
+    // This allows any webhook through and is a SECURITY VULNERABILITY
+    console.warn('WARNING: Webhook signature verification is not implemented');
     return true;
   }
 

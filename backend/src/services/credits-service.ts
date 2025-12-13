@@ -389,8 +389,13 @@ export class CreditsService {
       ]
     );
 
-    // TODO: Create invoice and process payment for auto-reload
-    console.log(`Auto-reload triggered for user ${userId}: ${amount} credits`);
+    // TODO: IMPORTANT - Implement auto-reload payment processing
+    // This should:
+    // 1. Create an invoice for the auto-reload amount
+    // 2. Charge the user's default payment method
+    // 3. Handle payment failures appropriately
+    // 4. Send notification to user about auto-reload
+    console.warn(`Auto-reload triggered for user ${userId}: ${amount} credits - Payment processing not implemented`);
   }
 
   /**
