@@ -1,18 +1,18 @@
-import { FrameworkDetector, FrameworkInfo } from './auto-detect/framework-detector';
-import { BuildCommandInferrer, BuildCommands } from './auto-detect/build-command-inferrer';
-import { PortDetector, PortConfiguration } from './auto-detect/port-detector';
+import { FrameworkDetector } from './auto-detect/framework-detector';
+import { BuildCommandInferrer } from './auto-detect/build-command-inferrer';
+import { PortDetector } from './auto-detect/port-detector';
 import { DependencyInstaller } from './auto-detect/dependency-installer';
 import { DockerfileGenerator } from './iac/dockerfile-generator';
-import { KubernetesGenerator, KubernetesManifests } from './iac/kubernetes-generator';
+import { KubernetesGenerator } from './iac/kubernetes-generator';
 import { NginxGenerator } from './iac/nginx-generator';
 import { TerraformGenerator } from './iac/terraform-generator';
 import { TemplateManager } from './templates/template-manager';
 import { Logger } from './utils/logger';
 
-import { FrameworkInfo } from './auto-detect/framework-detector';
-import { BuildCommands } from './auto-detect/build-command-inferrer';
-import { PortConfiguration } from './auto-detect/port-detector';
-import { KubernetesManifests } from './iac/kubernetes-generator';
+import type { FrameworkInfo } from './auto-detect/framework-detector';
+import type { BuildCommands } from './auto-detect/build-command-inferrer';
+import type { PortConfiguration } from './auto-detect/port-detector';
+import type { KubernetesManifests } from './iac/kubernetes-generator';
 
 export interface AutoDetectResult {
   frameworks: FrameworkInfo[];

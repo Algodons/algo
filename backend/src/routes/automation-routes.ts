@@ -24,12 +24,12 @@ router.post('/detect', async (req: Request, res: Response) => {
 
     const result = await automationService.autoDetect(projectPath);
 
-    res.json({
+    return res.json({
       success: true,
       data: result,
     });
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: error.message,
     });
@@ -50,12 +50,12 @@ router.post('/install', async (req: Request, res: Response) => {
 
     const result = await automationService.installDependencies(projectPath);
 
-    res.json({
+    return res.json({
       success: true,
       data: result,
     });
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: error.message,
     });
@@ -80,12 +80,12 @@ router.post('/generate-iac', async (req: Request, res: Response) => {
       cloudProvider
     );
 
-    res.json({
+    return res.json({
       success: true,
       data: result,
     });
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: error.message,
     });
@@ -100,12 +100,12 @@ router.get('/templates', async (req: Request, res: Response) => {
   try {
     const templates = await automationService.getTemplates();
 
-    res.json({
+    return res.json({
       success: true,
       data: templates,
     });
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: error.message,
     });
@@ -132,12 +132,12 @@ router.post('/init-template', async (req: Request, res: Response) => {
       customization
     );
 
-    res.json({
+    return res.json({
       success: true,
       message: `Project initialized from template: ${templateName}`,
     });
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: error.message,
     });
@@ -160,12 +160,12 @@ router.post('/import-github', async (req: Request, res: Response) => {
 
     await automationService.importFromGitHub(repoUrl, targetDir);
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Project imported from GitHub successfully',
     });
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: error.message,
     });
@@ -186,12 +186,12 @@ router.post('/setup', async (req: Request, res: Response) => {
 
     const result = await automationService.setupProject(projectPath, options || {});
 
-    res.json({
+    return res.json({
       success: true,
       data: result,
     });
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: error.message,
     });

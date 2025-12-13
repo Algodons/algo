@@ -160,7 +160,7 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \\
   CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:${port}/health').getcode()" || exit 1
 
 # Start application
-CMD ${commands.start.length > 0 ? JSON.stringify(commands.start[0].split(' ')) : '["python", "manage.py", "runserver", "0.0.0.0:' + port + '"]'}
+CMD ${_commands.start.length > 0 ? JSON.stringify(_commands.start[0].split(' ')) : '["python", "manage.py", "runserver", "0.0.0.0:' + port + '"]'}
 `;
   }
 
