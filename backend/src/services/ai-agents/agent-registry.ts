@@ -165,13 +165,21 @@ export class AgentRegistry {
 
   /**
    * Execute agent-specific logic
+   * 
+   * STUB: This is a mock implementation. In production, this would:
+   * - Route to the appropriate agent implementation
+   * - Call external AI services (OpenAI, Anthropic, etc.)
+   * - Execute custom agent logic
+   * - Handle context and parameters appropriately
+   * 
+   * Current implementation returns mock data for testing and development.
    */
   private async executeAgent(
     agent: AIAgent,
     invocation: AgentInvocation
   ): Promise<AgentResponse> {
-    // This is where agent-specific logic would be implemented
-    // For now, return a mock response
+    // STUB: Mock implementation - replace with actual agent logic
+    // This serves as a template for the agent execution interface
     
     const executionTime = Math.floor(Math.random() * 1000) + 100;
     

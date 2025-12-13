@@ -109,17 +109,21 @@ export class WebhookService {
     deliveryId: number,
     attempt: number
   ): Promise<void> {
-    const signature = this.generateSignature(payload, webhook.secret);
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'X-Webhook-Event': payload.event,
+      'X-Webhook-Delivery': deliveryId.toString(),
+      'X-Webhook-Attempt': attempt.toString(),
+    };
+
+    // Add signature if webhook has a secret
+    if (webhook.secret) {
+      headers['X-Webhook-Signature'] = this.generateSignature(payload, webhook.secret);
+    }
 
     const response = await fetch(webhook.url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Webhook-Signature': signature,
-        'X-Webhook-Event': payload.event,
-        'X-Webhook-Delivery': deliveryId.toString(),
-        'X-Webhook-Attempt': attempt.toString(),
-      },
+      headers,
       body: JSON.stringify(payload),
     });
 
