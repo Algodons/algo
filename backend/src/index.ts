@@ -34,6 +34,8 @@ import { RealtimeCollaborationService } from './services/realtime-collaboration-
 import automationRoutes from './routes/automation-routes';
 import { createV1Routes } from './routes/v1/index';
 import * as path from 'path';
+import { initializeRedisCache, cacheMiddleware, getCacheStats, clearAllCaches, invalidateCache } from './middleware/caching';
+import { ProjectSuspensionService, wakeOnRequestMiddleware } from './services/project-suspension-service';
 
 dotenv.config();
 
@@ -57,6 +59,16 @@ const dashboardPool = new Pool({
   password: process.env.DB_PASSWORD,
 });
 
+// Initialize caching
+initializeRedisCache();
+
+// Initialize project suspension service
+const suspensionService = new ProjectSuspensionService(dashboardPool, {
+  inactivityThresholdDays: 30,
+  checkInterval: 3600000, // 1 hour
+});
+suspensionService.start();
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -69,6 +81,51 @@ app.get('/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Cache management endpoints (admin only)
+app.get('/api/cache/stats', authenticate(dashboardPool), async (_req: Request, res: Response) => {
+  const stats = await getCacheStats();
+  res.json(stats);
+});
+
+app.post('/api/cache/clear', authenticate(dashboardPool), async (_req: Request, res: Response) => {
+  await clearAllCaches();
+  res.json({ success: true, message: 'All caches cleared' });
+});
+
+app.post('/api/cache/invalidate', authenticate(dashboardPool), async (req: Request, res: Response) => {
+  const { pattern } = req.body;
+  if (!pattern) {
+    return res.status(400).json({ error: 'Pattern is required' });
+  }
+  await invalidateCache(pattern);
+  res.json({ success: true, message: `Cache invalidated for pattern: ${pattern}` });
+});
+
+// Project suspension endpoints
+app.get('/api/projects/:projectId/status', authenticate(dashboardPool), async (req: Request, res: Response) => {
+  const { projectId } = req.params;
+  const status = await suspensionService.getProjectStatus(projectId);
+  if (!status) {
+    return res.status(404).json({ error: 'Project not found' });
+  }
+  res.json(status);
+});
+
+app.post('/api/projects/:projectId/wake', authenticate(dashboardPool), async (req: Request, res: Response) => {
+  const { projectId } = req.params;
+  try {
+    await suspensionService.wakeProject(projectId);
+    res.json({ success: true, message: 'Project is waking up' });
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+});
+
+app.get('/api/suspension/stats', authenticate(dashboardPool), async (_req: Request, res: Response) => {
+  const stats = await suspensionService.getStatistics();
+  res.json(stats);
+});
+
 // Database management routes
 app.use('/api/databases', databaseRoutes);
 app.use('/api/databases', queryRoutes);
@@ -77,9 +134,9 @@ app.use('/api/databases', migrationRoutes);
 app.use('/api/databases', importExportRoutes);
 app.use('/api/databases', backupRoutes);
 
-// Dashboard feature routes
-app.use('/api/dashboard/projects', createProjectManagementRoutes(dashboardPool));
-app.use('/api/dashboard/resources', createResourceMonitoringRoutes(dashboardPool));
+// Dashboard feature routes (with caching)
+app.use('/api/dashboard/projects', wakeOnRequestMiddleware(suspensionService), createProjectManagementRoutes(dashboardPool));
+app.use('/api/dashboard/resources', cacheMiddleware({ ttl: 60, prefix: 'resources' }), createResourceMonitoringRoutes(dashboardPool));
 app.use('/api/dashboard/api', createApiManagementRoutes(dashboardPool));
 app.use('/api/dashboard/settings', createAccountSettingsRoutes(dashboardPool));
 
@@ -90,13 +147,13 @@ app.use('/api/admin/affiliates', createAdminAffiliateRoutes(dashboardPool));
 app.use('/api/admin/financial', createAdminFinancialRoutes(dashboardPool));
 app.use('/api/admin/system', createAdminSystemRoutes(dashboardPool));
 
-// Monetization system routes (with authentication)
+// Monetization system routes (with authentication and caching)
 // Plans endpoint can be accessed without auth, others require authentication
-app.use('/api/subscriptions/plans', optionalAuthenticate(dashboardPool), createSubscriptionRoutes(dashboardPool));
+app.use('/api/subscriptions/plans', optionalAuthenticate(dashboardPool), cacheMiddleware({ ttl: 3600, prefix: 'plans' }), createSubscriptionRoutes(dashboardPool));
 app.use('/api/subscriptions', authenticate(dashboardPool), createSubscriptionRoutes(dashboardPool));
-app.use('/api/usage', authenticate(dashboardPool), createUsageRoutes(dashboardPool));
+app.use('/api/usage', authenticate(dashboardPool), cacheMiddleware({ ttl: 300, prefix: 'usage', varyBy: ['url', 'user'] }), createUsageRoutes(dashboardPool));
 app.use('/api/billing', authenticate(dashboardPool), createBillingRoutes(dashboardPool));
-app.use('/api/credits', authenticate(dashboardPool), createCreditsRoutes(dashboardPool));
+app.use('/api/credits', authenticate(dashboardPool), cacheMiddleware({ ttl: 180, prefix: 'credits', varyBy: ['user'] }), createCreditsRoutes(dashboardPool));
 app.use('/api/alerts', authenticate(dashboardPool), createAlertsRoutes(dashboardPool));
 
 // Team collaboration routes
