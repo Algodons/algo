@@ -1,0 +1,187 @@
+# Backup Configuration
+# Settings for automated backup and disaster recovery
+
+backup:
+  # Schedule (cron format)
+  schedule:
+    daily: "0 2 * * *"      # 2 AM daily
+    weekly: "0 3 * * 0"     # 3 AM Sunday
+    monthly: "0 4 1 * *"    # 4 AM 1st of month
+
+  # Retention policy
+  retention:
+    daily_days: 7           # Keep daily backups for 7 days
+    weekly_days: 30         # Keep weekly backups for 30 days
+    monthly_days: 365       # Keep monthly backups for 1 year
+    archive_days: 1825      # Keep archives for 5 years (compliance)
+
+  # Encryption
+  encryption:
+    enabled: true
+    algorithm: "AES-256-CBC"
+    key_file: "/etc/algo/backup.key"
+    key_rotation_days: 90
+
+  # Compression
+  compression:
+    enabled: true
+    level: 9                # Maximum compression
+    algorithm: "gzip"
+
+# Backup targets
+targets:
+  project:
+    enabled: true
+    path: "/home/runner/work/algo/algo"
+    exclude:
+      - "node_modules"
+      - "dist"
+      - "build"
+      - ".git"
+      - "*.log"
+      - "coverage"
+      - ".next"
+
+  database:
+    enabled: true
+    type: "postgresql"
+    host: "${DB_HOST:-localhost}"
+    port: "${DB_PORT:-5432}"
+    database: "${DB_NAME:-algo}"
+    user: "${DB_USER:-algo}"
+    # Password should be set via environment variable: DB_PASSWORD
+    options:
+      format: "custom"
+      compress: 9
+      blobs: true
+      create: true
+      clean: true
+
+  workspaces:
+    enabled: true
+    path: "/var/lib/algo/workspaces"
+    max_size_gb: 100        # Skip if larger than 100GB
+
+# Storage locations
+storage:
+  local:
+    enabled: true
+    root: "/var/backups/algo"
+    disk_space_threshold_gb: 50  # Alert if less than 50GB free
+
+  cloud:
+    enabled: false
+    provider: "aws"         # aws, azure, gcp
+    
+    # AWS S3 configuration
+    aws:
+      bucket: "${BACKUP_S3_BUCKET:-}"
+      region: "${AWS_REGION:-us-east-1}"
+      storage_class: "STANDARD_IA"  # Infrequent Access
+      lifecycle_days: 30    # Transition to Glacier after 30 days
+      
+    # Azure Blob Storage configuration
+    azure:
+      account: "${AZURE_STORAGE_ACCOUNT:-}"
+      container: "${BACKUP_CONTAINER:-backups}"
+      tier: "Cool"
+      
+    # Google Cloud Storage configuration
+    gcp:
+      bucket: "${BACKUP_GCS_BUCKET:-}"
+      storage_class: "NEARLINE"
+
+# Verification
+verification:
+  enabled: true
+  checksum_algorithm: "sha256"
+  test_restore: false     # Periodically test restore process
+  test_restore_schedule: "0 5 * * 6"  # 5 AM Saturday
+
+# Notifications
+notifications:
+  enabled: true
+  
+  email:
+    enabled: false
+    recipients:
+      - "ops@example.com"
+    smtp_host: "${SMTP_HOST:-localhost}"
+    smtp_port: "${SMTP_PORT:-587}"
+    
+  slack:
+    enabled: false
+    webhook_url: "${SLACK_WEBHOOK_URL:-}"
+    channel: "#ops-alerts"
+    
+  pagerduty:
+    enabled: false
+    integration_key: "${PAGERDUTY_KEY:-}"
+
+# Monitoring
+monitoring:
+  enabled: true
+  metrics:
+    - backup_duration_seconds
+    - backup_size_bytes
+    - backup_success_total
+    - backup_failure_total
+  
+  alerts:
+    backup_failure: true
+    disk_space_low: true
+    verification_failure: true
+
+# Disaster recovery
+disaster_recovery:
+  # Recovery Time Objective (RTO) - target time to restore
+  rto_hours: 4
+  
+  # Recovery Point Objective (RPO) - maximum acceptable data loss
+  rpo_hours: 24
+  
+  # Multi-region replication
+  multi_region:
+    enabled: false
+    primary_region: "us-east-1"
+    replica_regions:
+      - "us-west-2"
+      - "eu-west-1"
+    replication_lag_seconds: 60
+  
+  # Failover automation
+  failover:
+    enabled: false
+    health_check_interval_seconds: 30
+    failure_threshold: 3
+    auto_failover: false    # Manual approval required
+
+# Compliance
+compliance:
+  # SOC 2 requirements
+  soc2:
+    audit_logging: true
+    encryption_required: true
+    retention_policy_enforced: true
+    
+  # GDPR requirements
+  gdpr:
+    data_minimization: true
+    right_to_erasure: true
+    data_portability: true
+    retention_limits: true
+
+# Performance
+performance:
+  parallel_backups: 2       # Number of concurrent backup jobs
+  bandwidth_limit_mbps: 0   # 0 = unlimited
+  io_priority: "idle"       # idle, best-effort, normal
+  nice_level: 19            # CPU priority (19 = lowest)
+
+# Logging
+logging:
+  level: "info"             # debug, info, warn, error
+  file: "/var/log/algo/backup.log"
+  max_size_mb: 100
+  max_files: 10
+  syslog: false
