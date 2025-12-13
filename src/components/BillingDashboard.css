@@ -1,0 +1,360 @@
+.billing-dashboard {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: #f7fafc;
+  min-height: 100vh;
+}
+
+.billing-header {
+  margin-bottom: 2rem;
+}
+
+.billing-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 0.5rem;
+}
+
+.billing-header p {
+  font-size: 1.1rem;
+  color: #718096;
+}
+
+.billing-section {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.billing-section h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+}
+
+/* Subscription Section */
+.subscription-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  color: white;
+}
+
+.subscription-tier {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.subscription-tier h3 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+  text-transform: capitalize;
+}
+
+.subscription-details {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detail-item .label {
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+.detail-item .value {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.subscription-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.subscription-actions button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-upgrade {
+  background: white;
+  color: #667eea;
+}
+
+.btn-upgrade:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+}
+
+.btn-manage {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid white;
+}
+
+.btn-manage:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Usage Section */
+.usage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.usage-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: #f7fafc;
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.usage-card:hover {
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.usage-icon {
+  font-size: 2.5rem;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 10px;
+}
+
+.usage-details h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #718096;
+  text-transform: uppercase;
+  margin: 0 0 0.5rem 0;
+}
+
+.usage-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin: 0 0 0.25rem 0;
+}
+
+.usage-cost {
+  font-size: 0.875rem;
+  color: #667eea;
+  font-weight: 600;
+  margin: 0;
+}
+
+.usage-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: #667eea;
+  color: white;
+  border-radius: 10px;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.total-amount {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+/* Invoice Section */
+.invoices-table {
+  overflow-x: auto;
+}
+
+.invoices-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.invoices-table th {
+  text-align: left;
+  padding: 1rem;
+  background: #f7fafc;
+  color: #4a5568;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.invoices-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  color: #2d3748;
+}
+
+.invoice-number {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+}
+
+.invoice-amount {
+  font-weight: 600;
+  color: #667eea;
+}
+
+.no-invoices {
+  text-align: center;
+  color: #a0aec0;
+  padding: 2rem !important;
+}
+
+.btn-view,
+.btn-pay {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: 0.5rem;
+}
+
+.btn-view {
+  background: #e2e8f0;
+  color: #2d3748;
+}
+
+.btn-view:hover {
+  background: #cbd5e0;
+}
+
+.btn-pay {
+  background: #667eea;
+  color: white;
+}
+
+.btn-pay:hover {
+  background: #5a67d8;
+  transform: translateY(-1px);
+}
+
+/* Payment Methods Section */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+  margin: 0;
+}
+
+.btn-add {
+  padding: 0.75rem 1.5rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-add:hover {
+  background: #5a67d8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.no-payment-methods {
+  text-align: center;
+  color: #a0aec0;
+  padding: 2rem;
+}
+
+.billing-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-size: 1.25rem;
+  color: #718096;
+}
+
+@media (max-width: 768px) {
+  .billing-dashboard {
+    padding: 1rem;
+  }
+
+  .subscription-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .subscription-actions {
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .subscription-actions button {
+    width: 100%;
+  }
+
+  .subscription-details {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .usage-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .invoices-table {
+    font-size: 0.875rem;
+  }
+
+  .invoices-table th,
+  .invoices-table td {
+    padding: 0.75rem 0.5rem;
+  }
+}
