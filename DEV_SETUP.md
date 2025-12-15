@@ -444,12 +444,60 @@ NODE_ENV=staging npm run dev
 - **Deployment:** [DEPLOYMENT.md](./DEPLOYMENT.md)
 - **Security:** [SECURITY.md](./SECURITY.md)
 
+## Quick Reference
+
+### Common Commands
+
+```bash
+# Start development environment
+npm run dev:local
+# or
+./dev-start.sh
+
+# Start services separately
+cd backend && npm run dev        # Backend only
+cd frontend && npm run dev       # Frontend only
+
+# Build for production
+npm run build
+
+# Run tests
+npm test
+
+# Type checking
+cd frontend && npm run type-check
+cd backend && npm run build
+```
+
+### Environment URLs
+
+| Service | Development URL |
+|---------|----------------|
+| Frontend | http://localhost:3000 |
+| Backend API | http://localhost:4000 |
+| WebSocket | ws://localhost:4000 |
+| Health Check | http://localhost:4000/health |
+| Copilot API | http://localhost:4000/api/copilot |
+
+### Key Environment Variables
+
+```bash
+# Frontend
+NEXT_PUBLIC_API_URL=http://localhost:4000
+NEXT_PUBLIC_COPILOT_ENABLED=true
+
+# Backend
+PORT=4000
+COPILOT_ENABLED=true
+DEBUG=true
+```
+
 ## Next Steps
 
 Once your environment is running:
 
 1. Explore the IDE interface at http://localhost:3000
-2. Test API endpoints using the examples above
+2. Test Copilot API endpoints - see [COPILOT_API_TESTING.md](./COPILOT_API_TESTING.md)
 3. Review the [Automation System](./AUTOMATION_SYSTEM.md) for advanced features
 4. Check out [example projects](./AUTOMATION_EXAMPLES.md)
 5. Read about [Team Collaboration](./TEAM_COLLABORATION_SETUP.md)

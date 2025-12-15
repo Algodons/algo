@@ -21,6 +21,8 @@ out/
 .env
 .env.local
 .env.production
+# Note: .env.development is tracked as a template (no real secrets)
+# But .env.*.local files should contain actual secrets and are ignored
 
 # IDE
 .vscode/
