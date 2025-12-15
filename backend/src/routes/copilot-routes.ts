@@ -5,9 +5,19 @@
 
 import { Router, Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
+import rateLimit from 'express-rate-limit';
 import { getCopilotService } from '../services/copilot-service';
 import { Pool } from 'pg';
 import { authenticate } from '../middleware/auth';
+
+// Rate limiter for Copilot endpoints to prevent abuse
+const copilotRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50, // Limit each IP to 50 requests per windowMs for Copilot endpoints
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: 'Too many Copilot API requests, please try again later.',
+});
 
 export function createCopilotRoutes(pool: Pool): Router {
   const router = Router();
@@ -51,6 +61,7 @@ export function createCopilotRoutes(pool: Pool): Router {
    */
   router.post(
     '/complete',
+    copilotRateLimiter,
     authenticate(pool),
     [
       body('prompt').notEmpty().withMessage('Prompt is required'),
@@ -84,7 +95,7 @@ export function createCopilotRoutes(pool: Pool): Router {
         console.error('Copilot complete error:', error);
         res.status(500).json({
           success: false,
-          error: error.message || 'Failed to get completion',
+          error: 'An unexpected error occurred',
         });
       }
     }
@@ -96,6 +107,7 @@ export function createCopilotRoutes(pool: Pool): Router {
    */
   router.post(
     '/generate',
+    copilotRateLimiter,
     authenticate(pool),
     [
       body('prompt').notEmpty().withMessage('Prompt is required'),
@@ -125,7 +137,7 @@ export function createCopilotRoutes(pool: Pool): Router {
         console.error('Copilot generate error:', error);
         res.status(500).json({
           success: false,
-          error: error.message || 'Failed to generate code',
+          error: 'An unexpected error occurred',
         });
       }
     }
@@ -137,6 +149,7 @@ export function createCopilotRoutes(pool: Pool): Router {
    */
   router.post(
     '/explain',
+    copilotRateLimiter,
     authenticate(pool),
     [
       body('code').notEmpty().withMessage('Code is required'),
@@ -165,7 +178,7 @@ export function createCopilotRoutes(pool: Pool): Router {
         console.error('Copilot explain error:', error);
         res.status(500).json({
           success: false,
-          error: error.message || 'Failed to explain code',
+          error: 'An unexpected error occurred',
         });
       }
     }
@@ -177,6 +190,7 @@ export function createCopilotRoutes(pool: Pool): Router {
    */
   router.post(
     '/suggestions',
+    copilotRateLimiter,
     authenticate(pool),
     [
       body('code').notEmpty().withMessage('Code is required'),
@@ -206,7 +220,7 @@ export function createCopilotRoutes(pool: Pool): Router {
         console.error('Copilot suggestions error:', error);
         res.status(500).json({
           success: false,
-          error: error.message || 'Failed to get suggestions',
+          error: 'An unexpected error occurred',
         });
       }
     }

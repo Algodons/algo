@@ -122,7 +122,7 @@ export function loadEnvironmentConfig(): EnvironmentConfig {
     copilot: {
       apiUrl: process.env.COPILOT_API_URL || 'https://api.copilot.example.com',
       apiKey: process.env.COPILOT_API_KEY || '',
-      enabled: process.env.COPILOT_ENABLED === 'true' || process.env.COPILOT_SERVICE_ENABLED === 'true',
+      enabled: process.env.COPILOT_ENABLED === 'true',
     },
 
     // AI/ML Services

@@ -24,6 +24,8 @@ export interface CopilotResponse {
 }
 
 export class CopilotService {
+  private static readonly SERVICE_DISABLED_ERROR = 'Copilot service is not enabled';
+  
   private client: AxiosInstance;
   private enabled: boolean;
   private config: ReturnType<typeof getEnvironmentConfig>['copilot'];
@@ -77,7 +79,7 @@ export class CopilotService {
     if (!this.enabled) {
       return {
         success: false,
-        error: 'Copilot service is not enabled',
+        error: CopilotService.SERVICE_DISABLED_ERROR,
       };
     }
 
@@ -103,9 +105,15 @@ export class CopilotService {
       };
     } catch (error: any) {
       console.error('Copilot completion error:', error);
+      // Sanitize error message to avoid exposing internal details
+      const errorMessage = error.response?.status === 401 
+        ? 'Authentication failed' 
+        : error.response?.status === 429
+        ? 'Rate limit exceeded'
+        : 'Service temporarily unavailable';
       return {
         success: false,
-        error: error.response?.data?.message || error.message || 'Unknown error',
+        error: errorMessage,
         metadata: {
           latency_ms: 0,
         },
@@ -120,7 +128,7 @@ export class CopilotService {
     if (!this.enabled) {
       return {
         success: false,
-        error: 'Copilot service is not enabled',
+        error: CopilotService.SERVICE_DISABLED_ERROR,
       };
     }
 
@@ -146,9 +154,15 @@ export class CopilotService {
       };
     } catch (error: any) {
       console.error('Copilot code generation error:', error);
+      // Sanitize error message
+      const errorMessage = error.response?.status === 401 
+        ? 'Authentication failed' 
+        : error.response?.status === 429
+        ? 'Rate limit exceeded'
+        : 'Service temporarily unavailable';
       return {
         success: false,
-        error: error.response?.data?.message || error.message || 'Unknown error',
+        error: errorMessage,
       };
     }
   }
@@ -160,7 +174,7 @@ export class CopilotService {
     if (!this.enabled) {
       return {
         success: false,
-        error: 'Copilot service is not enabled',
+        error: CopilotService.SERVICE_DISABLED_ERROR,
       };
     }
 
@@ -176,9 +190,15 @@ export class CopilotService {
       };
     } catch (error: any) {
       console.error('Copilot code explanation error:', error);
+      // Sanitize error message
+      const errorMessage = error.response?.status === 401 
+        ? 'Authentication failed' 
+        : error.response?.status === 429
+        ? 'Rate limit exceeded'
+        : 'Service temporarily unavailable';
       return {
         success: false,
-        error: error.response?.data?.message || error.message || 'Unknown error',
+        error: errorMessage,
       };
     }
   }
@@ -190,7 +210,7 @@ export class CopilotService {
     if (!this.enabled) {
       return {
         success: false,
-        error: 'Copilot service is not enabled',
+        error: CopilotService.SERVICE_DISABLED_ERROR,
       };
     }
 
@@ -207,9 +227,15 @@ export class CopilotService {
       };
     } catch (error: any) {
       console.error('Copilot suggestions error:', error);
+      // Sanitize error message
+      const errorMessage = error.response?.status === 401 
+        ? 'Authentication failed' 
+        : error.response?.status === 429
+        ? 'Rate limit exceeded'
+        : 'Service temporarily unavailable';
       return {
         success: false,
-        error: error.response?.data?.message || error.message || 'Unknown error',
+        error: errorMessage,
       };
     }
   }
