@@ -86,7 +86,52 @@ The repository uses GitHub Actions to automate:
 - Findings appear in the Security tab under Code scanning alerts
 - Failed scans will block PR merging if critical issues are found
 
-### 3. Automated Code Review (`code-review.yml`)
+### 3. Snyk Security Scan (`snyk.yml`)
+
+**Triggers:**
+- Pull requests to `main` and `develop`
+- Pushes to `main` and `develop`
+- Scheduled daily scans (2:00 AM UTC)
+- Manual workflow dispatch
+
+**Purpose:**
+- Scans for vulnerabilities in dependencies (npm packages)
+- Checks Docker container images for security issues
+- Performs static code analysis for security vulnerabilities
+- Monitors production dependencies
+
+**Jobs:**
+
+#### Snyk Dependency Scan
+- Scans npm dependencies for known vulnerabilities
+- Uploads results to GitHub Security tab
+- Fails on high severity issues
+
+#### Snyk Container Scan
+- Builds Docker image
+- Scans container for vulnerabilities
+- Only runs on push events and scheduled scans
+
+#### Snyk Code Analysis
+- Performs static code analysis
+- Identifies security issues in source code
+- Checks for common vulnerabilities (XSS, injection, etc.)
+
+#### Snyk Monitor (Production)
+- Monitors production dependencies
+- Only runs on pushes to main branch
+- Tracks vulnerabilities over time in Snyk dashboard
+
+**Configuration Required:**
+- **SNYK_TOKEN** secret must be configured (see Repository Secrets section)
+- Get your token from: https://app.snyk.io/account
+
+**Results:**
+- Findings appear in the Security tab under Code scanning alerts
+- SARIF files uploaded for integration with GitHub Security
+- Failed scans will block PR merging if critical issues are found
+
+### 4. Automated Code Review (`code-review.yml`)
 
 **Triggers:**
 - Pull requests opened, synchronized, or reopened
@@ -109,7 +154,7 @@ The repository uses GitHub Actions to automate:
 - Comments on PRs if bundle size increases significantly
 - Helps prevent performance regressions
 
-### 4. Auto-Approve Workflow (`auto-approve.yml`)
+### 5. Auto-Approve Workflow (`auto-approve.yml`)
 
 **Triggers:**
 - Pull requests opened, synchronized, or reopened
@@ -138,7 +183,7 @@ TRUSTED_USERS=(
 )
 ```
 
-### 5. PR Notifications (`pr-notifications.yml`)
+### 6. PR Notifications (`pr-notifications.yml`)
 
 **Triggers:**
 - PR opened, reopened, or marked ready for review
@@ -213,10 +258,11 @@ Follow the instructions in [BRANCH_PROTECTION.md](.github/BRANCH_PROTECTION.md) 
 - Conversation resolution
 - Other protection settings
 
-### 3. Repository Secrets (Optional)
+### 3. Repository Secrets (Required & Optional)
 
 Configure in Settings → Secrets and variables → Actions:
-- `CODECOV_TOKEN` - For code coverage reporting
+- `SNYK_TOKEN` - **Required** for Snyk security scanning. Get your token from [Snyk Account Settings](https://app.snyk.io/account)
+- `CODECOV_TOKEN` - Optional for code coverage reporting
 
 ### 4. Create Required Labels
 
