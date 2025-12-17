@@ -1,0 +1,77 @@
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Backend (not needed for frontend deployment)
+backend
+server
+
+# Build outputs from other parts of monorepo
+dist
+build
+
+# Environment files (use Vercel environment variables instead)
+.env
+.env.local
+.env.*.local
+.env.production
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage
+.nyc_output
+
+# Documentation (optional - remove if you want docs in deployment)
+*.md
+!README.md
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Kubernetes
+k8s
+
+# Scripts
+scripts
+setup.sh
+start.sh
+dev-start.sh
+test-dev-setup.sh
+
+# Examples and templates
+examples
+templates
+
+# Workspace data
+workspaces
+workspace
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+backup
+*.backup
+
+# Logs
+logs
+*.log
+
+# Temporary files
+tmp
+temp
+*.tmp
