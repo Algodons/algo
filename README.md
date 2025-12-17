@@ -85,6 +85,17 @@ A production-grade cloud IDE and deployment platform similar to Replit, built wi
 
 ### Quick Start
 
+#### Option 1: Deploy to Vercel (Fastest)
+```bash
+# Deploy frontend to Vercel
+vercel --prod
+
+# Deploy backend to Railway, Render, or Fly.io
+```
+See [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) for complete guide.
+
+#### Option 2: Local Development
+
 1. **Clone the repository**
 ```bash
 git clone https://github.com/Algodons/algo.git
@@ -122,6 +133,31 @@ This will start:
 npm run build
 npm start
 ```
+
+## ☁️ Vercel Deployment
+
+Deploy the frontend to Vercel for fast, global distribution:
+
+```bash
+# Install Vercel CLI
+npm install -g vercel
+
+# Deploy
+cd frontend
+vercel --prod
+```
+
+**Quick Start:**
+1. Import the repository in [Vercel Dashboard](https://vercel.com/new)
+2. Set root directory to `frontend`
+3. Configure environment variables (see `.env.vercel.example`)
+4. Deploy!
+
+> **📖 Complete guide:** [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md)
+>
+> **🔧 Troubleshooting:** [VERCEL_TROUBLESHOOTING.md](./VERCEL_TROUBLESHOOTING.md)
+
+**Note:** Backend should be deployed separately to Railway, Render, or Fly.io for WebSocket and terminal support.
 
 ## 🐳 Docker Deployment
 
