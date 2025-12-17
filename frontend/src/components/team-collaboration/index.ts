@@ -9,3 +9,5 @@ export { CreatePullRequest } from './pull-requests/create-pull-request';
 export { MergeConflictResolver } from './pull-requests/merge-conflict-resolver';
 export { TeamBillingDashboard } from './billing/team-billing-dashboard';
 export { CodeComments } from './comments/code-comments';
+export { ProjectPermissionsManager } from './permissions/project-permissions';
+export { EnvironmentVariables } from './env-vars/environment-variables';
