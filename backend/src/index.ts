@@ -33,12 +33,17 @@ import { createTeamBillingRoutes } from './routes/team-billing-routes';
 import { RealtimeCollaborationService } from './services/realtime-collaboration-service';
 import automationRoutes from './routes/automation-routes';
 import { createV1Routes } from './routes/v1/index';
+import { createCopilotRoutes } from './routes/copilot-routes';
 import * as path from 'path';
 import { initializeRedisCache, cacheMiddleware, getCacheStats, clearAllCaches, invalidateCache } from './middleware/caching';
 import { ProjectSuspensionService, wakeOnRequestMiddleware } from './services/project-suspension-service';
 import rateLimit from 'express-rate-limit';
+import { getEnvironmentConfig } from './config/environment';
 
 dotenv.config();
+
+// Load and log environment configuration
+const envConfig = getEnvironmentConfig();
 
 const app = express();
 const httpServer = createServer(app);
@@ -184,6 +189,9 @@ app.use('/api/automation', automationRoutes);
 
 // API v1 routes - Comprehensive REST API platform
 app.use('/api/v1', createV1Routes(dashboardPool));
+
+// Copilot routes (for Copilot SaaS testing)
+app.use('/api/copilot', createCopilotRoutes(dashboardPool));
 
 // Initialize real-time collaboration service
 const realtimeCollaboration = new RealtimeCollaborationService(io, dashboardPool);

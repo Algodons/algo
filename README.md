@@ -94,22 +94,27 @@ cd algo
 2. **Install dependencies**
 ```bash
 npm install
+cd frontend && npm install && cd ..
+cd backend && npm install && cd ..
 ```
 
 3. **Set up environment variables**
 ```bash
-cp .env.example .env
-# Edit .env with your configuration
+# For development
+cp .env.example .env.development
+# Edit .env.development with your configuration
 ```
 
 4. **Start development server**
 ```bash
-npm run dev
+npm run dev:local
 ```
 
 This will start:
 - Frontend dev server on http://localhost:3000
-- Backend API server on http://localhost:5000
+- Backend API server on http://localhost:4000
+
+> **📖 For detailed development setup including Copilot SaaS testing, see [DEV_SETUP.md](./DEV_SETUP.md)**
 
 ### Production Build
 
