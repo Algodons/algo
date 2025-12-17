@@ -1,9 +1,11 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   // Set the root directory for file tracing to resolve the monorepo warning
-  outputFileTracingRoot: require('path').join(__dirname, '..'),
+  outputFileTracingRoot: path.join(__dirname, '..'),
   
   webpack: (config, { isServer }) => {
     if (!isServer) {

@@ -2,6 +2,9 @@
 
 # Vercel Setup Helper Script
 # This script helps prepare your project for Vercel deployment
+#
+# Usage: ./setup-vercel.sh
+# Note: Make sure this script is executable: chmod +x setup-vercel.sh
 
 set -e
 
