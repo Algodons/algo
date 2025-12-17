@@ -4,43 +4,54 @@ A production-grade cloud IDE and deployment platform similar to Replit, built wi
 
 ## 🚀 Features
 
-### 1. **Real-time Collaborative Editing**
+### 1. **Team Collaboration Suite** 🆕
+- **Real-time Presence** - See who's online, what they're editing, and their cursor positions
+- **Terminal Sharing** - Collaborate on terminal sessions with view-only or interactive modes
+- **Code Comments** - Add line-specific comments and threaded discussions
+- **Team Organizations** - Create organizations with role-based access (Owner, Admin, Developer, Viewer)
+- **Project Permissions** - Granular control with read, write, deploy, and admin permissions
+- **Activity Feed** - Track all team actions and changes in real-time
+- **Environment Variables** - Securely manage encrypted secrets at org and project levels
+- **Team Billing** - Track usage and costs per team member with detailed breakdowns
+
+### 2. **Real-time Collaborative Editing**
 - Built with Yjs and CRDT protocol for seamless multi-user editing
 - Live cursor tracking and presence awareness
 - CodeMirror-based editor with syntax highlighting for multiple languages
 
-### 2. **Integrated Terminal**
+### 3. **Integrated Terminal**
 - Full-featured terminal with WebSocket connection
 - Supports bash/powershell based on platform
 - Real-time terminal I/O with xterm.js
+- Terminal sharing for collaborative debugging 🆕
 
-### 3. **Git Integration**
-- Clone repositories
-- Commit, push, and pull operations
-- Branch management (create, checkout, list)
-- View git status, diff, and logs
-- Full git workflow support
+### 4. **Advanced Version Control** 🆕
+- **Pull Requests** - Create, review, and merge PRs directly in the IDE
+- **Visual Merge Conflicts** - 3-way merge view with conflict-by-conflict resolution
+- **Code Reviews** - Inline comments, approval workflows, and status tracking
+- **Branch Protection** - Enforce PR requirements, approvals, and status checks
+- Full git workflow support with commit, push, pull, and branch management
 
-### 4. **Package Manager Integration**
+### 5. **Package Manager Integration**
 - **npm** - Node.js package management
 - **pip** - Python package management
 - **cargo** - Rust package management
 - Install, uninstall, and list packages
 - Auto-detection of package managers
 
-### 5. **Hot Reload & Live Preview**
+### 6. **Hot Reload & Live Preview**
 - Iframe sandboxing for secure preview
 - File watching with chokidar
 - Automatic refresh on file changes
 - Real-time preview of web applications
 
-### 6. **Database GUI**
+### 7. **Database GUI**
 - **PostgreSQL** - Full query support and table browsing
 - **MySQL** - Connection management and query execution
 - **MongoDB** - Collection operations and document queries
 - Visual database management interface
 
-### 7. **Admin Control System** 🆕
+### 8. **Admin Control System** 🆕
 - **User Management** - Advanced search, suspension/activation, analytics, impersonation mode
 - **Platform Analytics** - Real-time metrics, revenue tracking (MRR/ARR), churn analysis
 - **Sales & Affiliates** - Affiliate program management, discount codes, commission tracking
@@ -48,7 +59,7 @@ A production-grade cloud IDE and deployment platform similar to Replit, built wi
 - **System Administration** - Server health monitoring, deployment queue, feature flags
 - **Security Features** - Role-based access control (RBAC), 2FA, audit logging, IP whitelisting
 
-### 8. **Intelligent Automation System** 🆕
+### 9. **Intelligent Automation System** 🆕
 - **Auto-Detection** - Automatically detect frameworks, build commands, ports, and dependencies
 - **IaC Generation** - Generate Dockerfiles, Kubernetes manifests, Terraform configs, nginx configurations
 - **Server Setup** - One-command server installation script with Docker, Node.js, Python, nginx, SSL
