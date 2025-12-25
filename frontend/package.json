@@ -17,7 +17,7 @@
     "react-dom": "^18.3.1",
     "next-auth": "^4.24.5",
     "@monaco-editor/react": "^4.6.0",
-    "monaco-editor": "^0.45.0",
+    "monaco-editor": "^0.55.1",
     "@xterm/xterm": "^5.5.0",
     "@xterm/addon-fit": "^0.10.0",
     "yjs": "^13.6.10",
