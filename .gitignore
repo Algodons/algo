@@ -2,6 +2,10 @@
 node_modules/
 package-lock.json
 yarn.lock
+venv/
+__pycache__/
+*.pyc
+*.egg-info/
 
 # Build outputs
 dist/
