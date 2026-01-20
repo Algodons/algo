@@ -20,6 +20,7 @@ DB_PORT="${DB_PORT:-5432}"
 # Database credentials
 DB_NAME="${DB_NAME:-${PROJECT_NAME}_db}"
 DB_USER="${DB_USER:-postgres}"
+# WARNING: Change this default password for any non-local deployment
 DB_PASSWORD="${DB_PASSWORD:-postgres}"
 
 # Versions
@@ -181,9 +182,20 @@ import os
 app = FastAPI(title="MyApp API", version="1.0.0")
 
 # CORS configuration
+cors_origins_env = os.getenv("CORS_ORIGINS")
+if cors_origins_env:
+    allowed_origins = [origin.strip() for origin in cors_origins_env.split(",") if origin.strip()]
+else:
+    # Default to common local development origins; configure CORS_ORIGINS for production.
+    allowed_origins = [
+        "http://localhost",
+        "http://localhost:3000",
+        "http://localhost:3001",
+    ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -238,8 +250,8 @@ EOF
   
   # api/Dockerfile
   if [[ ! -f api/Dockerfile ]]; then
-    cat > api/Dockerfile <<EOF
-FROM python:${PY_VERSION}-slim
+    cat > api/Dockerfile <<'EOF'
+FROM python:3.11-slim
 
 WORKDIR /app
 
@@ -248,9 +260,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-ENV API_PORT=${API_PORT}
+# Use a fixed internal port; map external ports via docker-compose or docker run
+ENV API_PORT=8000
 
-EXPOSE ${API_PORT}
+EXPOSE 8000
 
 CMD ["python", "main.py"]
 EOF
@@ -410,14 +423,17 @@ EOF
   
   # ui/Dockerfile
   if [[ ! -f ui/Dockerfile ]]; then
-    cat > ui/Dockerfile <<EOF
+    cat > ui/Dockerfile <<'EOF'
 # Build stage
-FROM node:${NODE_VERSION_HINT}-alpine AS builder
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci
+RUN npm install
+
+ARG VITE_API_URL
+ENV VITE_API_URL=${VITE_API_URL}
 
 COPY . .
 RUN npm run build
@@ -427,17 +443,17 @@ FROM nginx:alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Custom nginx config
+# Use a fixed internal port (80 is nginx default); map external ports via docker-compose
 RUN echo 'server { \
-  listen ${UI_PORT}; \
+  listen 80; \
   location / { \
     root /usr/share/nginx/html; \
     index index.html; \
-    try_files \$uri \$uri/ /index.html; \
+    try_files $uri $uri/ /index.html; \
   } \
 }' > /etc/nginx/conf.d/default.conf
 
-EXPOSE ${UI_PORT}
+EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
 EOF
@@ -505,8 +521,6 @@ create_docker_compose() {
   
   if [[ ! -f docker-compose.yml ]] || [[ "${FORCE_OVERWRITE:-0}" == "1" ]]; then
     cat > docker-compose.yml <<EOF
-version: '3.8'
-
 services:
   db:
     image: postgres:15-alpine
@@ -529,9 +543,9 @@ services:
       context: ./api
       dockerfile: Dockerfile
     ports:
-      - "${API_PORT}:${API_PORT}"
+      - "${API_PORT}:8000"
     environment:
-      API_PORT: ${API_PORT}
+      API_PORT: 8000
       DB_HOST: db
       DB_PORT: 5432
       DB_NAME: ${DB_NAME}
@@ -546,10 +560,10 @@ services:
     build:
       context: ./ui
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:${API_PORT}
     ports:
-      - "${UI_PORT}:${UI_PORT}"
-    environment:
-      VITE_API_URL: http://localhost:${API_PORT}
+      - "${UI_PORT}:80"
     depends_on:
       - api
     restart: unless-stopped
@@ -720,11 +734,11 @@ jobs:
         with:
           node-version: '${NODE_VERSION_HINT}'
           cache: 'npm'
-          cache-dependency-path: './ui/package-lock.json'
+          cache-dependency-path: './ui/package.json'
 
       - name: Install UI dependencies
         working-directory: ./ui
-        run: npm ci
+        run: npm install
 
       - name: Build UI
         working-directory: ./ui
@@ -792,6 +806,10 @@ cmd_run() {
   # Start API in background
   info "Starting API on port $API_PORT..."
   cd api
+  # Ensure virtualenv exists before trying to activate it
+  if [[ ! -f "venv/bin/activate" ]]; then
+    err "Python virtualenv not found in ./api. Please run './master.sh setup' first to create it."
+  fi
   # shellcheck disable=SC1091
   source venv/bin/activate
   API_PORT=$API_PORT python main.py &
@@ -883,17 +901,34 @@ cmd_github_push() {
   # Commit and push
   info "Checking for changes..."
   
-  if ! git diff-index --quiet HEAD -- 2>/dev/null; then
-    info "Uncommitted changes found"
-    git add .
-    
-    local commit_msg
-    commit_msg=$(ask "Commit message" "Initial commit from master.sh")
-    
-    git commit -m "$commit_msg"
-    success "Changes committed"
+  if git rev-parse --verify HEAD >/dev/null 2>&1; then
+    # HEAD exists: safe to diff against it
+    if ! git diff-index --quiet HEAD -- 2>/dev/null; then
+      info "Uncommitted changes found"
+      git add .
+      
+      local commit_msg
+      commit_msg=$(ask "Commit message" "Initial commit from master.sh")
+      
+      git commit -m "$commit_msg"
+      success "Changes committed"
+    else
+      info "No uncommitted changes"
+    fi
   else
-    info "No uncommitted changes"
+    # Initial commit case: HEAD does not yet exist
+    if [[ -n "$(git status --porcelain 2>/dev/null)" ]]; then
+      info "Uncommitted changes found (initial commit)"
+      git add .
+      
+      local commit_msg
+      commit_msg=$(ask "Commit message" "Initial commit from master.sh")
+      
+      git commit -m "$commit_msg"
+      success "Changes committed"
+    else
+      info "No uncommitted changes"
+    fi
   fi
   
   info "Pushing to origin..."
