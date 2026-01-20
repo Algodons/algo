@@ -1,114 +1,114 @@
-import { Express } from 'express'
-import { exec } from 'child_process'
-import { promisify } from 'util'
-import path from 'path'
+import { Express } from 'express';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import path from 'path';
 
-const execAsync = promisify(exec)
+const execAsync = promisify(exec);
 
 // Using process.cwd() as it works in CommonJS
-const WORKSPACE_DIR = process.env.WORKSPACE_DIR || path.join(process.cwd(), 'workspace')
+const WORKSPACE_DIR = process.env.WORKSPACE_DIR || path.join(process.cwd(), 'workspace');
 
 // Helper function to escape shell arguments
 function escapeShellArg(arg: string): string {
   // Replace single quotes with '\'' and wrap in single quotes
-  return `'${arg.replace(/'/g, "'\\''")}'`
+  return `'${arg.replace(/'/g, "'\\''")}'`;
 }
 
 export function setupSearchRoutes(app: Express) {
   // Search files using ripgrep
   app.post('/api/search', async (req, res) => {
     try {
-      const { query, regex, caseSensitive } = req.body
+      const { query, regex, caseSensitive } = req.body;
 
       if (!query) {
-        return res.status(400).json({ error: 'Query required' })
+        return res.status(400).json({ error: 'Query required' });
       }
 
       // Build ripgrep command
       const flags = [
         '-n', // Line numbers
         '--json', // JSON output
-      ]
+      ];
 
       if (!caseSensitive) {
-        flags.push('-i')
+        flags.push('-i');
       }
 
       if (!regex) {
-        flags.push('-F') // Fixed string search
+        flags.push('-F'); // Fixed string search
       }
 
       // Properly escape the query and workspace directory
-      const command = `rg ${flags.join(' ')} ${escapeShellArg(query)} ${escapeShellArg(WORKSPACE_DIR)}`
+      const command = `rg ${flags.join(' ')} ${escapeShellArg(query)} ${escapeShellArg(WORKSPACE_DIR)}`;
 
       try {
         const { stdout } = await execAsync(command, {
-          maxBuffer: 10 * 1024 * 1024 // 10MB buffer
-        })
+          maxBuffer: 10 * 1024 * 1024, // 10MB buffer
+        });
 
         // Parse ripgrep JSON output
         const results = stdout
           .split('\n')
-          .filter(line => line.trim())
-          .map(line => {
+          .filter((line) => line.trim())
+          .map((line) => {
             try {
-              const parsed = JSON.parse(line)
+              const parsed = JSON.parse(line);
               if (parsed.type === 'match') {
                 return {
                   file: parsed.data.path.text,
                   line: parsed.data.line_number,
                   column: parsed.data.submatches[0]?.start || 0,
                   match: parsed.data.submatches[0]?.match?.text || '',
-                  context: parsed.data.lines.text.trim()
-                }
+                  context: parsed.data.lines.text.trim(),
+                };
               }
-              return null
+              return null;
             } catch {
-              return null
+              return null;
             }
           })
-          .filter(r => r !== null)
+          .filter((r) => r !== null);
 
-        res.json({ results })
+        res.json({ results });
       } catch (error: any) {
         // ripgrep returns exit code 1 when no matches found
         if (error.code === 1) {
-          res.json({ results: [] })
+          res.json({ results: [] });
         } else {
-          throw error
+          throw error;
         }
       }
     } catch (error) {
-      console.error('Search error:', error)
-      res.status(500).json({ error: 'Search failed' })
+      console.error('Search error:', error);
+      res.status(500).json({ error: 'Search failed' });
     }
-  })
+  });
 
   // Find files by name
   app.post('/api/search/files', async (req, res) => {
     try {
-      const { query } = req.body
+      const { query } = req.body;
 
       if (!query) {
-        return res.status(400).json({ error: 'Query required' })
+        return res.status(400).json({ error: 'Query required' });
       }
 
       // Properly escape the query and workspace directory for shell command
-      const command = `find ${escapeShellArg(WORKSPACE_DIR)} -type f -iname ${escapeShellArg('*' + query + '*')} -not -path "*/node_modules/*" -not -path "*/.git/*"`
+      const command = `find ${escapeShellArg(WORKSPACE_DIR)} -type f -iname ${escapeShellArg('*' + query + '*')} -not -path "*/node_modules/*" -not -path "*/.git/*"`;
 
       const { stdout } = await execAsync(command, {
-        maxBuffer: 10 * 1024 * 1024
-      })
+        maxBuffer: 10 * 1024 * 1024,
+      });
 
       const files = stdout
         .split('\n')
-        .filter(f => f.trim())
-        .map(f => f.replace(WORKSPACE_DIR + '/', ''))
+        .filter((f) => f.trim())
+        .map((f) => f.replace(WORKSPACE_DIR + '/', ''));
 
-      res.json({ files })
+      res.json({ files });
     } catch (error) {
-      console.error('File search error:', error)
-      res.status(500).json({ error: 'File search failed' })
+      console.error('File search error:', error);
+      res.status(500).json({ error: 'File search failed' });
     }
-  })
+  });
 }

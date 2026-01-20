@@ -38,8 +38,8 @@ export function createUsageRoutes(pool: Pool) {
       const { startDate, endDate, metricType } = req.query;
 
       if (!startDate || !endDate) {
-        return res.status(400).json({ 
-          error: 'Start date and end date are required' 
+        return res.status(400).json({
+          error: 'Start date and end date are required',
         });
       }
 
@@ -69,9 +69,7 @@ export function createUsageRoutes(pool: Pool) {
 
       const { projectId } = req.params;
 
-      const summary = await usageService.getProjectUsageSummary(
-        parseInt(projectId)
-      );
+      const summary = await usageService.getProjectUsageSummary(parseInt(projectId));
 
       res.json({ summary });
     } catch (error) {
@@ -93,8 +91,8 @@ export function createUsageRoutes(pool: Pool) {
       const { metricType, value, unit, projectId, metadata } = req.body;
 
       if (!metricType || value === undefined || !unit) {
-        return res.status(400).json({ 
-          error: 'Metric type, value, and unit are required' 
+        return res.status(400).json({
+          error: 'Metric type, value, and unit are required',
         });
       }
 
@@ -107,8 +105,8 @@ export function createUsageRoutes(pool: Pool) {
       ];
 
       if (!validMetricTypes.includes(metricType)) {
-        return res.status(400).json({ 
-          error: `Invalid metric type. Must be one of: ${validMetricTypes.join(', ')}` 
+        return res.status(400).json({
+          error: `Invalid metric type. Must be one of: ${validMetricTypes.join(', ')}`,
         });
       }
 
@@ -121,10 +119,10 @@ export function createUsageRoutes(pool: Pool) {
         metadata
       );
 
-      res.json({ 
+      res.json({
         success: true,
         metric,
-        message: 'Usage recorded successfully' 
+        message: 'Usage recorded successfully',
       });
     } catch (error: any) {
       console.error('Error recording usage:', error);

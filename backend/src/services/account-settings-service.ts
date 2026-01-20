@@ -122,7 +122,10 @@ export class AccountSettingsService {
       [organizationId, inviterId]
     );
 
-    if (inviter.rows.length === 0 || (inviter.rows[0].role !== 'owner' && inviter.rows[0].role !== 'admin')) {
+    if (
+      inviter.rows.length === 0 ||
+      (inviter.rows[0].role !== 'owner' && inviter.rows[0].role !== 'admin')
+    ) {
       throw new Error('Permission denied');
     }
 
@@ -153,7 +156,10 @@ export class AccountSettingsService {
       [organizationId, removerId]
     );
 
-    if (remover.rows.length === 0 || (remover.rows[0].role !== 'owner' && remover.rows[0].role !== 'admin')) {
+    if (
+      remover.rows.length === 0 ||
+      (remover.rows[0].role !== 'owner' && remover.rows[0].role !== 'admin')
+    ) {
       throw new Error('Permission denied');
     }
 
@@ -195,10 +201,9 @@ export class AccountSettingsService {
 
   async setDefaultPaymentMethod(userId: number, paymentMethodId: number): Promise<void> {
     // Unset all defaults
-    await this.pool.query(
-      'UPDATE payment_methods SET is_default = false WHERE user_id = $1',
-      [userId]
-    );
+    await this.pool.query('UPDATE payment_methods SET is_default = false WHERE user_id = $1', [
+      userId,
+    ]);
 
     // Set new default
     await this.pool.query(
@@ -208,10 +213,10 @@ export class AccountSettingsService {
   }
 
   async deletePaymentMethod(userId: number, paymentMethodId: number): Promise<void> {
-    await this.pool.query(
-      'DELETE FROM payment_methods WHERE id = $1 AND user_id = $2',
-      [paymentMethodId, userId]
-    );
+    await this.pool.query('DELETE FROM payment_methods WHERE id = $1 AND user_id = $2', [
+      paymentMethodId,
+      userId,
+    ]);
   }
 
   // Invoices
@@ -225,10 +230,10 @@ export class AccountSettingsService {
   }
 
   async getInvoice(userId: number, invoiceId: number): Promise<Invoice | null> {
-    const result = await this.pool.query(
-      'SELECT * FROM invoices WHERE id = $1 AND user_id = $2',
-      [invoiceId, userId]
-    );
+    const result = await this.pool.query('SELECT * FROM invoices WHERE id = $1 AND user_id = $2', [
+      invoiceId,
+      userId,
+    ]);
 
     return result.rows[0] || null;
   }
@@ -322,10 +327,9 @@ export class AccountSettingsService {
   }
 
   async disable2FA(userId: number): Promise<void> {
-    await this.pool.query(
-      'UPDATE two_factor_auth SET is_enabled = false WHERE user_id = $1',
-      [userId]
-    );
+    await this.pool.query('UPDATE two_factor_auth SET is_enabled = false WHERE user_id = $1', [
+      userId,
+    ]);
   }
 
   async get2FAStatus(userId: number): Promise<{ isEnabled: boolean }> {
@@ -340,12 +344,8 @@ export class AccountSettingsService {
   // SSH Keys
   async addSshKey(userId: number, name: string, publicKey: string): Promise<SshKey> {
     // Generate fingerprint
-    const fingerprint = crypto
-      .createHash('sha256')
-      .update(publicKey)
-      .digest('hex')
-      .match(/.{2}/g)
-      ?.join(':') || '';
+    const fingerprint =
+      crypto.createHash('sha256').update(publicKey).digest('hex').match(/.{2}/g)?.join(':') || '';
 
     const result = await this.pool.query(
       `INSERT INTO ssh_keys (user_id, name, public_key, fingerprint)
@@ -367,10 +367,7 @@ export class AccountSettingsService {
   }
 
   async deleteSshKey(userId: number, keyId: number): Promise<void> {
-    await this.pool.query(
-      'DELETE FROM ssh_keys WHERE id = $1 AND user_id = $2',
-      [keyId, userId]
-    );
+    await this.pool.query('DELETE FROM ssh_keys WHERE id = $1 AND user_id = $2', [keyId, userId]);
   }
 
   // Personal Access Tokens
@@ -414,9 +411,9 @@ export class AccountSettingsService {
   }
 
   async deletePersonalAccessToken(userId: number, tokenId: number): Promise<void> {
-    await this.pool.query(
-      'DELETE FROM personal_access_tokens WHERE id = $1 AND user_id = $2',
-      [tokenId, userId]
-    );
+    await this.pool.query('DELETE FROM personal_access_tokens WHERE id = $1 AND user_id = $2', [
+      tokenId,
+      userId,
+    ]);
   }
 }

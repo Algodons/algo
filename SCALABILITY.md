@@ -1,6 +1,7 @@
 # Scalability Architecture
 
-This document describes the comprehensive scalability strategy implemented for the Algo platform, covering caching, load balancing, and resource management.
+This document describes the comprehensive scalability strategy implemented for
+the Algo platform, covering caching, load balancing, and resource management.
 
 ## Table of Contents
 
@@ -16,7 +17,8 @@ This document describes the comprehensive scalability strategy implemented for t
 
 ## Overview
 
-The scalability architecture is designed to handle growth efficiently while optimizing costs and maintaining performance. It implements:
+The scalability architecture is designed to handle growth efficiently while
+optimizing costs and maintaining performance. It implements:
 
 - **Multi-layer caching** for optimal response times
 - **Intelligent load balancing** for traffic distribution
@@ -32,18 +34,21 @@ The scalability architecture is designed to handle growth efficiently while opti
 The platform implements a three-tier caching strategy:
 
 #### L1: In-Memory Cache (Fastest)
+
 - **Size**: 100MB (configurable)
 - **TTL**: Up to 5 minutes
 - **Algorithm**: LRU (Least Recently Used)
 - **Use Cases**: Hot data, frequently accessed items
 
 #### L2: Redis Cache (Distributed)
+
 - **Size**: Configurable (default 256MB)
 - **TTL**: Up to 1 hour
 - **Persistence**: RDB + AOF
 - **Use Cases**: Session data, API responses, query results
 
 #### L3: CDN Cache (Static Assets)
+
 - **Provider**: Cloudflare/Fastly
 - **TTL**: 7 days to 1 year
 - **Use Cases**: Static files, images, fonts
@@ -56,12 +61,12 @@ Redis is used for distributed session storage:
 # Session Configuration
 session:
   ttl:
-    default: 86400      # 24 hours
-    remember_me: 2592000  # 30 days
+    default: 86400 # 24 hours
+    remember_me: 2592000 # 30 days
   security:
     httpOnly: true
     secure: true
-    sameSite: "strict"
+    sameSite: 'strict'
 ```
 
 ### Database Query Caching
@@ -80,10 +85,13 @@ Middleware-based caching for API endpoints:
 
 ```typescript
 // Apply caching to routes
-app.use('/api/subscriptions/plans', cacheMiddleware({ 
-  ttl: 3600,      // 1 hour
-  prefix: 'plans'
-}));
+app.use(
+  '/api/subscriptions/plans',
+  cacheMiddleware({
+    ttl: 3600, // 1 hour
+    prefix: 'plans',
+  })
+);
 ```
 
 ### Build Artifact Caching
@@ -154,7 +162,7 @@ stickySession:
   enabled: true
   type: cookie
   cookieName: BACKEND_SERVER
-  timeout: 3600  # 1 hour
+  timeout: 3600 # 1 hour
 ```
 
 ### Connection Draining
@@ -201,9 +209,9 @@ Machine learning-based scaling:
 
 ```yaml
 instances:
-  min: 2      # Minimum instances
-  max: 20     # Maximum instances
-  desired: 3  # Initial capacity
+  min: 2 # Minimum instances
+  max: 20 # Maximum instances
+  desired: 3 # Initial capacity
 ```
 
 ### Kubernetes HPA
@@ -219,12 +227,12 @@ spec:
   minReplicas: 2
   maxReplicas: 20
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
 ```
 
 ## Resource Management
@@ -234,6 +242,7 @@ spec:
 Each service has defined resource limits:
 
 #### Backend Service
+
 ```yaml
 resources:
   requests:
@@ -245,6 +254,7 @@ resources:
 ```
 
 #### Database Service
+
 ```yaml
 resources:
   requests:
@@ -256,6 +266,7 @@ resources:
 ```
 
 #### Redis Cache
+
 ```yaml
 resources:
   requests:
@@ -416,24 +427,28 @@ SPOT_INSTANCES_ENABLED=true
 Monitor key scalability metrics:
 
 #### Caching Metrics
+
 - Cache hit ratio (target: >80%)
 - Cache memory usage
 - Eviction rate
 - Response time improvement
 
 #### Load Balancing Metrics
+
 - Request distribution
 - Backend health
 - Connection count
 - Error rate
 
 #### Auto-Scaling Metrics
+
 - Current instance count
 - CPU/memory utilization
 - Scaling events
 - Request rate
 
 #### Resource Metrics
+
 - Container CPU usage
 - Container memory usage
 - OOM kills
@@ -533,11 +548,13 @@ Set up alerts at:
 ### Cache Issues
 
 **Low hit ratio**:
+
 - Check TTL settings
 - Verify cache key generation
 - Review invalidation patterns
 
 **Redis connection errors**:
+
 - Check Redis health
 - Verify credentials
 - Check network connectivity
@@ -545,11 +562,13 @@ Set up alerts at:
 ### Load Balancing Issues
 
 **Uneven distribution**:
+
 - Verify sticky session configuration
 - Check backend weights
 - Review health check results
 
 **Backend timeouts**:
+
 - Increase timeout values
 - Check backend performance
 - Review resource limits
@@ -557,11 +576,13 @@ Set up alerts at:
 ### Scaling Issues
 
 **Scaling too frequently**:
+
 - Increase cooldown periods
 - Adjust thresholds
 - Use stabilization windows
 
 **Not scaling fast enough**:
+
 - Lower thresholds
 - Reduce evaluation periods
 - Increase scale-up rate
@@ -569,11 +590,13 @@ Set up alerts at:
 ### Resource Issues
 
 **OOM kills**:
+
 - Increase memory limits
 - Check for memory leaks
 - Optimize application code
 
 **CPU throttling**:
+
 - Increase CPU limits
 - Optimize CPU usage
 - Review workload patterns

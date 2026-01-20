@@ -113,7 +113,9 @@ export function AdvancedAdminDashboard({ darkMode = false, onToggleDarkMode }: D
   return (
     <div className={`min-h-screen ${bgColor} ${textColor} transition-colors duration-300`}>
       {/* Header */}
-      <div className={`${cardBg} border-b ${borderColor} sticky top-0 z-50 backdrop-blur-lg bg-opacity-80`}>
+      <div
+        className={`${cardBg} border-b ${borderColor} sticky top-0 z-50 backdrop-blur-lg bg-opacity-80`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
@@ -127,7 +129,9 @@ export function AdvancedAdminDashboard({ darkMode = false, onToggleDarkMode }: D
               >
                 {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
-              <button className={`px-4 py-2 rounded-lg ${darkMode ? 'bg-blue-600' : 'bg-blue-500'} text-white hover:scale-105 transition-transform`}>
+              <button
+                className={`px-4 py-2 rounded-lg ${darkMode ? 'bg-blue-600' : 'bg-blue-500'} text-white hover:scale-105 transition-transform`}
+              >
                 <Settings className="w-5 h-5" />
               </button>
             </div>
@@ -149,8 +153,8 @@ export function AdvancedAdminDashboard({ darkMode = false, onToggleDarkMode }: D
                       ? 'bg-blue-600 text-white'
                       : 'bg-blue-500 text-white'
                     : darkMode
-                    ? 'hover:bg-gray-700'
-                    : 'hover:bg-gray-100'
+                      ? 'hover:bg-gray-700'
+                      : 'hover:bg-gray-100'
                 }`}
               >
                 {tab.icon}
@@ -174,15 +178,24 @@ export function AdvancedAdminDashboard({ darkMode = false, onToggleDarkMode }: D
               className={`${cardBg} rounded-xl p-6 border ${borderColor} shadow-lg hover:shadow-xl transition-shadow`}
             >
               <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 rounded-lg bg-${metric.color}-100 dark:bg-${metric.color}-900`}>
+                <div
+                  className={`p-3 rounded-lg bg-${metric.color}-100 dark:bg-${metric.color}-900`}
+                >
                   {metric.icon}
                 </div>
-                <div className={`flex items-center space-x-1 text-sm ${metric.trend === 'up' ? 'text-green-500' : metric.trend === 'down' ? 'text-red-500' : 'text-gray-500'}`}>
+                <div
+                  className={`flex items-center space-x-1 text-sm ${metric.trend === 'up' ? 'text-green-500' : metric.trend === 'down' ? 'text-red-500' : 'text-gray-500'}`}
+                >
                   <TrendingUp className="w-4 h-4" />
-                  <span>{metric.change > 0 ? '+' : ''}{metric.change.toFixed(1)}%</span>
+                  <span>
+                    {metric.change > 0 ? '+' : ''}
+                    {metric.change.toFixed(1)}%
+                  </span>
                 </div>
               </div>
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">{metric.title}</h3>
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                {metric.title}
+              </h3>
               <p className="text-3xl font-bold mt-2">{metric.value}</p>
             </motion.div>
           ))}
@@ -191,11 +204,7 @@ export function AdvancedAdminDashboard({ darkMode = false, onToggleDarkMode }: D
         {/* Tab Content */}
         <div className="space-y-6">
           {activeTab === 'overview' && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="space-y-6"
-            >
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
               <div className={`${cardBg} rounded-xl p-6 border ${borderColor}`}>
                 <h2 className="text-xl font-bold mb-4">System Overview</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -271,7 +280,8 @@ export function AdvancedAdminDashboard({ darkMode = false, onToggleDarkMode }: D
                 <span>AI-Powered Analytics</span>
               </h2>
               <p className="text-gray-500 dark:text-gray-400 mb-4">
-                Leverage machine learning for predictive analytics, churn prevention, and fraud detection.
+                Leverage machine learning for predictive analytics, churn prevention, and fraud
+                detection.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
@@ -313,7 +323,9 @@ export function AdvancedAdminDashboard({ darkMode = false, onToggleDarkMode }: D
                     {[1, 2, 3].map((rank) => (
                       <div key={rank} className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${rank === 1 ? 'bg-yellow-500' : rank === 2 ? 'bg-gray-400' : 'bg-orange-600'} text-white font-bold`}>
+                          <div
+                            className={`w-8 h-8 rounded-full flex items-center justify-center ${rank === 1 ? 'bg-yellow-500' : rank === 2 ? 'bg-gray-400' : 'bg-orange-600'} text-white font-bold`}
+                          >
                             {rank}
                           </div>
                           <span className="font-medium">Affiliate {rank}</span>
@@ -344,7 +356,9 @@ export function AdvancedAdminDashboard({ darkMode = false, onToggleDarkMode }: D
                 <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
                   <h3 className="font-semibold mb-2">Crypto Payments</h3>
                   <p className="text-2xl font-bold text-green-600 dark:text-green-400">$45.2K</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">This month (BTC, ETH, USDT, USDC)</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    This month (BTC, ETH, USDT, USDC)
+                  </p>
                 </div>
                 <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
                   <h3 className="font-semibold mb-2">NFTs Minted</h3>

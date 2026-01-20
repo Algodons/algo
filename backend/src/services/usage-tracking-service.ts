@@ -32,7 +32,7 @@ export class UsageTrackingService {
   ): Promise<UsageMetric> {
     // Get current billing period
     const billingPeriod = this.getCurrentBillingPeriod();
-    
+
     // Calculate cost based on usage type
     const cost = await this.calculateUsageCost(metricType, value);
 
@@ -44,9 +44,17 @@ export class UsageTrackingService {
       RETURNING 
         id, user_id as "userId", project_id as "projectId", 
         metric_type as "metricType", value, unit, cost, timestamp`,
-      [userId, projectId, metricType, value, unit, cost, 
-       metadata ? JSON.stringify(metadata) : null,
-       billingPeriod.start, billingPeriod.end]
+      [
+        userId,
+        projectId,
+        metricType,
+        value,
+        unit,
+        cost,
+        metadata ? JSON.stringify(metadata) : null,
+        billingPeriod.start,
+        billingPeriod.end,
+      ]
     );
 
     // Check if usage alerts should be triggered
@@ -126,33 +134,21 @@ export class UsageTrackingService {
   /**
    * Track deployment hours
    */
-  async trackDeploymentHours(
-    userId: number,
-    projectId: number,
-    hours: number
-  ): Promise<void> {
+  async trackDeploymentHours(userId: number, projectId: number, hours: number): Promise<void> {
     await this.recordUsage(userId, 'deployment_hours', hours, 'hours', projectId);
   }
 
   /**
    * Track storage usage
    */
-  async trackStorageUsage(
-    userId: number,
-    projectId: number,
-    megabytes: number
-  ): Promise<void> {
+  async trackStorageUsage(userId: number, projectId: number, megabytes: number): Promise<void> {
     await this.recordUsage(userId, 'storage', megabytes, 'MB', projectId);
   }
 
   /**
    * Track bandwidth usage
    */
-  async trackBandwidthUsage(
-    userId: number,
-    projectId: number,
-    gigabytes: number
-  ): Promise<void> {
+  async trackBandwidthUsage(userId: number, projectId: number, gigabytes: number): Promise<void> {
     await this.recordUsage(userId, 'bandwidth', gigabytes, 'GB', projectId);
   }
 
@@ -177,34 +173,38 @@ export class UsageTrackingService {
         (user_id, project_id, provider, model, tokens_used, cost_usd, 
          markup_percentage, total_charge, billing_period_start, billing_period_end)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-      [userId, projectId, provider, model, tokensUsed, costUsd, 
-       markupPercentage, totalCharge, billingPeriod.start, billingPeriod.end]
+      [
+        userId,
+        projectId,
+        provider,
+        model,
+        tokensUsed,
+        costUsd,
+        markupPercentage,
+        totalCharge,
+        billingPeriod.start,
+        billingPeriod.end,
+      ]
     );
 
-    await this.recordUsage(
-      userId,
-      'ai_api_usage',
-      totalCharge,
-      'USD',
-      projectId,
-      { provider, model, tokens: tokensUsed }
-    );
+    await this.recordUsage(userId, 'ai_api_usage', totalCharge, 'USD', projectId, {
+      provider,
+      model,
+      tokens: tokensUsed,
+    });
   }
 
   /**
    * Calculate cost based on usage type and tier
    */
-  private async calculateUsageCost(
-    metricType: string,
-    value: number
-  ): Promise<number> {
+  private async calculateUsageCost(metricType: string, value: number): Promise<number> {
     // Pricing configuration
     const pricing: Record<string, number> = {
       deployment_hours: 0.01, // $0.01 per hour
-      storage: 0.10 / 1024,   // $0.10 per GB/month = $0.10/1024 per MB
-      bandwidth: 0.05,         // $0.05 per GB
-      ai_api_usage: 1,         // Already calculated with markup
-      build_minutes: 0.005,    // $0.005 per minute
+      storage: 0.1 / 1024, // $0.10 per GB/month = $0.10/1024 per MB
+      bandwidth: 0.05, // $0.05 per GB
+      ai_api_usage: 1, // Already calculated with markup
+      build_minutes: 0.005, // $0.005 per minute
     };
 
     const rate = pricing[metricType] || 0;
@@ -326,8 +326,16 @@ export class UsageTrackingService {
         (alert_id, user_id, metric_type, threshold_value, current_value, 
          percentage_used, notification_sent, notification_channels)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-      [alertId, userId, metricType, thresholdValue, currentValue, 
-       percentageUsed, true, JSON.stringify(notificationChannels)]
+      [
+        alertId,
+        userId,
+        metricType,
+        thresholdValue,
+        currentValue,
+        percentageUsed,
+        true,
+        JSON.stringify(notificationChannels),
+      ]
     );
 
     // Update last triggered timestamp

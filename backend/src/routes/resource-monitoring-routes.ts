@@ -177,7 +177,12 @@ export function createResourceMonitoringRoutes(pool: Pool): Router {
         return res.status(400).json({ error: 'Metric type and threshold value are required' });
       }
 
-      const alert = await service.createAlert(userId, metricType, thresholdValue, thresholdPercentage);
+      const alert = await service.createAlert(
+        userId,
+        metricType,
+        thresholdValue,
+        thresholdPercentage
+      );
       res.status(201).json({ alert });
     } catch (error) {
       console.error('Error creating alert:', error);

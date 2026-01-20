@@ -6,7 +6,7 @@ const nextConfig = {
   output: 'standalone',
   // Set the root directory for file tracing to resolve the monorepo warning
   outputFileTracingRoot: path.join(__dirname, '..'),
-  
+
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -20,16 +20,23 @@ const nextConfig = {
     }
     return config;
   },
-  
+
   async headers() {
     return [
       {
         source: '/api/:path*',
         headers: [
           { key: 'Access-Control-Allow-Credentials', value: 'true' },
-          { key: 'Access-Control-Allow-Origin', value: process.env.FRONTEND_URL || 'http://localhost:3000' },
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: process.env.FRONTEND_URL || 'http://localhost:3000',
+          },
           { key: 'Access-Control-Allow-Methods', value: 'GET,DELETE,PATCH,POST,PUT,OPTIONS' },
-          { key: 'Access-Control-Allow-Headers', value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization' },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value:
+              'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization',
+          },
         ],
       },
       {
@@ -43,11 +50,11 @@ const nextConfig = {
       },
     ];
   },
-  
+
   // Optimize for production
   compress: true,
   poweredByHeader: false,
-  
+
   // Environment variables that should be available on the client
   env: {
     NEXT_PUBLIC_API_URL: process.env.API_URL || process.env.NEXT_PUBLIC_API_URL,

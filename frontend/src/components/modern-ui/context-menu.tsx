@@ -1,61 +1,63 @@
-'use client'
+'use client';
 
-import { useState, useRef, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { LucideIcon } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { LucideIcon } from 'lucide-react';
 
-export type ContextMenuItem = {
-  label: string
-  icon?: LucideIcon
-  onClick: () => void
-  shortcut?: string
-  disabled?: boolean
-  danger?: boolean
-  divider?: never
-} | {
-  divider: true
-  label?: never
-  icon?: never
-  onClick?: never
-  shortcut?: never
-  disabled?: never
-  danger?: never
-}
+export type ContextMenuItem =
+  | {
+      label: string;
+      icon?: LucideIcon;
+      onClick: () => void;
+      shortcut?: string;
+      disabled?: boolean;
+      danger?: boolean;
+      divider?: never;
+    }
+  | {
+      divider: true;
+      label?: never;
+      icon?: never;
+      onClick?: never;
+      shortcut?: never;
+      disabled?: never;
+      danger?: never;
+    };
 
 interface ContextMenuProps {
-  items: ContextMenuItem[]
-  children: React.ReactNode
+  items: ContextMenuItem[];
+  children: React.ReactNode;
 }
 
 export function ContextMenu({ items, children }: ContextMenuProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [position, setPosition] = useState({ x: 0, y: 0 })
-  const menuRef = useRef<HTMLDivElement>(null)
+  const [isOpen, setIsOpen] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const handleContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault()
-    setPosition({ x: e.clientX, y: e.clientY })
-    setIsOpen(true)
-  }
+    e.preventDefault();
+    setPosition({ x: e.clientX, y: e.clientY });
+    setIsOpen(true);
+  };
 
   const handleClickOutside = (e: MouseEvent) => {
     if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-      setIsOpen(false)
+      setIsOpen(false);
     }
-  }
+  };
 
   useEffect(() => {
     if (isOpen) {
-      document.addEventListener('click', handleClickOutside)
-      return () => document.removeEventListener('click', handleClickOutside)
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const handleItemClick = (item: ContextMenuItem) => {
-    if ('divider' in item || item.disabled) return
-    item.onClick()
-    setIsOpen(false)
-  }
+    if ('divider' in item || item.disabled) return;
+    item.onClick();
+    setIsOpen(false);
+  };
 
   return (
     <>
@@ -78,10 +80,10 @@ export function ContextMenu({ items, children }: ContextMenuProps) {
           >
             {items.map((item, index) => {
               if ('divider' in item && item.divider) {
-                return <div key={index} className="h-px bg-white/10 my-1" />
+                return <div key={index} className="h-px bg-white/10 my-1" />;
               }
 
-              const Icon = item.icon
+              const Icon = item.icon;
 
               return (
                 <motion.button
@@ -93,21 +95,19 @@ export function ContextMenu({ items, children }: ContextMenuProps) {
                     item.disabled
                       ? 'text-gray-600 cursor-not-allowed'
                       : item.danger
-                      ? 'text-red-400 hover:text-red-300'
-                      : 'text-gray-300 hover:text-white'
+                        ? 'text-red-400 hover:text-red-300'
+                        : 'text-gray-300 hover:text-white'
                   }`}
                 >
                   {Icon && <Icon className="h-4 w-4" />}
                   <span className="flex-1 text-left">{item.label}</span>
-                  {item.shortcut && (
-                    <span className="text-xs text-gray-600">{item.shortcut}</span>
-                  )}
+                  {item.shortcut && <span className="text-xs text-gray-600">{item.shortcut}</span>}
                 </motion.button>
-              )
+              );
             })}
           </motion.div>
         )}
       </AnimatePresence>
     </>
-  )
+  );
 }

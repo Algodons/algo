@@ -59,10 +59,7 @@ export class BackupService {
   /**
    * Create a backup
    */
-  async createBackup(
-    connectionId: string,
-    options: BackupOptions = {}
-  ): Promise<BackupMetadata> {
+  async createBackup(connectionId: string, options: BackupOptions = {}): Promise<BackupMetadata> {
     const adapter = this.connectionService.getAdapter(connectionId);
 
     if (!adapter) {
@@ -304,10 +301,7 @@ export class BackupService {
   /**
    * Point-in-time recovery (placeholder)
    */
-  async pointInTimeRecovery(
-    connectionId: string,
-    targetTimestamp: Date
-  ): Promise<void> {
+  async pointInTimeRecovery(connectionId: string, targetTimestamp: Date): Promise<void> {
     // Find the closest backup before the target timestamp
     const backups = this.listBackups(connectionId)
       .filter((b) => b.timestamp <= targetTimestamp)
@@ -372,11 +366,7 @@ export class BackupService {
     const gzip = zlib.createGzip();
 
     return new Promise((resolve, reject) => {
-      Readable.from(data)
-        .pipe(gzip)
-        .pipe(writeStream)
-        .on('finish', resolve)
-        .on('error', reject);
+      Readable.from(data).pipe(gzip).pipe(writeStream).on('finish', resolve).on('error', reject);
     });
   }
 

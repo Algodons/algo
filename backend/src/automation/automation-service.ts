@@ -86,15 +86,17 @@ export class AutomationService {
   async installDependencies(projectPath: string): Promise<any> {
     this.logger.info('Installing dependencies...');
     const results = await this.dependencyInstaller.installDependencies(projectPath);
-    
+
     const summary = {
       total: results.length,
-      successful: results.filter(r => r.success).length,
-      failed: results.filter(r => !r.success).length,
+      successful: results.filter((r) => r.success).length,
+      failed: results.filter((r) => !r.success).length,
       results,
     };
 
-    this.logger.info(`Dependencies installation completed: ${summary.successful}/${summary.total} successful`);
+    this.logger.info(
+      `Dependencies installation completed: ${summary.successful}/${summary.total} successful`
+    );
     return summary;
   }
 
@@ -117,11 +119,16 @@ export class AutomationService {
 
     // Generate Kubernetes manifests
     const appName = projectPath.split('/').pop() || 'app';
-    const kubernetes = this.kubernetesGenerator.generateManifests(appName, frameworks, ports, domain);
+    const kubernetes = this.kubernetesGenerator.generateManifests(
+      appName,
+      frameworks,
+      ports,
+      domain
+    );
     this.logger.debug('Kubernetes manifests generated');
 
     // Generate nginx config
-    const nginx = domain 
+    const nginx = domain
       ? this.nginxGenerator.generateConfig(domain, ports, true)
       : this.nginxGenerator.generateConfig('localhost', ports, false);
     this.logger.debug('nginx configuration generated');

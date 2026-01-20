@@ -35,8 +35,17 @@ import automationRoutes from './routes/automation-routes';
 import { createV1Routes } from './routes/v1/index';
 import { createCopilotRoutes } from './routes/copilot-routes';
 import * as path from 'path';
-import { initializeRedisCache, cacheMiddleware, getCacheStats, clearAllCaches, invalidateCache } from './middleware/caching';
-import { ProjectSuspensionService, wakeOnRequestMiddleware } from './services/project-suspension-service';
+import {
+  initializeRedisCache,
+  cacheMiddleware,
+  getCacheStats,
+  clearAllCaches,
+  invalidateCache,
+} from './middleware/caching';
+import {
+  ProjectSuspensionService,
+  wakeOnRequestMiddleware,
+} from './services/project-suspension-service';
 import rateLimit from 'express-rate-limit';
 import { getEnvironmentConfig } from './config/environment';
 
@@ -103,49 +112,79 @@ app.get('/health', (_req: Request, res: Response) => {
 });
 
 // Cache management endpoints (admin only with rate limiting)
-app.get('/api/cache/stats', adminRateLimiter, authenticate(dashboardPool), async (_req: Request, res: Response) => {
-  const stats = await getCacheStats();
-  res.json(stats);
-});
-
-app.post('/api/cache/clear', adminRateLimiter, authenticate(dashboardPool), async (_req: Request, res: Response) => {
-  await clearAllCaches();
-  res.json({ success: true, message: 'All caches cleared' });
-});
-
-app.post('/api/cache/invalidate', adminRateLimiter, authenticate(dashboardPool), async (req: Request, res: Response) => {
-  const { pattern } = req.body;
-  if (!pattern) {
-    return res.status(400).json({ error: 'Pattern is required' });
+app.get(
+  '/api/cache/stats',
+  adminRateLimiter,
+  authenticate(dashboardPool),
+  async (_req: Request, res: Response) => {
+    const stats = await getCacheStats();
+    res.json(stats);
   }
-  await invalidateCache(pattern);
-  res.json({ success: true, message: `Cache invalidated for pattern: ${pattern}` });
-});
+);
+
+app.post(
+  '/api/cache/clear',
+  adminRateLimiter,
+  authenticate(dashboardPool),
+  async (_req: Request, res: Response) => {
+    await clearAllCaches();
+    res.json({ success: true, message: 'All caches cleared' });
+  }
+);
+
+app.post(
+  '/api/cache/invalidate',
+  adminRateLimiter,
+  authenticate(dashboardPool),
+  async (req: Request, res: Response) => {
+    const { pattern } = req.body;
+    if (!pattern) {
+      return res.status(400).json({ error: 'Pattern is required' });
+    }
+    await invalidateCache(pattern);
+    res.json({ success: true, message: `Cache invalidated for pattern: ${pattern}` });
+  }
+);
 
 // Project suspension endpoints (with rate limiting)
-app.get('/api/projects/:projectId/status', apiRateLimiter, authenticate(dashboardPool), async (req: Request, res: Response) => {
-  const { projectId } = req.params;
-  const status = await suspensionService.getProjectStatus(projectId);
-  if (!status) {
-    return res.status(404).json({ error: 'Project not found' });
+app.get(
+  '/api/projects/:projectId/status',
+  apiRateLimiter,
+  authenticate(dashboardPool),
+  async (req: Request, res: Response) => {
+    const { projectId } = req.params;
+    const status = await suspensionService.getProjectStatus(projectId);
+    if (!status) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+    res.json(status);
   }
-  res.json(status);
-});
+);
 
-app.post('/api/projects/:projectId/wake', apiRateLimiter, authenticate(dashboardPool), async (req: Request, res: Response) => {
-  const { projectId } = req.params;
-  try {
-    await suspensionService.wakeProject(projectId);
-    res.json({ success: true, message: 'Project is waking up' });
-  } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
+app.post(
+  '/api/projects/:projectId/wake',
+  apiRateLimiter,
+  authenticate(dashboardPool),
+  async (req: Request, res: Response) => {
+    const { projectId } = req.params;
+    try {
+      await suspensionService.wakeProject(projectId);
+      res.json({ success: true, message: 'Project is waking up' });
+    } catch (error) {
+      res.status(500).json({ error: (error as Error).message });
+    }
   }
-});
+);
 
-app.get('/api/suspension/stats', apiRateLimiter, authenticate(dashboardPool), async (_req: Request, res: Response) => {
-  const stats = await suspensionService.getStatistics();
-  res.json(stats);
-});
+app.get(
+  '/api/suspension/stats',
+  apiRateLimiter,
+  authenticate(dashboardPool),
+  async (_req: Request, res: Response) => {
+    const stats = await suspensionService.getStatistics();
+    res.json(stats);
+  }
+);
 
 // Database management routes
 app.use('/api/databases', databaseRoutes);
@@ -156,8 +195,16 @@ app.use('/api/databases', importExportRoutes);
 app.use('/api/databases', backupRoutes);
 
 // Dashboard feature routes (with caching)
-app.use('/api/dashboard/projects', wakeOnRequestMiddleware(suspensionService), createProjectManagementRoutes(dashboardPool));
-app.use('/api/dashboard/resources', cacheMiddleware({ ttl: 60, prefix: 'resources' }), createResourceMonitoringRoutes(dashboardPool));
+app.use(
+  '/api/dashboard/projects',
+  wakeOnRequestMiddleware(suspensionService),
+  createProjectManagementRoutes(dashboardPool)
+);
+app.use(
+  '/api/dashboard/resources',
+  cacheMiddleware({ ttl: 60, prefix: 'resources' }),
+  createResourceMonitoringRoutes(dashboardPool)
+);
 app.use('/api/dashboard/api', createApiManagementRoutes(dashboardPool));
 app.use('/api/dashboard/settings', createAccountSettingsRoutes(dashboardPool));
 
@@ -170,11 +217,26 @@ app.use('/api/admin/system', createAdminSystemRoutes(dashboardPool));
 
 // Monetization system routes (with authentication and caching)
 // Plans endpoint can be accessed without auth, others require authentication
-app.use('/api/subscriptions/plans', optionalAuthenticate(dashboardPool), cacheMiddleware({ ttl: 3600, prefix: 'plans' }), createSubscriptionRoutes(dashboardPool));
+app.use(
+  '/api/subscriptions/plans',
+  optionalAuthenticate(dashboardPool),
+  cacheMiddleware({ ttl: 3600, prefix: 'plans' }),
+  createSubscriptionRoutes(dashboardPool)
+);
 app.use('/api/subscriptions', authenticate(dashboardPool), createSubscriptionRoutes(dashboardPool));
-app.use('/api/usage', authenticate(dashboardPool), cacheMiddleware({ ttl: 300, prefix: 'usage', varyBy: ['url', 'user'] }), createUsageRoutes(dashboardPool));
+app.use(
+  '/api/usage',
+  authenticate(dashboardPool),
+  cacheMiddleware({ ttl: 300, prefix: 'usage', varyBy: ['url', 'user'] }),
+  createUsageRoutes(dashboardPool)
+);
 app.use('/api/billing', authenticate(dashboardPool), createBillingRoutes(dashboardPool));
-app.use('/api/credits', authenticate(dashboardPool), cacheMiddleware({ ttl: 180, prefix: 'credits', varyBy: ['user'] }), createCreditsRoutes(dashboardPool));
+app.use(
+  '/api/credits',
+  authenticate(dashboardPool),
+  cacheMiddleware({ ttl: 180, prefix: 'credits', varyBy: ['user'] }),
+  createCreditsRoutes(dashboardPool)
+);
 app.use('/api/alerts', authenticate(dashboardPool), createAlertsRoutes(dashboardPool));
 
 // Team collaboration routes

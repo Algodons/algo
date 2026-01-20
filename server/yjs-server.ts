@@ -7,10 +7,10 @@ const docs = new Map<string, Y.Doc>();
 export function setupYjsServer(wss: WebSocketServer) {
   wss.on('connection', (ws: WebSocket, req) => {
     const url = new URL(req.url || '', `http://${req.headers.host}`);
-    
+
     if (url.pathname.startsWith('/yjs')) {
       const docName = url.searchParams.get('docName') || 'default';
-      
+
       // Get or create document
       let doc = docs.get(docName);
       if (!doc) {
@@ -21,7 +21,7 @@ export function setupYjsServer(wss: WebSocketServer) {
 
       // Setup WebSocket connection for this document
       setupWSConnection(ws, req, { docName, gc: true });
-      
+
       ws.on('close', () => {
         console.log(`🔌 Client disconnected from document: ${docName}`);
       });

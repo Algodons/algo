@@ -86,35 +86,35 @@ export interface AuditEvent {
   type: AuditEventType;
   severity: AuditSeverity;
   timestamp: Date;
-  
+
   // Actor (who performed the action)
   userId?: number;
   userEmail?: string;
   userName?: string;
   userRole?: string;
   sessionId?: string;
-  
+
   // Context
   ipAddress?: string;
   userAgent?: string;
   organizationId?: number;
-  
+
   // Target (what was affected)
   targetType?: string;
   targetId?: string;
   targetName?: string;
-  
+
   // Action details
   action: string;
   resource?: string;
   method?: string;
   path?: string;
-  
+
   // Results
   success: boolean;
   errorMessage?: string;
   errorCode?: string;
-  
+
   // Additional data
   metadata?: Record<string, any>;
   changes?: {

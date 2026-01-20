@@ -38,11 +38,7 @@ export function OrganizationList() {
   }
 
   if (error) {
-    return (
-      <div className="p-4 text-red-500 bg-red-50 rounded-lg">
-        {error}
-      </div>
-    );
+    return <div className="p-4 text-red-500 bg-red-50 rounded-lg">{error}</div>;
   }
 
   return (
@@ -59,9 +55,7 @@ export function OrganizationList() {
         <Card className="p-8 text-center">
           <Users className="w-12 h-12 mx-auto mb-4 text-gray-400" />
           <h3 className="text-lg font-medium mb-2">No organizations yet</h3>
-          <p className="text-gray-500 mb-4">
-            Create an organization to collaborate with your team
-          </p>
+          <p className="text-gray-500 mb-4">Create an organization to collaborate with your team</p>
           <Button>
             <Plus className="w-4 h-4 mr-2" />
             Create Your First Organization
@@ -80,11 +74,9 @@ export function OrganizationList() {
                   <Settings className="w-4 h-4" />
                 </Button>
               </div>
-              
+
               {org.description && (
-                <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                  {org.description}
-                </p>
+                <p className="text-sm text-gray-600 mb-4 line-clamp-2">{org.description}</p>
               )}
 
               <div className="flex items-center justify-between text-xs text-gray-500">

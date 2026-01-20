@@ -144,10 +144,10 @@ export function createWebhooksRoutes(pool: Pool): Router {
       const userId = (req as any).user?.id;
 
       try {
-        const result = await pool.query(
-          'SELECT * FROM webhooks WHERE id = $1 AND user_id = $2',
-          [id, userId]
-        );
+        const result = await pool.query('SELECT * FROM webhooks WHERE id = $1 AND user_id = $2', [
+          id,
+          userId,
+        ]);
 
         if (result.rows.length === 0) {
           return res.status(404).json({
@@ -314,10 +314,10 @@ export function createWebhooksRoutes(pool: Pool): Router {
 
       try {
         // Verify webhook ownership
-        const webhook = await pool.query(
-          'SELECT id FROM webhooks WHERE id = $1 AND user_id = $2',
-          [id, userId]
-        );
+        const webhook = await pool.query('SELECT id FROM webhooks WHERE id = $1 AND user_id = $2', [
+          id,
+          userId,
+        ]);
 
         if (webhook.rows.length === 0) {
           return res.status(404).json({
@@ -334,10 +334,7 @@ export function createWebhooksRoutes(pool: Pool): Router {
              LIMIT $2 OFFSET $3`,
             [id, limit, offset]
           ),
-          pool.query(
-            'SELECT COUNT(*) FROM webhook_deliveries WHERE webhook_id = $1',
-            [id]
-          ),
+          pool.query('SELECT COUNT(*) FROM webhook_deliveries WHERE webhook_id = $1', [id]),
         ]);
 
         const total = parseInt(countResult.rows[0].count);

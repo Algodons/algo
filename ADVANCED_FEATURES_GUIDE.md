@@ -2,7 +2,10 @@
 
 ## 🚀 Overview
 
-This comprehensive guide covers all the advanced features implemented for the 2026 Hackathon, transforming the Algo Cloud IDE into a cutting-edge platform with AI-powered analytics, blockchain integration, gamification, real-time insights, accessibility features, and self-healing infrastructure.
+This comprehensive guide covers all the advanced features implemented for the
+2026 Hackathon, transforming the Algo Cloud IDE into a cutting-edge platform
+with AI-powered analytics, blockchain integration, gamification, real-time
+insights, accessibility features, and self-healing infrastructure.
 
 ## Table of Contents
 
@@ -21,7 +24,8 @@ This comprehensive guide covers all the advanced features implemented for the 20
 
 ### Predictive Analytics Service
 
-The AI-powered predictive analytics service provides intelligent insights into user behavior, churn risk, and revenue opportunities.
+The AI-powered predictive analytics service provides intelligent insights into
+user behavior, churn risk, and revenue opportunities.
 
 #### Features
 
@@ -95,7 +99,7 @@ Response: {
 // Check for churn risk
 const prediction = await fetch('/api/admin/advanced/ai/predict-churn/123', {
   method: 'POST',
-  headers: { 'Authorization': `Bearer ${token}` }
+  headers: { Authorization: `Bearer ${token}` },
 });
 
 if (prediction.riskLevel === 'critical') {
@@ -106,7 +110,7 @@ if (prediction.riskLevel === 'critical') {
 // Identify upsell opportunities
 const opportunity = await fetch('/api/admin/advanced/ai/identify-upsell/123', {
   method: 'POST',
-  headers: { 'Authorization': `Bearer ${token}` }
+  headers: { Authorization: `Bearer ${token}` },
 });
 
 if (opportunity && opportunity.probability > 0.7) {
@@ -188,15 +192,15 @@ Response: {
 
 ### Achievement Definitions
 
-| ID | Name | Description | Category | Points | Rarity |
-|----|------|-------------|----------|--------|--------|
-| first_referral | First Blood | Make your first referral | referral | 100 | common |
-| ten_referrals | Rising Star | Successfully refer 10 users | referral | 500 | uncommon |
-| hundred_referrals | Influencer | Reach 100 referrals | referral | 5000 | epic |
-| week_streak | Dedicated | Maintain a 7-day streak | engagement | 250 | uncommon |
-| month_streak | Committed | Maintain a 30-day streak | engagement | 1000 | rare |
-| revenue_1k | Sales Champion | Generate $1,000 in revenue | sales | 2000 | rare |
-| revenue_10k | Sales Legend | Generate $10,000 in revenue | sales | 10000 | legendary |
+| ID                | Name           | Description                 | Category   | Points | Rarity    |
+| ----------------- | -------------- | --------------------------- | ---------- | ------ | --------- |
+| first_referral    | First Blood    | Make your first referral    | referral   | 100    | common    |
+| ten_referrals     | Rising Star    | Successfully refer 10 users | referral   | 500    | uncommon  |
+| hundred_referrals | Influencer     | Reach 100 referrals         | referral   | 5000   | epic      |
+| week_streak       | Dedicated      | Maintain a 7-day streak     | engagement | 250    | uncommon  |
+| month_streak      | Committed      | Maintain a 30-day streak    | engagement | 1000   | rare      |
+| revenue_1k        | Sales Champion | Generate $1,000 in revenue  | sales      | 2000   | rare      |
+| revenue_10k       | Sales Legend   | Generate $10,000 in revenue | sales      | 10000  | legendary |
 
 ---
 
@@ -274,12 +278,12 @@ GET /api/admin/advanced/blockchain/verify-audit-log/:logId
 
 ### Supported Cryptocurrencies
 
-| Symbol | Name | Network | Confirmations Required |
-|--------|------|---------|----------------------|
-| ETH | Ethereum | Ethereum Mainnet | 6 |
-| BTC | Bitcoin | Bitcoin Mainnet | 3 |
-| USDT | Tether USD | Ethereum (ERC-20) | 6 |
-| USDC | USD Coin | Ethereum (ERC-20) | 6 |
+| Symbol | Name       | Network           | Confirmations Required |
+| ------ | ---------- | ----------------- | ---------------------- |
+| ETH    | Ethereum   | Ethereum Mainnet  | 6                      |
+| BTC    | Bitcoin    | Bitcoin Mainnet   | 3                      |
+| USDT   | Tether USD | Ethereum (ERC-20) | 6                      |
+| USDC   | USD Coin   | Ethereum (ERC-20) | 6                      |
 
 ---
 
@@ -437,20 +441,21 @@ GET /api/admin/advanced/accessibility/voice-commands
 
 ### Supported Languages
 
-English, Spanish, French, German, Italian, Portuguese, Russian, Chinese, Japanese, Korean, Arabic, Hindi
+English, Spanish, French, German, Italian, Portuguese, Russian, Chinese,
+Japanese, Korean, Arabic, Hindi
 
 ### Voice Commands
 
-| Command | Description | Example |
-|---------|-------------|---------|
-| search_users | Search for users | "Search for user john@example.com" |
-| suspend_user | Suspend user account | "Suspend user ID 123" |
-| activate_user | Activate user account | "Activate john@example.com" |
-| view_analytics | View analytics | "Show me active users" |
-| navigate_to | Navigate to section | "Go to users page" |
-| refresh_dashboard | Refresh view | "Refresh dashboard" |
-| create_announcement | Create announcement | "Create announcement about maintenance" |
-| toggle_feature | Toggle feature flag | "Enable feature new_dashboard" |
+| Command             | Description           | Example                                 |
+| ------------------- | --------------------- | --------------------------------------- |
+| search_users        | Search for users      | "Search for user john@example.com"      |
+| suspend_user        | Suspend user account  | "Suspend user ID 123"                   |
+| activate_user       | Activate user account | "Activate john@example.com"             |
+| view_analytics      | View analytics        | "Show me active users"                  |
+| navigate_to         | Navigate to section   | "Go to users page"                      |
+| refresh_dashboard   | Refresh view          | "Refresh dashboard"                     |
+| create_announcement | Create announcement   | "Create announcement about maintenance" |
+| toggle_feature      | Toggle feature flag   | "Enable feature new_dashboard"          |
 
 ---
 
@@ -542,6 +547,7 @@ Headers: {
 ### Response Format
 
 Success Response:
+
 ```json
 {
   "data": { ... },
@@ -550,6 +556,7 @@ Success Response:
 ```
 
 Error Response:
+
 ```json
 {
   "error": "Error message",
@@ -618,7 +625,7 @@ function AdminPage() {
   const [darkMode, setDarkMode] = useState(false);
 
   return (
-    <AdvancedAdminDashboard 
+    <AdvancedAdminDashboard
       darkMode={darkMode}
       onToggleDarkMode={() => setDarkMode(!darkMode)}
     />
@@ -681,6 +688,7 @@ function AdminPage() {
 ### Common Issues
 
 1. **Services Not Starting**
+
    ```bash
    # Check logs
    tail -f logs/analytics-service.log
@@ -688,6 +696,7 @@ function AdminPage() {
    ```
 
 2. **Database Connection Issues**
+
    ```bash
    # Test connection
    psql -U algo_user -d algo_ide -c "SELECT 1"
@@ -725,6 +734,7 @@ MIT License - See LICENSE file for details
 ## Support
 
 For issues or questions:
+
 - GitHub Issues: https://github.com/Algodons/algo/issues
 - Documentation: See ADMIN_API.md, ADMIN_SECURITY.md
 - Email: support@algo.dev

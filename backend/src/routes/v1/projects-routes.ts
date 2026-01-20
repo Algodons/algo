@@ -185,10 +185,10 @@ export function createProjectsRoutes(pool: Pool): Router {
 
       try {
         // Verify project ownership
-        const project = await pool.query(
-          'SELECT * FROM projects WHERE id = $1 AND user_id = $2',
-          [id, userId]
-        );
+        const project = await pool.query('SELECT * FROM projects WHERE id = $1 AND user_id = $2', [
+          id,
+          userId,
+        ]);
 
         if (project.rows.length === 0) {
           return res.status(404).json({
@@ -267,10 +267,7 @@ export function createProjectsRoutes(pool: Pool): Router {
   router.post(
     '/:id/clone',
     authenticate(pool),
-    [
-      param('id').isInt(),
-      body('name').optional().isLength({ min: 1, max: 100 }).trim(),
-    ],
+    [param('id').isInt(), body('name').optional().isLength({ min: 1, max: 100 }).trim()],
     async (req: Request, res: Response) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -284,7 +281,7 @@ export function createProjectsRoutes(pool: Pool): Router {
       try {
         // Get original project
         const original = await pool.query(
-          'SELECT * FROM projects WHERE id = $1 AND (visibility = \'public\' OR user_id = $2)',
+          "SELECT * FROM projects WHERE id = $1 AND (visibility = 'public' OR user_id = $2)",
           [id, userId]
         );
 

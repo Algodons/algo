@@ -24,10 +24,10 @@ router.get('/', authenticateToken, async (req, res) => {
 // Get single project
 router.get('/:id', authenticateToken, async (req, res) => {
   try {
-    const result = await pgPool.query(
-      'SELECT * FROM projects WHERE id = $1 AND user_id = $2',
-      [req.params.id, req.user.id]
-    );
+    const result = await pgPool.query('SELECT * FROM projects WHERE id = $1 AND user_id = $2', [
+      req.params.id,
+      req.user.id,
+    ]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Project not found' });

@@ -2,7 +2,8 @@
 
 ## High-Level Architecture
 
-The Cloud IDE platform follows a client-server architecture with real-time capabilities powered by WebSocket connections.
+The Cloud IDE platform follows a client-server architecture with real-time
+capabilities powered by WebSocket connections.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -181,39 +182,41 @@ Serve File in iframe
 
 ### Frontend Stack
 
-| Technology | Purpose | Version |
-|------------|---------|---------|
-| React | UI Framework | 18.x |
-| TypeScript | Type Safety | 5.x |
-| Vite | Build Tool | 5.x |
-| CodeMirror | Code Editor | 6.x |
-| Yjs | CRDT Sync | 13.x |
-| xterm.js | Terminal Emulator | 5.x |
-| Zustand | State Management | 4.x |
+| Technology | Purpose           | Version |
+| ---------- | ----------------- | ------- |
+| React      | UI Framework      | 18.x    |
+| TypeScript | Type Safety       | 5.x     |
+| Vite       | Build Tool        | 5.x     |
+| CodeMirror | Code Editor       | 6.x     |
+| Yjs        | CRDT Sync         | 13.x    |
+| xterm.js   | Terminal Emulator | 5.x     |
+| Zustand    | State Management  | 4.x     |
 
 ### Backend Stack
 
-| Technology | Purpose | Version |
-|------------|---------|---------|
-| Node.js | Runtime | 18+ |
-| Express | Web Framework | 4.x |
-| ws | WebSocket | 8.x |
-| node-pty | Terminal | 1.x |
-| simple-git | Git Operations | 3.x |
-| chokidar | File Watching | 3.x |
-| pg | PostgreSQL Client | 8.x |
-| mysql2 | MySQL Client | 3.x |
-| mongodb | MongoDB Client | 6.x |
+| Technology | Purpose           | Version |
+| ---------- | ----------------- | ------- |
+| Node.js    | Runtime           | 18+     |
+| Express    | Web Framework     | 4.x     |
+| ws         | WebSocket         | 8.x     |
+| node-pty   | Terminal          | 1.x     |
+| simple-git | Git Operations    | 3.x     |
+| chokidar   | File Watching     | 3.x     |
+| pg         | PostgreSQL Client | 8.x     |
+| mysql2     | MySQL Client      | 3.x     |
+| mongodb    | MongoDB Client    | 6.x     |
 
 ## Communication Protocols
 
 ### HTTP/REST
+
 - Git operations
 - Package management
 - Database queries
 - File serving
 
 ### WebSocket
+
 - Real-time collaborative editing (Yjs)
 - Terminal I/O
 - File change notifications (future)
@@ -221,12 +224,14 @@ Serve File in iframe
 ## Security Architecture
 
 ### Current Implementation
+
 - CORS enabled for development
 - Iframe sandboxing for preview
 - Input validation on all APIs
 - Isolated workspaces
 
 ### Production Recommendations
+
 1. **Authentication**
    - JWT tokens
    - OAuth2 integration
@@ -272,6 +277,7 @@ Serve File in iframe
 ```
 
 ### Challenges
+
 1. **WebSocket Sticky Sessions**
    - Use Redis adapter for Socket.io
    - Implement session affinity in load balancer
@@ -307,6 +313,7 @@ Serve File in iframe
 ## Monitoring & Observability
 
 ### Metrics to Track
+
 - WebSocket connection count
 - Active terminal sessions
 - API response times
@@ -314,12 +321,14 @@ Serve File in iframe
 - Resource usage (CPU, Memory, Disk)
 
 ### Logging Strategy
+
 - Structured logging (JSON)
 - Log levels (DEBUG, INFO, WARN, ERROR)
 - Centralized logging (ELK, Datadog)
 - Request/response logging
 
 ### Health Checks
+
 - `/api/health` endpoint
 - Database connectivity
 - File system accessibility
@@ -328,6 +337,7 @@ Serve File in iframe
 ## Deployment Architecture
 
 ### Development
+
 ```
 Developer Machine
 ├── Frontend (Vite Dev Server) :3000
@@ -335,6 +345,7 @@ Developer Machine
 ```
 
 ### Production
+
 ```
 Nginx (Reverse Proxy)
 ├── Static Files (Frontend) :80/443
@@ -343,6 +354,7 @@ Nginx (Reverse Proxy)
 ```
 
 ### Docker Deployment
+
 ```
 Docker Compose
 ├── App Container (Frontend + Backend)
@@ -376,12 +388,14 @@ Docker Compose
 ## Disaster Recovery
 
 ### Backup Strategy
+
 - Workspace backups (daily)
 - Database backups (hourly)
 - Configuration backups
 - Automated backup testing
 
 ### Recovery Plan
+
 1. Restore from latest backup
 2. Verify data integrity
 3. Test functionality
@@ -390,6 +404,7 @@ Docker Compose
 ## Maintenance
 
 ### Regular Tasks
+
 - Security updates
 - Dependency updates
 - Performance monitoring
@@ -398,6 +413,7 @@ Docker Compose
 - Database optimization
 
 ### Update Strategy
+
 - Rolling updates
 - Blue-green deployment
 - Canary releases

@@ -49,10 +49,13 @@ export class DockerfileGenerator {
   ): string {
     const port = ports[0]?.port || 3000;
     const packageManager = framework.packageManager || 'npm';
-    
-    const lockFile = packageManager === 'yarn' ? 'yarn.lock' 
-      : packageManager === 'pnpm' ? 'pnpm-lock.yaml' 
-      : 'package-lock.json';
+
+    const lockFile =
+      packageManager === 'yarn'
+        ? 'yarn.lock'
+        : packageManager === 'pnpm'
+          ? 'pnpm-lock.yaml'
+          : 'package-lock.json';
 
     return `# Multi-stage build for ${framework.name}
 # Stage 1: Build

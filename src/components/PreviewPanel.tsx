@@ -15,7 +15,7 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({ workspaceId }) => {
       const response = await fetch('/api/preview/watch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ workspaceId })
+        body: JSON.stringify({ workspaceId }),
       });
       const data = await response.json();
       if (data.success) {
@@ -26,39 +26,20 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({ workspaceId }) => {
     }
   };
 
-  const stopWatching = async () => {
-    try {
-      const response = await fetch('/api/preview/unwatch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ workspaceId })
-      });
-      const data = await response.json();
-      if (data.success) {
-        setIsWatching(false);
-      }
-    } catch (error) {
-      console.error('Failed to stop watching:', error);
-    }
-  };
-
   const refresh = () => {
-    setRefreshKey(prev => prev + 1);
+    setRefreshKey((prev) => prev + 1);
   };
 
   useEffect(() => {
-    let isMounted = true;
-    
     startWatching();
-    
+
     return () => {
-      isMounted = false;
       // Fire and forget - don't await in cleanup
       fetch('/api/preview/unwatch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ workspaceId })
-      }).catch(error => {
+        body: JSON.stringify({ workspaceId }),
+      }).catch((error) => {
         // Ignore errors during cleanup
         console.error('Failed to stop watching during cleanup:', error);
       });

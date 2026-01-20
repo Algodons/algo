@@ -51,6 +51,7 @@ npm run dev
 ## Customization Options
 
 When initializing this template, you can enable:
+
 - Authentication (JWT, OAuth)
 - State Management (Redux, Zustand)
 - Routing (React Router)

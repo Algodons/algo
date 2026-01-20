@@ -25,7 +25,7 @@ export interface CopilotResponse {
 
 export class CopilotService {
   private static readonly SERVICE_DISABLED_ERROR = 'Copilot service is not enabled';
-  
+
   private client: AxiosInstance;
   private enabled: boolean;
   private config: ReturnType<typeof getEnvironmentConfig>['copilot'];
@@ -41,7 +41,7 @@ export class CopilotService {
       timeout: 30000, // 30 second timeout
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.config.apiKey}`,
+        Authorization: `Bearer ${this.config.apiKey}`,
       },
     });
 
@@ -85,7 +85,7 @@ export class CopilotService {
 
     try {
       const startTime = Date.now();
-      
+
       const response = await this.client.post('/v1/completions', {
         prompt: request.prompt,
         context: request.context || {},
@@ -106,11 +106,12 @@ export class CopilotService {
     } catch (error: any) {
       console.error('Copilot completion error:', error);
       // Sanitize error message to avoid exposing internal details
-      const errorMessage = error.response?.status === 401 
-        ? 'Authentication failed' 
-        : error.response?.status === 429
-        ? 'Rate limit exceeded'
-        : 'Service temporarily unavailable';
+      const errorMessage =
+        error.response?.status === 401
+          ? 'Authentication failed'
+          : error.response?.status === 429
+            ? 'Rate limit exceeded'
+            : 'Service temporarily unavailable';
       return {
         success: false,
         error: errorMessage,
@@ -134,7 +135,7 @@ export class CopilotService {
 
     try {
       const startTime = Date.now();
-      
+
       const response = await this.client.post('/v1/code/generate', {
         prompt,
         language,
@@ -155,11 +156,12 @@ export class CopilotService {
     } catch (error: any) {
       console.error('Copilot code generation error:', error);
       // Sanitize error message
-      const errorMessage = error.response?.status === 401 
-        ? 'Authentication failed' 
-        : error.response?.status === 429
-        ? 'Rate limit exceeded'
-        : 'Service temporarily unavailable';
+      const errorMessage =
+        error.response?.status === 401
+          ? 'Authentication failed'
+          : error.response?.status === 429
+            ? 'Rate limit exceeded'
+            : 'Service temporarily unavailable';
       return {
         success: false,
         error: errorMessage,
@@ -191,11 +193,12 @@ export class CopilotService {
     } catch (error: any) {
       console.error('Copilot code explanation error:', error);
       // Sanitize error message
-      const errorMessage = error.response?.status === 401 
-        ? 'Authentication failed' 
-        : error.response?.status === 429
-        ? 'Rate limit exceeded'
-        : 'Service temporarily unavailable';
+      const errorMessage =
+        error.response?.status === 401
+          ? 'Authentication failed'
+          : error.response?.status === 429
+            ? 'Rate limit exceeded'
+            : 'Service temporarily unavailable';
       return {
         success: false,
         error: errorMessage,
@@ -206,7 +209,11 @@ export class CopilotService {
   /**
    * Get suggestions for code completion
    */
-  async getSuggestions(code: string, cursorPosition: number, language: string): Promise<CopilotResponse> {
+  async getSuggestions(
+    code: string,
+    cursorPosition: number,
+    language: string
+  ): Promise<CopilotResponse> {
     if (!this.enabled) {
       return {
         success: false,
@@ -228,11 +235,12 @@ export class CopilotService {
     } catch (error: any) {
       console.error('Copilot suggestions error:', error);
       // Sanitize error message
-      const errorMessage = error.response?.status === 401 
-        ? 'Authentication failed' 
-        : error.response?.status === 429
-        ? 'Rate limit exceeded'
-        : 'Service temporarily unavailable';
+      const errorMessage =
+        error.response?.status === 401
+          ? 'Authentication failed'
+          : error.response?.status === 429
+            ? 'Rate limit exceeded'
+            : 'Service temporarily unavailable';
       return {
         success: false,
         error: errorMessage,

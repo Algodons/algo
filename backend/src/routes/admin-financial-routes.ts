@@ -129,68 +129,76 @@ export function createAdminFinancialRoutes(pool: Pool) {
    * POST /api/admin/financial/subscriptions/:id/upgrade
    * Manual subscription upgrade
    */
-  router.post('/subscriptions/:id/upgrade', require2FA(pool), async (req: Request, res: Response) => {
-    try {
-      const { id } = req.params;
-      const { newTier, newAmount, reason } = req.body;
+  router.post(
+    '/subscriptions/:id/upgrade',
+    require2FA(pool),
+    async (req: Request, res: Response) => {
+      try {
+        const { id } = req.params;
+        const { newTier, newAmount, reason } = req.body;
 
-      if (!newTier || newAmount === undefined) {
-        return res.status(400).json({ error: 'New tier and amount are required' });
-      }
+        if (!newTier || newAmount === undefined) {
+          return res.status(400).json({ error: 'New tier and amount are required' });
+        }
 
-      const result = await pool.query(
-        `UPDATE subscriptions 
+        const result = await pool.query(
+          `UPDATE subscriptions 
          SET tier = $1, amount = $2
          WHERE id = $3
          RETURNING *`,
-        [newTier, newAmount, id]
-      );
+          [newTier, newAmount, id]
+        );
 
-      if (result.rows.length === 0) {
-        return res.status(404).json({ error: 'Subscription not found' });
-      }
+        if (result.rows.length === 0) {
+          return res.status(404).json({ error: 'Subscription not found' });
+        }
 
-      // Log the action
-      await pool.query(
-        `INSERT INTO audit_logs (user_id, action, resource_type, resource_id, details, admin_action)
+        // Log the action
+        await pool.query(
+          `INSERT INTO audit_logs (user_id, action, resource_type, resource_id, details, admin_action)
          VALUES ($1, 'subscription_upgrade', 'subscription', $2, $3, true)`,
-        [req.user!.id, id, JSON.stringify({ newTier, newAmount, reason })]
-      );
+          [req.user!.id, id, JSON.stringify({ newTier, newAmount, reason })]
+        );
 
-      res.json({ subscription: result.rows[0] });
-    } catch (error) {
-      console.error('Error upgrading subscription:', error);
-      res.status(500).json({ error: 'Failed to upgrade subscription' });
+        res.json({ subscription: result.rows[0] });
+      } catch (error) {
+        console.error('Error upgrading subscription:', error);
+        res.status(500).json({ error: 'Failed to upgrade subscription' });
+      }
     }
-  });
+  );
 
   /**
    * POST /api/admin/financial/subscriptions/:id/cancel
    * Cancel subscription
    */
-  router.post('/subscriptions/:id/cancel', require2FA(pool), async (req: Request, res: Response) => {
-    try {
-      const { id } = req.params;
-      const { reason, immediate } = req.body;
+  router.post(
+    '/subscriptions/:id/cancel',
+    require2FA(pool),
+    async (req: Request, res: Response) => {
+      try {
+        const { id } = req.params;
+        const { reason, immediate } = req.body;
 
-      const result = await pool.query(
-        `UPDATE subscriptions 
+        const result = await pool.query(
+          `UPDATE subscriptions 
          SET status = 'cancelled', cancelled_at = CURRENT_TIMESTAMP
          WHERE id = $1
          RETURNING *`,
-        [id]
-      );
+          [id]
+        );
 
-      if (result.rows.length === 0) {
-        return res.status(404).json({ error: 'Subscription not found' });
+        if (result.rows.length === 0) {
+          return res.status(404).json({ error: 'Subscription not found' });
+        }
+
+        res.json({ subscription: result.rows[0] });
+      } catch (error) {
+        console.error('Error cancelling subscription:', error);
+        res.status(500).json({ error: 'Failed to cancel subscription' });
       }
-
-      res.json({ subscription: result.rows[0] });
-    } catch (error) {
-      console.error('Error cancelling subscription:', error);
-      res.status(500).json({ error: 'Failed to cancel subscription' });
     }
-  });
+  );
 
   /**
    * POST /api/admin/financial/subscriptions/:id/pause
@@ -353,7 +361,9 @@ export function createAdminFinancialRoutes(pool: Pool) {
       const { countryCode, stateCode, taxType, rate, effectiveFrom, effectiveTo } = req.body;
 
       if (!countryCode || !taxType || rate === undefined || !effectiveFrom) {
-        return res.status(400).json({ error: 'Country code, tax type, rate, and effective from are required' });
+        return res
+          .status(400)
+          .json({ error: 'Country code, tax type, rate, and effective from are required' });
       }
 
       const result = await pool.query(
@@ -396,28 +406,32 @@ export function createAdminFinancialRoutes(pool: Pool) {
    * POST /api/admin/financial/payment-retry/:userId/trigger
    * Manually trigger payment retry
    */
-  router.post('/payment-retry/:userId/trigger', require2FA(pool), async (req: Request, res: Response) => {
-    try {
-      const { userId } = req.params;
+  router.post(
+    '/payment-retry/:userId/trigger',
+    require2FA(pool),
+    async (req: Request, res: Response) => {
+      try {
+        const { userId } = req.params;
 
-      // Update retry config
-      await pool.query(
-        `UPDATE payment_retry_config 
+        // Update retry config
+        await pool.query(
+          `UPDATE payment_retry_config 
          SET last_retry_at = CURRENT_TIMESTAMP, 
              current_retry_attempt = current_retry_attempt + 1,
              next_retry_at = CURRENT_TIMESTAMP + INTERVAL '24 hours'
          WHERE user_id = $1`,
-        [userId]
-      );
+          [userId]
+        );
 
-      // TODO: Trigger actual payment retry with payment provider
+        // TODO: Trigger actual payment retry with payment provider
 
-      res.json({ message: 'Payment retry triggered' });
-    } catch (error) {
-      console.error('Error triggering payment retry:', error);
-      res.status(500).json({ error: 'Failed to trigger payment retry' });
+        res.json({ message: 'Payment retry triggered' });
+      } catch (error) {
+        console.error('Error triggering payment retry:', error);
+        res.status(500).json({ error: 'Failed to trigger payment retry' });
+      }
     }
-  });
+  );
 
   return router;
 }

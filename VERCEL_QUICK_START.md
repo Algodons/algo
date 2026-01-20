@@ -65,6 +65,7 @@ NEXT_PUBLIC_WEBSOCKET_URL=wss://your-backend.railway.app
 ```
 
 **Where to add:**
+
 - Project Settings → Environment Variables
 - Select: Production, Preview, Development
 - Click "Save"
@@ -92,8 +93,8 @@ NEXT_PUBLIC_WEBSOCKET_URL=wss://your-backend.railway.app
 ```javascript
 // Paste in browser console
 fetch(process.env.NEXT_PUBLIC_API_URL + '/api/health')
-  .then(r => r.json())
-  .then(console.log)
+  .then((r) => r.json())
+  .then(console.log);
 ```
 
 Expected: `{ status: "ok" }`
@@ -103,17 +104,21 @@ Expected: `{ status: "ok" }`
 ## 🐛 Common Issues (Quick Fixes)
 
 ### "NEXTAUTH_SECRET not found"
+
 → Go to Settings → Environment Variables → Add it → Redeploy
 
 ### API calls fail
+
 → Check `NEXT_PUBLIC_API_URL` is correct and backend is running
 
 ### WebSocket won't connect
+
 → Use `wss://` not `ws://` in `NEXT_PUBLIC_WEBSOCKET_URL`
 
 ### Build fails
-→ Check build logs in Vercel dashboard
-→ See [VERCEL_TROUBLESHOOTING.md](./VERCEL_TROUBLESHOOTING.md)
+
+→ Check build logs in Vercel dashboard → See
+[VERCEL_TROUBLESHOOTING.md](./VERCEL_TROUBLESHOOTING.md)
 
 ---
 
@@ -149,12 +154,15 @@ Expected: `{ status: "ok" }`
 ## 🆘 Need Help?
 
 **Before asking:**
+
 1. Check [VERCEL_TROUBLESHOOTING.md](./VERCEL_TROUBLESHOOTING.md)
 2. View Vercel build logs
 3. Check browser console
 
 **Get help:**
-- GitHub Issues: [github.com/Algodons/algo/issues](https://github.com/Algodons/algo/issues)
+
+- GitHub Issues:
+  [github.com/Algodons/algo/issues](https://github.com/Algodons/algo/issues)
 - Vercel Support: [vercel.com/support](https://vercel.com/support)
 
 ---

@@ -31,7 +31,7 @@ export function createSubscriptionRoutes(pool: Pool) {
       }
 
       const subscription = await subscriptionService.getUserSubscription(req.user.id);
-      
+
       if (!subscription) {
         // Return default free tier
         return res.json({
@@ -63,14 +63,14 @@ export function createSubscriptionRoutes(pool: Pool) {
       const { planName, billingCycle, trialDays } = req.body;
 
       if (!planName || !billingCycle) {
-        return res.status(400).json({ 
-          error: 'Plan name and billing cycle are required' 
+        return res.status(400).json({
+          error: 'Plan name and billing cycle are required',
         });
       }
 
       if (!['monthly', 'yearly'].includes(billingCycle)) {
-        return res.status(400).json({ 
-          error: 'Billing cycle must be "monthly" or "yearly"' 
+        return res.status(400).json({
+          error: 'Billing cycle must be "monthly" or "yearly"',
         });
       }
 
@@ -81,10 +81,10 @@ export function createSubscriptionRoutes(pool: Pool) {
         trialDays
       );
 
-      res.json({ 
+      res.json({
         success: true,
         subscription,
-        message: 'Subscription created successfully' 
+        message: 'Subscription created successfully',
       });
     } catch (error: any) {
       console.error('Error creating subscription:', error);
@@ -109,8 +109,8 @@ export function createSubscriptionRoutes(pool: Pool) {
       }
 
       if (billingCycle && !['monthly', 'yearly'].includes(billingCycle)) {
-        return res.status(400).json({ 
-          error: 'Billing cycle must be "monthly" or "yearly"' 
+        return res.status(400).json({
+          error: 'Billing cycle must be "monthly" or "yearly"',
         });
       }
 
@@ -120,10 +120,10 @@ export function createSubscriptionRoutes(pool: Pool) {
         billingCycle
       );
 
-      res.json({ 
+      res.json({
         success: true,
         subscription,
-        message: 'Subscription upgraded successfully' 
+        message: 'Subscription upgraded successfully',
       });
     } catch (error: any) {
       console.error('Error upgrading subscription:', error);
@@ -147,15 +147,13 @@ export function createSubscriptionRoutes(pool: Pool) {
         return res.status(400).json({ error: 'Plan name is required' });
       }
 
-      const subscription = await subscriptionService.downgradeSubscription(
-        req.user.id,
-        planName
-      );
+      const subscription = await subscriptionService.downgradeSubscription(req.user.id, planName);
 
-      res.json({ 
+      res.json({
         success: true,
         subscription,
-        message: 'Subscription downgraded successfully. Changes will take effect at the end of the current billing period.' 
+        message:
+          'Subscription downgraded successfully. Changes will take effect at the end of the current billing period.',
       });
     } catch (error: any) {
       console.error('Error downgrading subscription:', error);
@@ -175,15 +173,13 @@ export function createSubscriptionRoutes(pool: Pool) {
 
       const { reason } = req.body;
 
-      const subscription = await subscriptionService.cancelSubscription(
-        req.user.id,
-        reason
-      );
+      const subscription = await subscriptionService.cancelSubscription(req.user.id, reason);
 
-      res.json({ 
+      res.json({
         success: true,
         subscription,
-        message: 'Subscription cancelled successfully. You can continue using the service until the end of the current billing period.' 
+        message:
+          'Subscription cancelled successfully. You can continue using the service until the end of the current billing period.',
       });
     } catch (error: any) {
       console.error('Error cancelling subscription:', error);

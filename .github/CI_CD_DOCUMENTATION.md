@@ -1,10 +1,12 @@
 # CI/CD Workflows Documentation
 
-This document describes the automated workflows configured for the Algodons/algo repository to ensure code quality, security, and streamlined deployment.
+This document describes the automated workflows configured for the Algodons/algo
+repository to ensure code quality, security, and streamlined deployment.
 
 ## Overview
 
 The repository uses GitHub Actions to automate:
+
 - Code linting and formatting checks
 - Building frontend and backend applications
 - Running tests
@@ -14,50 +16,62 @@ The repository uses GitHub Actions to automate:
 - Conditional auto-approval for trusted contributors
 
 **Note:** Some features require additional configuration:
-- **Codecov integration**: Optional - Add `CODECOV_TOKEN` secret for coverage reports
+
+- **Codecov integration**: Optional - Add `CODECOV_TOKEN` secret for coverage
+  reports
 - **Auto-approval**: Optional - Update trusted users list in `auto-approve.yml`
-- **CODEOWNERS**: Optional - Replace placeholder team names with actual teams/usernames
-- **Bundle size monitoring**: Optional - Requires size-limit configuration (can be added later)
+- **CODEOWNERS**: Optional - Replace placeholder team names with actual
+  teams/usernames
+- **Bundle size monitoring**: Optional - Requires size-limit configuration (can
+  be added later)
 
 ## Workflows
 
 ### 1. CI Workflow (`ci.yml`)
 
 **Triggers:**
+
 - Pull requests to `main` and `develop` branches
 - Pushes to `main` and `develop` branches
 
 **Jobs:**
 
 #### Lint Code
+
 - Runs ESLint to check for code quality issues
 - Runs Prettier to verify code formatting
 - **Required:** Must pass for PR to be merged
 
 #### Build Frontend
+
 - Builds the Vite/React application
 - Uploads build artifacts for later use
 - Verifies the frontend can be built successfully
 
 #### Build Backend
+
 - Builds the Express server
 - Uploads build artifacts
 - Ensures backend code compiles without errors
 
 #### Run Tests
+
 - Executes the test suite
 - Uploads coverage reports to Codecov (if configured)
 - Validates all tests pass
 
 #### TypeScript Type Check
+
 - Runs TypeScript compiler in check mode
 - Catches type errors without building
 
 #### CI Success
+
 - Final check that all jobs completed successfully
 - **This is the primary status check for branch protection**
 
 **Expected Scripts in package.json:**
+
 ```json
 {
   "scripts": {
@@ -73,28 +87,33 @@ The repository uses GitHub Actions to automate:
 ### 2. CodeQL Security Scan (`codeql.yml`)
 
 **Triggers:**
+
 - Pull requests to `main` and `develop`
 - Pushes to `main` and `develop`
 - Scheduled weekly scans (Mondays at 6:00 AM UTC)
 
 **Purpose:**
+
 - Identifies security vulnerabilities in JavaScript/TypeScript code
 - Scans for common security issues (SQL injection, XSS, etc.)
 - Runs queries from GitHub's security-and-quality query suite
 
 **Results:**
+
 - Findings appear in the Security tab under Code scanning alerts
 - Failed scans will block PR merging if critical issues are found
 
 ### 3. Snyk Security Scan (`snyk.yml`)
 
 **Triggers:**
+
 - Pull requests to `main` and `develop`
 - Pushes to `main` and `develop`
 - Scheduled daily scans (2:00 AM UTC)
 - Manual workflow dispatch
 
 **Purpose:**
+
 - Scans for vulnerabilities in dependencies (npm packages)
 - Checks Docker container images for security issues
 - Performs static code analysis for security vulnerabilities
@@ -103,30 +122,36 @@ The repository uses GitHub Actions to automate:
 **Jobs:**
 
 #### Snyk Dependency Scan
+
 - Scans npm dependencies for known vulnerabilities
 - Uploads results to GitHub Security tab
 - Fails on high severity issues
 
 #### Snyk Container Scan
+
 - Builds Docker image
 - Scans container for vulnerabilities
 - Only runs on push events and scheduled scans
 
 #### Snyk Code Analysis
+
 - Performs static code analysis
 - Identifies security issues in source code
 - Checks for common vulnerabilities (XSS, injection, etc.)
 
 #### Snyk Monitor (Production)
+
 - Monitors production dependencies
 - Only runs on pushes to main branch
 - Tracks vulnerabilities over time in Snyk dashboard
 
 **Configuration Required:**
+
 - **SNYK_TOKEN** secret must be configured (see Repository Secrets section)
 - Get your token from: https://app.snyk.io/account
 
 **Results:**
+
 - Findings appear in the Security tab under Code scanning alerts
 - SARIF files uploaded for integration with GitHub Security
 - Failed scans will block PR merging if critical issues are found
@@ -134,22 +159,26 @@ The repository uses GitHub Actions to automate:
 ### 4. Automated Code Review (`code-review.yml`)
 
 **Triggers:**
+
 - Pull requests opened, synchronized, or reopened
 
 **Jobs:**
 
 #### ESLint Code Review
+
 - Uses reviewdog to add inline comments on ESLint issues
 - Only comments on lines that were added in the PR
 - Provides actionable feedback directly in the PR
 
 #### Dependency Review
+
 - Checks for vulnerable dependencies
 - Analyzes added/updated dependencies
 - Posts summary in PR comments
 - Fails on moderate or higher severity vulnerabilities
 
 #### Bundle Size Check
+
 - Monitors bundle size changes
 - Comments on PRs if bundle size increases significantly
 - Helps prevent performance regressions
@@ -157,10 +186,12 @@ The repository uses GitHub Actions to automate:
 ### 5. Auto-Approve Workflow (`auto-approve.yml`)
 
 **Triggers:**
+
 - Pull requests opened, synchronized, or reopened
 - Only runs for non-draft PRs
 
 **Behavior:**
+
 1. Checks if PR author is in the trusted contributors list
 2. Waits for all CI checks to pass
 3. Waits for CodeQL scan to complete
@@ -169,23 +200,23 @@ The repository uses GitHub Actions to automate:
 6. Adds a comment noting auto-approval
 
 **Security Safeguards:**
+
 - Only trusted users can receive auto-approval
 - All CI checks must pass
 - CodeQL scan must complete without critical findings
 - Skips auto-approval if security issues are detected
 
-**Configuring Trusted Contributors:**
-Edit the `TRUSTED_USERS` array in `.github/workflows/auto-approve.yml`:
+**Configuring Trusted Contributors:** Edit the `TRUSTED_USERS` array in
+`.github/workflows/auto-approve.yml`:
+
 ```yaml
-TRUSTED_USERS=(
-  "owner-username"
-  "maintainer-username"
-)
+TRUSTED_USERS=( "owner-username" "maintainer-username" )
 ```
 
 ### 6. PR Notifications (`pr-notifications.yml`)
 
 **Triggers:**
+
 - PR opened, reopened, or marked ready for review
 - Review submitted
 - Review requested
@@ -193,16 +224,21 @@ TRUSTED_USERS=(
 **Features:**
 
 #### Notify Reviewers
+
 - Posts comment when PR is ready for review
 - Notifies when reviews are submitted
 - Helps keep team informed
 
 #### Auto-Label
+
 Automatically adds labels based on:
-- **File types:** `frontend`, `backend`, `tests`, `documentation`, `configuration`, `ci/cd`
+
+- **File types:** `frontend`, `backend`, `tests`, `documentation`,
+  `configuration`, `ci/cd`
 - **Size:** `size/xs`, `size/s`, `size/m`, `size/l`, `size/xl`
 
 Label thresholds:
+
 - XS: < 10 lines changed
 - S: 10-49 lines changed
 - M: 50-199 lines changed
@@ -214,7 +250,9 @@ Label thresholds:
 ### 1. Repository Configuration
 
 #### Required Dependencies
+
 Ensure your `package.json` includes development dependencies for:
+
 ```json
 {
   "devDependencies": {
@@ -232,7 +270,9 @@ Ensure your `package.json` includes development dependencies for:
 ```
 
 #### Required Scripts
+
 Add these scripts to `package.json`:
+
 ```json
 {
   "scripts": {
@@ -252,7 +292,9 @@ Add these scripts to `package.json`:
 
 ### 2. Branch Protection Rules
 
-Follow the instructions in [BRANCH_PROTECTION.md](.github/BRANCH_PROTECTION.md) to configure:
+Follow the instructions in [BRANCH_PROTECTION.md](.github/BRANCH_PROTECTION.md)
+to configure:
+
 - Required status checks
 - Required approvals
 - Conversation resolution
@@ -261,7 +303,9 @@ Follow the instructions in [BRANCH_PROTECTION.md](.github/BRANCH_PROTECTION.md) 
 ### 3. Repository Secrets (Required & Optional)
 
 Configure in Settings → Secrets and variables → Actions:
-- `SNYK_TOKEN` - **Required** for Snyk security scanning. Get your token from [Snyk Account Settings](https://app.snyk.io/account)
+
+- `SNYK_TOKEN` - **Required** for Snyk security scanning. Get your token from
+  [Snyk Account Settings](https://app.snyk.io/account)
 - `CODECOV_TOKEN` - Optional for code coverage reporting
 
 ### 4. Create Required Labels
@@ -269,6 +313,7 @@ Configure in Settings → Secrets and variables → Actions:
 Create the following labels in your repository (Settings → Labels):
 
 **Type Labels:**
+
 - `frontend` - 🎨 Frontend changes
 - `backend` - ⚙️ Backend changes
 - `tests` - ✅ Test updates
@@ -277,6 +322,7 @@ Create the following labels in your repository (Settings → Labels):
 - `ci/cd` - 🚀 CI/CD changes
 
 **Size Labels:**
+
 - `size/xs` - Extra small changes
 - `size/s` - Small changes
 - `size/m` - Medium changes
@@ -286,6 +332,7 @@ Create the following labels in your repository (Settings → Labels):
 ### 5. Update CODEOWNERS
 
 Edit `.github/CODEOWNERS` to match your team structure:
+
 ```
 *       @Algodons/maintainers
 /src/   @Algodons/frontend-team
@@ -297,20 +344,24 @@ Edit `.github/CODEOWNERS` to match your team structure:
 ### For Contributors
 
 1. **Create a feature branch**
+
    ```bash
    git checkout -b feature/my-feature
    ```
 
 2. **Make changes and commit**
+
    ```bash
    git add .
    git commit -m "Add new feature"
    ```
 
 3. **Push and create PR**
+
    ```bash
    git push origin feature/my-feature
    ```
+
    Then create a PR on GitHub
 
 4. **Wait for CI checks**
@@ -346,6 +397,7 @@ Edit `.github/CODEOWNERS` to match your team structure:
 ## Monitoring and Maintenance
 
 ### Viewing Workflow Runs
+
 - Navigate to the **Actions** tab in GitHub
 - Select a workflow to view run history
 - Click on a run to see detailed logs
@@ -353,18 +405,23 @@ Edit `.github/CODEOWNERS` to match your team structure:
 ### Common Issues
 
 #### Workflow fails on missing scripts
+
 **Solution:** Add the required scripts to `package.json`
 
 #### ESLint errors
+
 **Solution:** Run `npm run lint:fix` locally and commit fixes
 
 #### Build failures
+
 **Solution:** Run `npm run build` locally to reproduce and fix
 
 #### Type errors
+
 **Solution:** Run `npm run type-check` locally and fix type issues
 
 #### Security vulnerabilities
+
 **Solution:** Review CodeQL alerts in Security tab and address findings
 
 ### Debugging Workflows
@@ -382,11 +439,13 @@ Edit `.github/CODEOWNERS` to match your team structure:
 ## Performance Considerations
 
 ### Workflow Optimization
+
 - Jobs run in parallel where possible
 - Uses caching for Node.js dependencies
 - Uploads artifacts for use in subsequent workflows
 
 ### Cost Management
+
 - Workflows only run on PR and push events
 - CodeQL runs weekly to minimize compute usage
 - Artifacts retained for 7 days
@@ -402,12 +461,14 @@ Edit `.github/CODEOWNERS` to match your team structure:
 ## Continuous Improvement
 
 ### Metrics to Track
+
 - Average time from PR creation to merge
 - Number of failed CI runs
 - Security vulnerabilities detected and fixed
 - Test coverage trends
 
 ### Regular Reviews
+
 - **Monthly:** Review workflow efficiency
 - **Quarterly:** Update dependencies and actions versions
 - **Annually:** Audit security settings and permissions
@@ -415,6 +476,7 @@ Edit `.github/CODEOWNERS` to match your team structure:
 ## Support
 
 For issues or questions about CI/CD workflows:
+
 1. Check workflow logs in the Actions tab
 2. Review this documentation
 3. Open an issue in the repository

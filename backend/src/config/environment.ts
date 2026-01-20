@@ -23,7 +23,7 @@ export interface EnvironmentConfig {
     secret: string;
     expiration: string;
   };
-  
+
   encryptionSecret: string;
 
   // Redis
@@ -108,7 +108,7 @@ export function loadEnvironmentConfig(): EnvironmentConfig {
       secret: process.env.JWT_SECRET || 'dev-secret-key-change-in-production',
       expiration: process.env.JWT_EXPIRATION || '7d',
     },
-    
+
     encryptionSecret: process.env.ENCRYPTION_SECRET || 'dev-encryption-key-change-in-production',
 
     // Redis
@@ -173,11 +173,19 @@ export function validateEnvironmentConfig(config: EnvironmentConfig): void {
 
   // Validate JWT secret in production
   if (config.isProduction) {
-    if (!config.jwt.secret || config.jwt.secret.includes('dev-') || config.jwt.secret.includes('change-in-production')) {
+    if (
+      !config.jwt.secret ||
+      config.jwt.secret.includes('dev-') ||
+      config.jwt.secret.includes('change-in-production')
+    ) {
       errors.push('JWT_SECRET must be set to a secure value in production');
     }
 
-    if (!config.encryptionSecret || config.encryptionSecret.includes('dev-') || config.encryptionSecret.includes('change-in-production')) {
+    if (
+      !config.encryptionSecret ||
+      config.encryptionSecret.includes('dev-') ||
+      config.encryptionSecret.includes('change-in-production')
+    ) {
       errors.push('ENCRYPTION_SECRET must be set to a secure value in production');
     }
 
@@ -204,7 +212,7 @@ export function getEnvironmentConfig(): EnvironmentConfig {
   if (!envConfig) {
     envConfig = loadEnvironmentConfig();
     validateEnvironmentConfig(envConfig);
-    
+
     // Log configuration in development
     if (envConfig.isDevelopment && envConfig.logging.verbose) {
       console.log('🔧 Environment Configuration:');
@@ -220,7 +228,7 @@ export function getEnvironmentConfig(): EnvironmentConfig {
       console.log(`   Debug Mode: ${envConfig.logging.debug}`);
     }
   }
-  
+
   return envConfig;
 }
 

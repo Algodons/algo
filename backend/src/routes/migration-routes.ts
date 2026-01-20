@@ -9,21 +9,24 @@ const migrationService = new MigrationService(connectionService);
 /**
  * Initialize migration system for a connection
  */
-router.post('/connections/:connectionId/migrations/init', async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { connectionId } = req.params;
+router.post(
+  '/connections/:connectionId/migrations/init',
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { connectionId } = req.params;
 
-    await migrationService.initialize(connectionId);
+      await migrationService.initialize(connectionId);
 
-    res.json({
-      message: 'Migration system initialized',
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      error: error.message || 'Failed to initialize migration system',
-    });
+      res.json({
+        message: 'Migration system initialized',
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        error: error.message || 'Failed to initialize migration system',
+      });
+    }
   }
-});
+);
 
 /**
  * Create a new migration
@@ -71,101 +74,116 @@ router.get('/connections/:connectionId/migrations', (req: Request, res: Response
 /**
  * Get a specific migration
  */
-router.get('/connections/:connectionId/migrations/:migrationId', (req: Request, res: Response): void => {
-  try {
-    const { connectionId, migrationId } = req.params;
-    const migration = migrationService.getMigration(connectionId, migrationId);
+router.get(
+  '/connections/:connectionId/migrations/:migrationId',
+  (req: Request, res: Response): void => {
+    try {
+      const { connectionId, migrationId } = req.params;
+      const migration = migrationService.getMigration(connectionId, migrationId);
 
-    if (!migration) {
-      res.status(404).json({
-        error: `Migration ${migrationId} not found`,
+      if (!migration) {
+        res.status(404).json({
+          error: `Migration ${migrationId} not found`,
+        });
+        return;
+      }
+
+      res.json(migration);
+    } catch (error: any) {
+      res.status(500).json({
+        error: error.message || 'Failed to fetch migration',
       });
-      return;
     }
-
-    res.json(migration);
-  } catch (error: any) {
-    res.status(500).json({
-      error: error.message || 'Failed to fetch migration',
-    });
   }
-});
+);
 
 /**
  * Apply a specific migration
  */
-router.post('/connections/:connectionId/migrations/:migrationId/apply', async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { connectionId, migrationId } = req.params;
+router.post(
+  '/connections/:connectionId/migrations/:migrationId/apply',
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { connectionId, migrationId } = req.params;
 
-    await migrationService.applyMigration(connectionId, migrationId);
+      await migrationService.applyMigration(connectionId, migrationId);
 
-    res.json({
-      message: 'Migration applied successfully',
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      error: error.message || 'Failed to apply migration',
-    });
+      res.json({
+        message: 'Migration applied successfully',
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        error: error.message || 'Failed to apply migration',
+      });
+    }
   }
-});
+);
 
 /**
  * Rollback a specific migration
  */
-router.post('/connections/:connectionId/migrations/:migrationId/rollback', async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { connectionId, migrationId } = req.params;
+router.post(
+  '/connections/:connectionId/migrations/:migrationId/rollback',
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { connectionId, migrationId } = req.params;
 
-    await migrationService.rollbackMigration(connectionId, migrationId);
+      await migrationService.rollbackMigration(connectionId, migrationId);
 
-    res.json({
-      message: 'Migration rolled back successfully',
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      error: error.message || 'Failed to rollback migration',
-    });
+      res.json({
+        message: 'Migration rolled back successfully',
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        error: error.message || 'Failed to rollback migration',
+      });
+    }
   }
-});
+);
 
 /**
  * Apply all pending migrations
  */
-router.post('/connections/:connectionId/migrations/apply-all', async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { connectionId } = req.params;
+router.post(
+  '/connections/:connectionId/migrations/apply-all',
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { connectionId } = req.params;
 
-    await migrationService.applyAll(connectionId);
+      await migrationService.applyAll(connectionId);
 
-    res.json({
-      message: 'All pending migrations applied successfully',
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      error: error.message || 'Failed to apply migrations',
-    });
+      res.json({
+        message: 'All pending migrations applied successfully',
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        error: error.message || 'Failed to apply migrations',
+      });
+    }
   }
-});
+);
 
 /**
  * Rollback to a specific version
  */
-router.post('/connections/:connectionId/migrations/rollback-to/:version', async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { connectionId, version } = req.params;
+router.post(
+  '/connections/:connectionId/migrations/rollback-to/:version',
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { connectionId, version } = req.params;
 
-    await migrationService.rollbackTo(connectionId, parseInt(version));
+      await migrationService.rollbackTo(connectionId, parseInt(version));
 
-    res.json({
-      message: `Rolled back to version ${version}`,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      error: error.message || 'Failed to rollback migrations',
-    });
+      res.json({
+        message: `Rolled back to version ${version}`,
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        error: error.message || 'Failed to rollback migrations',
+      });
+    }
   }
-});
+);
 
 /**
  * Get migration status
@@ -186,19 +204,22 @@ router.get('/connections/:connectionId/migrations/status', (req: Request, res: R
 /**
  * Dry run a migration
  */
-router.get('/connections/:connectionId/migrations/:migrationId/dry-run', async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { connectionId, migrationId } = req.params;
-    const sql = await migrationService.dryRun(connectionId, migrationId);
+router.get(
+  '/connections/:connectionId/migrations/:migrationId/dry-run',
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { connectionId, migrationId } = req.params;
+      const sql = await migrationService.dryRun(connectionId, migrationId);
 
-    res.json({
-      sql,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      error: error.message || 'Failed to perform dry run',
-    });
+      res.json({
+        sql,
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        error: error.message || 'Failed to perform dry run',
+      });
+    }
   }
-});
+);
 
 export default router;

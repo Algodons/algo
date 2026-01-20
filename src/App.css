@@ -108,7 +108,9 @@
   font-size: 13px;
 }
 
-input, textarea, select {
+input,
+textarea,
+select {
   background-color: #3c3c3c;
   border: 1px solid #555;
   color: #d4d4d4;
@@ -119,7 +121,9 @@ input, textarea, select {
   margin-bottom: 8px;
 }
 
-input:focus, textarea:focus, select:focus {
+input:focus,
+textarea:focus,
+select:focus {
   outline: none;
   border-color: #007acc;
 }

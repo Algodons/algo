@@ -13,7 +13,8 @@ OAuth and webhook integration for GitHub repositories.
 ## Setup
 
 1. Create a GitHub OAuth App at https://github.com/settings/developers
-2. Set the callback URL to `https://your-domain.com/api/integrations/github/callback`
+2. Set the callback URL to
+   `https://your-domain.com/api/integrations/github/callback`
 3. Add environment variables:
 
 ```env

@@ -22,7 +22,7 @@ export const glassmorphismStyles = {
     border: '1px solid rgba(255, 255, 255, 0.1)',
     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
   },
-}
+};
 
 export const glassmorphismClasses = {
   card: 'backdrop-blur-[10px] border border-white/10 shadow-2xl',
@@ -30,12 +30,12 @@ export const glassmorphismClasses = {
   cardLight: 'bg-white/70 backdrop-blur-[10px] border border-white/18',
   panel: 'bg-gray-900/80 backdrop-blur-[12px] border border-white/10',
   popup: 'bg-gray-800/95 backdrop-blur-[20px] border border-white/10 shadow-2xl',
-}
+};
 
 export function getGlassmorphismStyle(variant: keyof typeof glassmorphismStyles = 'card') {
-  return glassmorphismStyles[variant]
+  return glassmorphismStyles[variant];
 }
 
 export function getGlassmorphismClass(variant: keyof typeof glassmorphismClasses = 'card') {
-  return glassmorphismClasses[variant]
+  return glassmorphismClasses[variant];
 }

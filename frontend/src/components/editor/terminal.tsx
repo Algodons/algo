@@ -40,7 +40,7 @@ export function EditorTerminal({ projectId }: EditorTerminalProps) {
 
     // Connect to WebSocket for terminal I/O
     const socket = getSocket();
-    
+
     socket.on('connect', () => {
       socket.emit('terminal:connect', { projectId });
       terminal.writeln('Connected to terminal...');

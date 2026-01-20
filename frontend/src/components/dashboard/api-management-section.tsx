@@ -112,7 +112,9 @@ export function ApiManagementSection() {
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Create API Key</DialogTitle>
-                    <DialogDescription>Generate a new API key for your applications</DialogDescription>
+                    <DialogDescription>
+                      Generate a new API key for your applications
+                    </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 mt-4">
                     <div className="space-y-2">
@@ -150,7 +152,10 @@ export function ApiManagementSection() {
           <CardContent>
             <div className="space-y-4">
               {apiKeys.map((key) => (
-                <div key={key.id} className="flex items-center justify-between p-4 rounded-lg border">
+                <div
+                  key={key.id}
+                  className="flex items-center justify-between p-4 rounded-lg border"
+                >
                   <div className="flex items-start gap-3 flex-1">
                     <Key className="h-5 w-5 text-primary mt-0.5" />
                     <div className="flex-1">
@@ -197,7 +202,9 @@ export function ApiManagementSection() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle>Webhooks</CardTitle>
-                <CardDescription>Configure webhook endpoints for event notifications</CardDescription>
+                <CardDescription>
+                  Configure webhook endpoints for event notifications
+                </CardDescription>
               </div>
               <Dialog open={showCreateWebhook} onOpenChange={setShowCreateWebhook}>
                 <DialogTrigger asChild>
@@ -250,7 +257,10 @@ export function ApiManagementSection() {
           <CardContent>
             <div className="space-y-4">
               {webhooks.map((webhook) => (
-                <div key={webhook.id} className="flex items-center justify-between p-4 rounded-lg border">
+                <div
+                  key={webhook.id}
+                  className="flex items-center justify-between p-4 rounded-lg border"
+                >
                   <div className="flex items-start gap-3 flex-1">
                     <Webhook className="h-5 w-5 text-primary mt-0.5" />
                     <div className="flex-1">
@@ -338,7 +348,9 @@ export function ApiManagementSection() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-medium">{((endpoint.count / analytics.totalRequests) * 100).toFixed(1)}%</div>
+                    <div className="text-sm font-medium">
+                      {((endpoint.count / analytics.totalRequests) * 100).toFixed(1)}%
+                    </div>
                   </div>
                 </div>
               ))}

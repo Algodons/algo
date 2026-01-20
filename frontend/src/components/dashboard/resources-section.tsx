@@ -17,7 +17,6 @@ import {
 } from 'lucide-react';
 
 export function ResourcesSection() {
-
   // Mock data - would come from API
   const currentUsage = {
     cpu: { current: 45, limit: 100, percentage: 45, unit: '%' },
@@ -103,7 +102,9 @@ export function ResourcesSection() {
                   <Database className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium">Memory</span>
                 </div>
-                <span className={`text-sm font-bold ${getUsageColor(currentUsage.memory.percentage)}`}>
+                <span
+                  className={`text-sm font-bold ${getUsageColor(currentUsage.memory.percentage)}`}
+                >
                   {currentUsage.memory.percentage}%
                 </span>
               </div>
@@ -114,7 +115,8 @@ export function ResourcesSection() {
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                {formatBytes(currentUsage.memory.current)} of {formatBytes(currentUsage.memory.limit)}
+                {formatBytes(currentUsage.memory.current)} of{' '}
+                {formatBytes(currentUsage.memory.limit)}
               </p>
             </div>
 
@@ -125,7 +127,9 @@ export function ResourcesSection() {
                   <HardDrive className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium">Storage</span>
                 </div>
-                <span className={`text-sm font-bold ${getUsageColor(currentUsage.storage.percentage)}`}>
+                <span
+                  className={`text-sm font-bold ${getUsageColor(currentUsage.storage.percentage)}`}
+                >
                   {currentUsage.storage.percentage}%
                 </span>
               </div>
@@ -136,7 +140,8 @@ export function ResourcesSection() {
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                {formatBytes(currentUsage.storage.current)} of {formatBytes(currentUsage.storage.limit)}
+                {formatBytes(currentUsage.storage.current)} of{' '}
+                {formatBytes(currentUsage.storage.limit)}
               </p>
             </div>
 
@@ -160,7 +165,8 @@ export function ResourcesSection() {
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                {formatBytes(currentUsage.bandwidth.current)} of {formatBytes(currentUsage.bandwidth.limit)}
+                {formatBytes(currentUsage.bandwidth.current)} of{' '}
+                {formatBytes(currentUsage.bandwidth.limit)}
               </p>
             </div>
           </div>
@@ -182,7 +188,9 @@ export function ResourcesSection() {
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-center justify-between pb-4 border-b">
-                <span className="text-2xl font-bold">${billing.currentPeriod.total.toFixed(2)}</span>
+                <span className="text-2xl font-bold">
+                  ${billing.currentPeriod.total.toFixed(2)}
+                </span>
                 <Badge variant="outline">Current Period</Badge>
               </div>
               <div className="space-y-2">
@@ -221,14 +229,18 @@ export function ResourcesSection() {
             <div className="space-y-4">
               <div className="flex items-center justify-between pb-4 border-b">
                 <span className="text-2xl font-bold">${billing.forecast.amount.toFixed(2)}</span>
-                <Badge variant={billing.forecast.trend === 'increasing' ? 'destructive' : 'success'}>
+                <Badge
+                  variant={billing.forecast.trend === 'increasing' ? 'destructive' : 'success'}
+                >
                   {billing.forecast.trend}
                 </Badge>
               </div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Confidence</span>
-                  <span className="font-medium">{(billing.forecast.confidence * 100).toFixed(0)}%</span>
+                  <span className="font-medium">
+                    {(billing.forecast.confidence * 100).toFixed(0)}%
+                  </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Change</span>

@@ -2,13 +2,16 @@
 
 ## Overview
 
-The Algo Cloud IDE Platform now includes a comprehensive REST API v1 with extensive features for managing projects, deployments, webhooks, AI agents, ML models, and more.
+The Algo Cloud IDE Platform now includes a comprehensive REST API v1 with
+extensive features for managing projects, deployments, webhooks, AI agents, ML
+models, and more.
 
 ## 🎯 Key Features
 
 ### 1. RESTful API Endpoints
 
 #### User Management
+
 - `POST /api/v1/users` - Create new user
 - `GET /api/v1/users/:id` - Get user details
 - `PUT /api/v1/users/:id` - Update user
@@ -16,6 +19,7 @@ The Algo Cloud IDE Platform now includes a comprehensive REST API v1 with extens
 - `GET /api/v1/users` - List users (with pagination and search)
 
 #### Project Operations
+
 - `POST /api/v1/projects` - Create project
 - `GET /api/v1/projects/:id` - Get project details
 - `GET /api/v1/projects` - List projects
@@ -24,16 +28,19 @@ The Algo Cloud IDE Platform now includes a comprehensive REST API v1 with extens
 - `POST /api/v1/projects/:id/clone` - Clone project
 
 #### File System Access
+
 - `GET /api/v1/files/*path` - Read file or directory
 - `POST /api/v1/files/*path` - Create file or directory
 - `PUT /api/v1/files/*path` - Update file
 - `DELETE /api/v1/files/*path` - Delete file or directory
 
 #### Deployment & Triggers
+
 - `GET /api/v1/deployments/:id` - Get deployment status
 - `POST /api/v1/deployments/:id/rollback` - Rollback deployment
 
 #### Webhooks
+
 - `POST /api/v1/webhooks` - Register webhook
 - `GET /api/v1/webhooks` - List webhooks
 - `GET /api/v1/webhooks/:id` - Get webhook details
@@ -42,23 +49,28 @@ The Algo Cloud IDE Platform now includes a comprehensive REST API v1 with extens
 - `GET /api/v1/webhooks/:id/deliveries` - Get delivery history
 
 #### Resource Management
+
 - `GET /api/v1/resources/usage` - Query resource usage
 - `GET /api/v1/resources/limits` - Get resource limits
 
 #### Billing
+
 - `GET /api/v1/billing` - Retrieve billing information
 
 #### AI Agent Invocation
+
 - `GET /api/v1/ai/agents` - List available agents
 - `POST /api/v1/ai/agents/:agentId/invoke` - Invoke AI agent
 
 #### ML Models
+
 - `GET /api/v1/ai/models` - List available models
 - `POST /api/v1/ai/models/:modelId/predict` - ML model prediction
 
 ### 2. Webhook System
 
 **Features:**
+
 - ✅ Event-based subscriptions (deployment, build, resource, payment)
 - ✅ Retry logic with exponential backoff (1s, 5s, 15s)
 - ✅ HMAC SHA-256 signature verification
@@ -67,6 +79,7 @@ The Algo Cloud IDE Platform now includes a comprehensive REST API v1 with extens
 - ✅ Project-specific and global webhooks
 
 **Supported Events:**
+
 - `deployment.started`
 - `deployment.completed`
 - `deployment.failed`
@@ -87,7 +100,7 @@ import { AlgoSDK } from '@algo/sdk';
 
 const algo = new AlgoSDK({
   apiKey: 'YOUR_API_KEY',
-  baseURL: 'https://api.algo.dev/v1'
+  baseURL: 'https://api.algo.dev/v1',
 });
 
 // Full API coverage with TypeScript types
@@ -96,6 +109,7 @@ const deployment = await algo.projects.deploy(project.id);
 ```
 
 **Features:**
+
 - Full API coverage with type definitions
 - Promise-based async operations
 - Automatic retry with exponential backoff
@@ -115,6 +129,7 @@ deployment = algo.projects.deploy(project.id)
 ```
 
 **Features:**
+
 - Pythonic API wrapper
 - Type hints throughout
 - Pydantic models for validation
@@ -138,6 +153,7 @@ algo resources usage
 ```
 
 **Features:**
+
 - Terminal operations for all API endpoints
 - Interactive mode support
 - Configuration management
@@ -157,6 +173,7 @@ algo resources usage
 ```
 
 **Features:**
+
 - Automated deployment from CI/CD
 - Status reporting
 - Matrix builds support
@@ -165,12 +182,14 @@ algo resources usage
 #### VS Code Extension
 
 **Commands:**
+
 - `Algo: Deploy Project`
 - `Algo: Sync Files`
 - `Algo: View Resource Usage`
 - `Algo: Invoke AI Agent`
 
 **Features:**
+
 - Local-remote file sync
 - Deployment from editor
 - Resource monitoring
@@ -181,18 +200,22 @@ algo resources usage
 #### Supported Integrations
 
 **Version Control:**
+
 - GitHub (OAuth, webhooks, repository sync)
 - GitLab (OAuth, webhooks, repository sync)
 
 **Communication:**
+
 - Slack (notifications, bot commands)
 - Discord (webhooks, bot integration)
 
 **Productivity:**
+
 - Notion (documentation sync)
 - Linear (issue tracking)
 
 **Deployment:**
+
 - Vercel (migration tools)
 - Netlify (migration tools)
 
@@ -201,6 +224,7 @@ algo resources usage
 #### AI Agent System
 
 **Features:**
+
 - Agent registry and lifecycle management
 - Custom agent creation framework
 - Agent chaining and workflows
@@ -209,6 +233,7 @@ algo resources usage
 - Performance monitoring
 
 **Pre-installed Agents:**
+
 - Code Assistant (code completion)
 - Code Reviewer (automated review)
 - Documentation Generator (auto-docs)
@@ -216,6 +241,7 @@ algo resources usage
 #### ML Models Integration
 
 **Features:**
+
 - Model registry and versioning
 - Inference API (sync)
 - Model deployment pipeline
@@ -223,6 +249,7 @@ algo resources usage
 - Performance monitoring
 
 **Pre-installed Models:**
+
 - Sentiment Analysis (NLP)
 - Image Classification (CV)
 - Text Classification (NLP)
@@ -230,6 +257,7 @@ algo resources usage
 ### 7. Oracle Database Integration
 
 **Features:**
+
 - Connection pooling
 - Query optimization
 - Transaction management
@@ -244,7 +272,7 @@ const oracle = new OracleConnector({
   port: 1521,
   database: 'ORCL',
   user: 'system',
-  password: 'password'
+  password: 'password',
 });
 
 await oracle.initialize();
@@ -452,4 +480,5 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
-**Platform API v1** - A comprehensive extensible platform with REST API capabilities, AI Agent integration, ML Models, and Oracle connectivity.
+**Platform API v1** - A comprehensive extensible platform with REST API
+capabilities, AI Agent integration, ML Models, and Oracle connectivity.

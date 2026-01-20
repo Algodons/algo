@@ -58,7 +58,7 @@
   white-space: nowrap;
 }
 
-.toolbar input[type="number"] {
+.toolbar input[type='number'] {
   background: #3c3c3c;
   color: #cccccc;
   border: 1px solid #555555;
@@ -68,6 +68,6 @@
   font-size: 12px;
 }
 
-.toolbar input[type="checkbox"] {
+.toolbar input[type='checkbox'] {
   cursor: pointer;
 }

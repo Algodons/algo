@@ -5,7 +5,14 @@ import DataBrowser from './database/DataBrowser';
 import MigrationManager from './database/MigrationManager';
 import BackupManager from './database/BackupManager';
 
-type DatabaseType = 'postgresql' | 'mysql' | 'mongodb' | 'redis' | 'sqlite' | 'pinecone' | 'weaviate';
+type DatabaseType =
+  | 'postgresql'
+  | 'mysql'
+  | 'mongodb'
+  | 'redis'
+  | 'sqlite'
+  | 'pinecone'
+  | 'weaviate';
 type TabType = 'query' | 'visual-builder' | 'data-browser' | 'migrations' | 'backups';
 
 const DatabasePanel: React.FC = () => {
@@ -42,7 +49,7 @@ const DatabasePanel: React.FC = () => {
           credentials,
         }),
       });
-      
+
       const data = await response.json();
       if (data.id) {
         setConnectionId(data.id);
@@ -71,7 +78,7 @@ const DatabasePanel: React.FC = () => {
           body: JSON.stringify({ query: queryToExecute || query }),
         }
       );
-      
+
       const data = await response.json();
       if (data.rows || data.result) {
         setResult(data.rows || data.result);
@@ -102,7 +109,7 @@ const DatabasePanel: React.FC = () => {
   return (
     <div className="database-panel">
       <div className="panel-title">Database Management</div>
-      
+
       {!connected ? (
         <>
           <div className="db-section">
@@ -251,23 +258,19 @@ const DatabasePanel: React.FC = () => {
               <QueryBuilder connectionId={connectionId} onExecute={executeQuery} />
             )}
 
-            {activeTab === 'data-browser' && (
-              <DataBrowser connectionId={connectionId} />
-            )}
+            {activeTab === 'data-browser' && <DataBrowser connectionId={connectionId} />}
 
-            {activeTab === 'migrations' && (
-              <MigrationManager connectionId={connectionId} />
-            )}
+            {activeTab === 'migrations' && <MigrationManager connectionId={connectionId} />}
 
-            {activeTab === 'backups' && (
-              <BackupManager connectionId={connectionId} />
-            )}
+            {activeTab === 'backups' && <BackupManager connectionId={connectionId} />}
           </div>
         </>
       )}
 
       {message && (
-        <div className={message.includes('failed') || message.includes('Failed') ? 'error' : 'success'}>
+        <div
+          className={message.includes('failed') || message.includes('Failed') ? 'error' : 'success'}
+        >
           {message}
         </div>
       )}

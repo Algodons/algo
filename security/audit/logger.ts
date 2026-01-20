@@ -26,14 +26,11 @@ export class AuditLogger {
 
   constructor(config: AuditLoggerConfig) {
     this.config = config;
-    
+
     // Initialize Winston logger for file-based logging
     this.logger = winston.createLogger({
       level: 'info',
-      format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json()
-      ),
+      format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
       transports: [],
     });
 
@@ -50,12 +47,11 @@ export class AuditLogger {
 
     // Always log to console in development
     if (process.env.NODE_ENV !== 'production') {
-      this.logger.add(new winston.transports.Console({
-        format: winston.format.combine(
-          winston.format.colorize(),
-          winston.format.simple()
-        ),
-      }));
+      this.logger.add(
+        new winston.transports.Console({
+          format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
+        })
+      );
     }
   }
 
@@ -121,7 +117,7 @@ export class AuditLogger {
     const result = await this.config.database.query(
       'SELECT log_hash FROM audit_logs ORDER BY id DESC LIMIT 1'
     );
-    
+
     if (result.rows.length > 0) {
       this.lastLogHash = result.rows[0].log_hash;
     }
@@ -143,7 +139,7 @@ export class AuditLogger {
    */
   async log(event: AuditEvent): Promise<void> {
     const eventId = event.id || this.generateEventId();
-    
+
     // Compute hash for tamper detection
     const logHash = this.computeLogHash(event, this.lastLogHash);
 
@@ -211,7 +207,6 @@ export class AuditLogger {
       if (this.config.enableSIEMIntegration && this.config.siemEndpoint) {
         await this.sendToSIEM(event);
       }
-
     } catch (error) {
       console.error('Failed to log audit event:', error);
       // Log to file as fallback
@@ -342,10 +337,11 @@ export class AuditLogger {
    * Verify log integrity by checking hash chain
    */
   async verifyIntegrity(startId?: number, endId?: number): Promise<boolean> {
-    const query = startId && endId
-      ? `SELECT * FROM audit_logs WHERE id >= $1 AND id <= $2 ORDER BY id ASC`
-      : `SELECT * FROM audit_logs ORDER BY id ASC`;
-    
+    const query =
+      startId && endId
+        ? `SELECT * FROM audit_logs WHERE id >= $1 AND id <= $2 ORDER BY id ASC`
+        : `SELECT * FROM audit_logs ORDER BY id ASC`;
+
     const params = startId && endId ? [startId, endId] : [];
     const result = await this.config.database.query(query, params);
 
@@ -353,12 +349,12 @@ export class AuditLogger {
     for (const row of result.rows) {
       const event = this.rowToEvent(row);
       const expectedHash = this.computeLogHash(event, previousHash);
-      
+
       if (row.log_hash !== expectedHash) {
         console.error(`Hash mismatch detected at log ID ${row.id}`);
         return false;
       }
-      
+
       previousHash = row.log_hash;
     }
 
@@ -376,10 +372,10 @@ export class AuditLogger {
     );
 
     const count = parseInt(result.rows[0].count, 10);
-    
+
     // Placeholder for actual archival logic
     console.log(`Would archive ${count} logs before ${beforeDate.toISOString()}`);
-    
+
     return count;
   }
 }

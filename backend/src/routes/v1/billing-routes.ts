@@ -10,10 +10,7 @@ export function createBillingRoutesV1(pool: Pool): Router {
   router.get(
     '/',
     authenticate(pool),
-    [
-      query('start_date').optional().isISO8601(),
-      query('end_date').optional().isISO8601(),
-    ],
+    [query('start_date').optional().isISO8601(), query('end_date').optional().isISO8601()],
     async (req: Request, res: Response) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {

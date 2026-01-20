@@ -1,6 +1,7 @@
 # Intelligent Automation System
 
-A comprehensive automation system for project detection, infrastructure generation, and deployment automation.
+A comprehensive automation system for project detection, infrastructure
+generation, and deployment automation.
 
 ## 🚀 Features
 
@@ -71,6 +72,7 @@ curl -fsSL https://install.gxqstudio.com | bash
 ```
 
 The installation script:
+
 - Detects OS and distribution (Ubuntu, Debian, CentOS, Fedora)
 - Checks system requirements
 - Installs Docker and Docker Compose
@@ -86,6 +88,7 @@ The installation script:
 50+ pre-configured starter templates:
 
 **Frontend:**
+
 - React with TypeScript
 - Next.js with App Router
 - Vue 3 with Vite
@@ -93,6 +96,7 @@ The installation script:
 - Svelte
 
 **Backend:**
+
 - Express with TypeScript
 - FastAPI with Python
 - NestJS
@@ -100,6 +104,7 @@ The installation script:
 - Flask
 
 **Fullstack:**
+
 - MERN Stack
 - T3 Stack (Next.js + tRPC + Prisma)
 - MEAN Stack
@@ -109,6 +114,7 @@ The installation script:
 ### Auto-Detection
 
 **Detect Project Configuration**
+
 ```http
 POST /api/automation/detect
 Content-Type: application/json
@@ -119,6 +125,7 @@ Content-Type: application/json
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -151,6 +158,7 @@ Response:
 ```
 
 **Install Dependencies**
+
 ```http
 POST /api/automation/install
 Content-Type: application/json
@@ -161,6 +169,7 @@ Content-Type: application/json
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -182,6 +191,7 @@ Response:
 ### Infrastructure Generation
 
 **Generate IaC**
+
 ```http
 POST /api/automation/generate-iac
 Content-Type: application/json
@@ -194,6 +204,7 @@ Content-Type: application/json
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -215,11 +226,13 @@ Response:
 ### Template Management
 
 **Get Available Templates**
+
 ```http
 GET /api/automation/templates
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -238,6 +251,7 @@ Response:
 ```
 
 **Initialize from Template**
+
 ```http
 POST /api/automation/init-template
 Content-Type: application/json
@@ -257,6 +271,7 @@ Content-Type: application/json
 ```
 
 **Import from GitHub**
+
 ```http
 POST /api/automation/import-github
 Content-Type: application/json
@@ -270,6 +285,7 @@ Content-Type: application/json
 ### Full Project Setup
 
 **Complete Setup**
+
 ```http
 POST /api/automation/setup
 Content-Type: application/json
@@ -305,14 +321,22 @@ const installation = await automation.installDependencies('/path/to/project');
 console.log('Installation result:', installation);
 
 // Generate IaC
-const iac = await automation.generateIaC('/path/to/project', 'example.com', 'aws');
+const iac = await automation.generateIaC(
+  '/path/to/project',
+  'example.com',
+  'aws'
+);
 console.log('Dockerfile:', iac.dockerfile);
 
 // Initialize from template
-await automation.initializeFromTemplate('react-typescript', '/path/to/new/project', {
-  projectName: 'my-app',
-  addDocker: true,
-});
+await automation.initializeFromTemplate(
+  'react-typescript',
+  '/path/to/new/project',
+  {
+    projectName: 'my-app',
+    addDocker: true,
+  }
+);
 
 // Full setup
 const setup = await automation.setupProject('/path/to/project', {
@@ -395,31 +419,39 @@ backend/src/automation/
 ## 🎯 Supported Frameworks
 
 ### JavaScript/TypeScript
+
 - React, Next.js, Gatsby
 - Vue, Nuxt
 - Angular, Svelte
 - Express, Fastify, NestJS
 
 ### Python
+
 - Django, Flask, FastAPI
 
 ### Rust
+
 - Actix, Rocket, Axum
 
 ### Java
+
 - Spring Boot
 
 ### Go
+
 - Gin, Fiber, Gorilla Mux
 
 ### PHP
+
 - Laravel, Symfony
 
 ## 🚀 Deployment
 
-The automation system is integrated into the main backend server and starts automatically when the server runs.
+The automation system is integrated into the main backend server and starts
+automatically when the server runs.
 
 To use in production:
+
 1. Ensure all required dependencies are installed on the server
 2. Configure environment variables
 3. Start the backend server
@@ -437,6 +469,7 @@ TEMPLATES_DIR=/templates     # Directory for templates
 ## 🤝 Contributing
 
 To add new framework support:
+
 1. Update `FrameworkDetector` with detection logic
 2. Add build commands in `BuildCommandInferrer`
 3. Add default ports in `PortDetector`

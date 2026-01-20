@@ -1,7 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { GitPullRequest, GitMerge, Clock, CheckCircle2, XCircle, MessageSquare } from 'lucide-react';
+import {
+  GitPullRequest,
+  GitMerge,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  MessageSquare,
+} from 'lucide-react';
 import { PullRequest, PullRequestStatus } from '@/lib/types/collaboration';
 import { pullRequestApi } from '@/lib/team-api';
 import { Button } from '@/components/ui/button';
@@ -155,9 +162,7 @@ export function PullRequestList({ projectId }: PullRequestListProps) {
                         {pr.status === 'merged' && pr.merged_at && (
                           <div className="mt-2 flex items-center gap-2 text-sm text-purple-600">
                             <CheckCircle2 className="w-4 h-4" />
-                            <span>
-                              Merged {formatTimeAgo(pr.merged_at)}
-                            </span>
+                            <span>Merged {formatTimeAgo(pr.merged_at)}</span>
                           </div>
                         )}
                       </div>

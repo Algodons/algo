@@ -40,23 +40,27 @@ export function createVersionControlRoutes(pool: Pool, workspaceDir: string): Ro
   });
 
   // Get pull request by number
-  router.get('/projects/:projectId/pull-requests/:prNumber', authenticate(pool), async (req, res) => {
-    try {
-      const projectId = parseInt(req.params.projectId);
-      const prNumber = parseInt(req.params.prNumber);
+  router.get(
+    '/projects/:projectId/pull-requests/:prNumber',
+    authenticate(pool),
+    async (req, res) => {
+      try {
+        const projectId = parseInt(req.params.projectId);
+        const prNumber = parseInt(req.params.prNumber);
 
-      const pullRequest = await versionControlService.getPullRequest(projectId, prNumber);
+        const pullRequest = await versionControlService.getPullRequest(projectId, prNumber);
 
-      if (!pullRequest) {
-        return res.status(404).json({ error: 'Pull request not found' });
+        if (!pullRequest) {
+          return res.status(404).json({ error: 'Pull request not found' });
+        }
+
+        res.json({ pullRequest });
+      } catch (error) {
+        console.error('Get pull request error:', error);
+        res.status(500).json({ error: 'Failed to get pull request' });
       }
-
-      res.json({ pullRequest });
-    } catch (error) {
-      console.error('Get pull request error:', error);
-      res.status(500).json({ error: 'Failed to get pull request' });
     }
-  });
+  );
 
   // Get pull requests for a project
   router.get('/projects/:projectId/pull-requests', authenticate(pool), async (req, res) => {
@@ -228,40 +232,44 @@ export function createVersionControlRoutes(pool: Pool, workspaceDir: string): Ro
   });
 
   // Create deployment protection
-  router.post('/projects/:projectId/deployment-protection', authenticate(pool), async (req, res) => {
-    try {
-      const projectId = parseInt(req.params.projectId);
-      const {
-        environment,
-        requireApproval,
-        requiredApprovers,
-        approvalTimeout,
-        autoRollback,
-        protectionRules,
-      } = req.body;
-
-      if (!environment) {
-        return res.status(400).json({ error: 'environment is required' });
-      }
-
-      const protection = await versionControlService.createDeploymentProtection(
-        projectId,
-        environment,
-        {
+  router.post(
+    '/projects/:projectId/deployment-protection',
+    authenticate(pool),
+    async (req, res) => {
+      try {
+        const projectId = parseInt(req.params.projectId);
+        const {
+          environment,
           requireApproval,
           requiredApprovers,
           approvalTimeout,
           autoRollback,
           protectionRules,
-        }
-      );
+        } = req.body;
 
-      res.status(201).json({ protection });
-    } catch (error) {
-      console.error('Create deployment protection error:', error);
-      res.status(500).json({ error: 'Failed to create deployment protection' });
+        if (!environment) {
+          return res.status(400).json({ error: 'environment is required' });
+        }
+
+        const protection = await versionControlService.createDeploymentProtection(
+          projectId,
+          environment,
+          {
+            requireApproval,
+            requiredApprovers,
+            approvalTimeout,
+            autoRollback,
+            protectionRules,
+          }
+        );
+
+        res.status(201).json({ protection });
+      } catch (error) {
+        console.error('Create deployment protection error:', error);
+        res.status(500).json({ error: 'Failed to create deployment protection' });
+      }
     }
-  });
+  );
 
   // Request deployment approval
   router.post('/projects/:projectId/deployment-approvals', authenticate(pool), async (req, res) => {
@@ -316,71 +324,83 @@ export function createVersionControlRoutes(pool: Pool, workspaceDir: string): Ro
   });
 
   // Get pending deployment approvals
-  router.get('/projects/:projectId/deployment-approvals/pending', authenticate(pool), async (req, res) => {
-    try {
-      const projectId = parseInt(req.params.projectId);
-      const approvals = await versionControlService.getPendingApprovals(projectId);
-      res.json({ approvals });
-    } catch (error) {
-      console.error('Get pending approvals error:', error);
-      res.status(500).json({ error: 'Failed to get pending approvals' });
+  router.get(
+    '/projects/:projectId/deployment-approvals/pending',
+    authenticate(pool),
+    async (req, res) => {
+      try {
+        const projectId = parseInt(req.params.projectId);
+        const approvals = await versionControlService.getPendingApprovals(projectId);
+        res.json({ approvals });
+      } catch (error) {
+        console.error('Get pending approvals error:', error);
+        res.status(500).json({ error: 'Failed to get pending approvals' });
+      }
     }
-  });
+  );
 
   // Detect merge conflicts
-  router.post('/projects/:projectId/merge-conflicts/detect', authenticate(pool), async (req, res) => {
-    try {
-      const projectId = parseInt(req.params.projectId);
-      const { sourceBranch, targetBranch } = req.body;
+  router.post(
+    '/projects/:projectId/merge-conflicts/detect',
+    authenticate(pool),
+    async (req, res) => {
+      try {
+        const projectId = parseInt(req.params.projectId);
+        const { sourceBranch, targetBranch } = req.body;
 
-      if (!sourceBranch || !targetBranch) {
-        return res.status(400).json({ error: 'sourceBranch and targetBranch are required' });
-      }
+        if (!sourceBranch || !targetBranch) {
+          return res.status(400).json({ error: 'sourceBranch and targetBranch are required' });
+        }
 
-      const result = await versionControlService.detectMergeConflicts(
-        projectId,
-        sourceBranch,
-        targetBranch
-      );
+        const result = await versionControlService.detectMergeConflicts(
+          projectId,
+          sourceBranch,
+          targetBranch
+        );
 
-      res.json(result);
-    } catch (error) {
-      console.error('Detect merge conflicts error:', error);
-      res.status(500).json({
-        error: 'Failed to detect merge conflicts',
-        details: (error as Error).message,
-      });
-    }
-  });
-
-  // Get merge conflict content
-  router.post('/projects/:projectId/merge-conflicts/content', authenticate(pool), async (req, res) => {
-    try {
-      const projectId = parseInt(req.params.projectId);
-      const { filePath, sourceBranch, targetBranch } = req.body;
-
-      if (!filePath || !sourceBranch || !targetBranch) {
-        return res.status(400).json({
-          error: 'filePath, sourceBranch, and targetBranch are required',
+        res.json(result);
+      } catch (error) {
+        console.error('Detect merge conflicts error:', error);
+        res.status(500).json({
+          error: 'Failed to detect merge conflicts',
+          details: (error as Error).message,
         });
       }
-
-      const content = await versionControlService.getMergeConflictContent(
-        projectId,
-        filePath,
-        sourceBranch,
-        targetBranch
-      );
-
-      res.json(content);
-    } catch (error) {
-      console.error('Get merge conflict content error:', error);
-      res.status(500).json({
-        error: 'Failed to get merge conflict content',
-        details: (error as Error).message,
-      });
     }
-  });
+  );
+
+  // Get merge conflict content
+  router.post(
+    '/projects/:projectId/merge-conflicts/content',
+    authenticate(pool),
+    async (req, res) => {
+      try {
+        const projectId = parseInt(req.params.projectId);
+        const { filePath, sourceBranch, targetBranch } = req.body;
+
+        if (!filePath || !sourceBranch || !targetBranch) {
+          return res.status(400).json({
+            error: 'filePath, sourceBranch, and targetBranch are required',
+          });
+        }
+
+        const content = await versionControlService.getMergeConflictContent(
+          projectId,
+          filePath,
+          sourceBranch,
+          targetBranch
+        );
+
+        res.json(content);
+      } catch (error) {
+        console.error('Get merge conflict content error:', error);
+        res.status(500).json({
+          error: 'Failed to get merge conflict content',
+          details: (error as Error).message,
+        });
+      }
+    }
+  );
 
   return router;
 }

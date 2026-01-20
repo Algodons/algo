@@ -12,10 +12,10 @@ const terminals = new Map<string, TerminalSession>();
 export function setupTerminalServer(wss: WebSocketServer) {
   wss.on('connection', (ws: WebSocket, req) => {
     const url = new URL(req.url || '', `http://${req.headers.host}`);
-    
+
     if (url.pathname === '/terminal') {
       const terminalId = url.searchParams.get('id') || generateId();
-      
+
       // Create new terminal session
       const shell = process.platform === 'win32' ? 'powershell.exe' : 'bash';
       const ptyProcess = pty.spawn(shell, [], {
@@ -23,7 +23,7 @@ export function setupTerminalServer(wss: WebSocketServer) {
         cols: 80,
         rows: 30,
         cwd: process.env.HOME || process.cwd(),
-        env: process.env as { [key: string]: string }
+        env: process.env as { [key: string]: string },
       });
 
       terminals.set(terminalId, { pty: ptyProcess, ws });
@@ -46,7 +46,7 @@ export function setupTerminalServer(wss: WebSocketServer) {
       ws.on('message', (message: string) => {
         try {
           const msg = JSON.parse(message);
-          
+
           if (msg.type === 'input') {
             ptyProcess.write(msg.data);
           } else if (msg.type === 'resize') {

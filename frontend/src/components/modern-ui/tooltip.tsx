@@ -1,45 +1,47 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface TooltipProps {
-  content: string | React.ReactNode
-  children: React.ReactNode
-  position?: 'top' | 'bottom' | 'left' | 'right'
-  delay?: number
+  content: string | React.ReactNode;
+  children: React.ReactNode;
+  position?: 'top' | 'bottom' | 'left' | 'right';
+  delay?: number;
 }
 
 export function Tooltip({ content, children, position = 'top', delay = 200 }: TooltipProps) {
-  const [isVisible, setIsVisible] = useState(false)
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null)
+  const [isVisible, setIsVisible] = useState(false);
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   const handleMouseEnter = () => {
-    const id = setTimeout(() => setIsVisible(true), delay)
-    setTimeoutId(id)
-  }
+    const id = setTimeout(() => setIsVisible(true), delay);
+    setTimeoutId(id);
+  };
 
   const handleMouseLeave = () => {
     if (timeoutId) {
-      clearTimeout(timeoutId)
-      setTimeoutId(null)
+      clearTimeout(timeoutId);
+      setTimeoutId(null);
     }
-    setIsVisible(false)
-  }
+    setIsVisible(false);
+  };
 
   const positionClasses = {
     top: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
     bottom: 'top-full left-1/2 -translate-x-1/2 mt-2',
     left: 'right-full top-1/2 -translate-y-1/2 mr-2',
     right: 'left-full top-1/2 -translate-y-1/2 ml-2',
-  }
+  };
 
   const arrowClasses = {
     top: 'top-full left-1/2 -translate-x-1/2 border-l-transparent border-r-transparent border-b-transparent',
-    bottom: 'bottom-full left-1/2 -translate-x-1/2 border-l-transparent border-r-transparent border-t-transparent',
+    bottom:
+      'bottom-full left-1/2 -translate-x-1/2 border-l-transparent border-r-transparent border-t-transparent',
     left: 'left-full top-1/2 -translate-y-1/2 border-t-transparent border-b-transparent border-r-transparent',
-    right: 'right-full top-1/2 -translate-y-1/2 border-t-transparent border-b-transparent border-l-transparent',
-  }
+    right:
+      'right-full top-1/2 -translate-y-1/2 border-t-transparent border-b-transparent border-l-transparent',
+  };
 
   return (
     <div
@@ -72,15 +74,15 @@ export function Tooltip({ content, children, position = 'top', delay = 200 }: To
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }
 
 // Tutorial tooltip variant with progress indicator
 interface TutorialTooltipProps extends TooltipProps {
-  step: number
-  totalSteps: number
-  onNext?: () => void
-  onSkip?: () => void
+  step: number;
+  totalSteps: number;
+  onNext?: () => void;
+  onSkip?: () => void;
 }
 
 export function TutorialTooltip({
@@ -92,9 +94,9 @@ export function TutorialTooltip({
   onNext,
   onSkip,
 }: TutorialTooltipProps) {
-  const [isVisible, setIsVisible] = useState(true)
+  const [isVisible, setIsVisible] = useState(true);
 
-  if (!isVisible) return <>{children}</>
+  if (!isVisible) return <>{children}</>;
 
   return (
     <div className="relative inline-block">
@@ -128,9 +130,7 @@ export function TutorialTooltip({
                   {Array.from({ length: totalSteps }).map((_, i) => (
                     <div
                       key={i}
-                      className={`h-1 w-4 rounded-full ${
-                        i < step ? 'bg-white' : 'bg-white/30'
-                      }`}
+                      className={`h-1 w-4 rounded-full ${i < step ? 'bg-white' : 'bg-white/30'}`}
                     />
                   ))}
                 </div>
@@ -138,8 +138,8 @@ export function TutorialTooltip({
                   {onSkip && (
                     <button
                       onClick={() => {
-                        onSkip()
-                        setIsVisible(false)
+                        onSkip();
+                        setIsVisible(false);
                       }}
                       className="text-xs text-blue-200 hover:text-white transition-colors"
                     >
@@ -161,5 +161,5 @@ export function TutorialTooltip({
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }

@@ -69,14 +69,14 @@ export class AlgoSDK {
       timeout: this.config.timeout,
       headers: {
         'Content-Type': 'application/json',
-        ...(this.config.apiKey && { 'Authorization': `Bearer ${this.config.apiKey}` }),
+        ...(this.config.apiKey && { Authorization: `Bearer ${this.config.apiKey}` }),
       },
     });
 
     // Add retry logic
     this.client.interceptors.response.use(
-      response => response,
-      async error => {
+      (response) => response,
+      async (error) => {
         const config = error.config;
         if (!config || !config.retry) {
           config.retry = 0;
@@ -88,7 +88,7 @@ export class AlgoSDK {
 
         config.retry += 1;
         const delay = Math.pow(2, config.retry) * 1000;
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
 
         return this.client(config);
       }
@@ -97,7 +97,12 @@ export class AlgoSDK {
 
   // Users API
   users = {
-    create: async (data: { email: string; username: string; password: string; name?: string }): Promise<User> => {
+    create: async (data: {
+      email: string;
+      username: string;
+      password: string;
+      name?: string;
+    }): Promise<User> => {
       const response = await this.client.post('/users', data);
       return response.data.data;
     },
@@ -116,7 +121,9 @@ export class AlgoSDK {
       await this.client.delete(`/users/${id}`);
     },
 
-    list: async (params?: PaginationParams & { search?: string }): Promise<{ users: User[]; pagination: any }> => {
+    list: async (
+      params?: PaginationParams & { search?: string }
+    ): Promise<{ users: User[]; pagination: any }> => {
       const response = await this.client.get('/users', { params });
       return { users: response.data.data, pagination: response.data.pagination };
     },
@@ -124,7 +131,12 @@ export class AlgoSDK {
 
   // Projects API
   projects = {
-    create: async (data: { name: string; description?: string; template?: string; visibility?: string }): Promise<Project> => {
+    create: async (data: {
+      name: string;
+      description?: string;
+      template?: string;
+      visibility?: string;
+    }): Promise<Project> => {
       const response = await this.client.post('/projects', data);
       return response.data.data;
     },
@@ -134,7 +146,9 @@ export class AlgoSDK {
       return response.data.data;
     },
 
-    list: async (params?: PaginationParams & { search?: string }): Promise<{ projects: Project[]; pagination: any }> => {
+    list: async (
+      params?: PaginationParams & { search?: string }
+    ): Promise<{ projects: Project[]; pagination: any }> => {
       const response = await this.client.get('/projects', { params });
       return { projects: response.data.data, pagination: response.data.pagination };
     },
@@ -161,7 +175,12 @@ export class AlgoSDK {
       return response.data.data;
     },
 
-    create: async (path: string, projectId: string, content: string, directory?: boolean): Promise<any> => {
+    create: async (
+      path: string,
+      projectId: string,
+      content: string,
+      directory?: boolean
+    ): Promise<any> => {
       const response = await this.client.post(`/files/${path}`, { projectId, content, directory });
       return response.data.data;
     },
@@ -191,7 +210,12 @@ export class AlgoSDK {
 
   // Webhooks API
   webhooks = {
-    create: async (data: { url: string; events: string[]; project_id?: number; secret?: string }): Promise<Webhook> => {
+    create: async (data: {
+      url: string;
+      events: string[];
+      project_id?: number;
+      secret?: string;
+    }): Promise<Webhook> => {
       const response = await this.client.post('/webhooks', data);
       return response.data.data;
     },
@@ -201,7 +225,9 @@ export class AlgoSDK {
       return response.data.data;
     },
 
-    list: async (params?: PaginationParams & { project_id?: number }): Promise<{ webhooks: Webhook[]; pagination: any }> => {
+    list: async (
+      params?: PaginationParams & { project_id?: number }
+    ): Promise<{ webhooks: Webhook[]; pagination: any }> => {
       const response = await this.client.get('/webhooks', { params });
       return { webhooks: response.data.data, pagination: response.data.pagination };
     },
@@ -215,7 +241,10 @@ export class AlgoSDK {
       await this.client.delete(`/webhooks/${id}`);
     },
 
-    deliveries: async (id: number, params?: PaginationParams): Promise<{ deliveries: any[]; pagination: any }> => {
+    deliveries: async (
+      id: number,
+      params?: PaginationParams
+    ): Promise<{ deliveries: any[]; pagination: any }> => {
       const response = await this.client.get(`/webhooks/${id}/deliveries`, { params });
       return { deliveries: response.data.data, pagination: response.data.pagination };
     },
@@ -223,7 +252,12 @@ export class AlgoSDK {
 
   // Resources API
   resources = {
-    usage: async (params?: { project_id?: number; start_date?: string; end_date?: string; metric?: string }): Promise<any> => {
+    usage: async (params?: {
+      project_id?: number;
+      start_date?: string;
+      end_date?: string;
+      metric?: string;
+    }): Promise<any> => {
       const response = await this.client.get('/resources/usage', { params });
       return response.data.data;
     },
@@ -245,25 +279,41 @@ export class AlgoSDK {
   // AI API
   ai = {
     agents: {
-      list: async (params?: PaginationParams & { category?: string }): Promise<{ agents: any[]; pagination: any }> => {
+      list: async (
+        params?: PaginationParams & { category?: string }
+      ): Promise<{ agents: any[]; pagination: any }> => {
         const response = await this.client.get('/ai/agents', { params });
         return { agents: response.data.data, pagination: response.data.pagination };
       },
 
-      invoke: async (agentId: string, input: any, context?: any, parameters?: any): Promise<any> => {
-        const response = await this.client.post(`/ai/agents/${agentId}/invoke`, { input, context, parameters });
+      invoke: async (
+        agentId: string,
+        input: any,
+        context?: any,
+        parameters?: any
+      ): Promise<any> => {
+        const response = await this.client.post(`/ai/agents/${agentId}/invoke`, {
+          input,
+          context,
+          parameters,
+        });
         return response.data.data;
       },
     },
 
     models: {
-      list: async (params?: PaginationParams & { type?: string }): Promise<{ models: any[]; pagination: any }> => {
+      list: async (
+        params?: PaginationParams & { type?: string }
+      ): Promise<{ models: any[]; pagination: any }> => {
         const response = await this.client.get('/ai/models', { params });
         return { models: response.data.data, pagination: response.data.pagination };
       },
 
       predict: async (modelId: string, input: any, parameters?: any): Promise<any> => {
-        const response = await this.client.post(`/ai/models/${modelId}/predict`, { input, parameters });
+        const response = await this.client.post(`/ai/models/${modelId}/predict`, {
+          input,
+          parameters,
+        });
         return response.data.data;
       },
     },

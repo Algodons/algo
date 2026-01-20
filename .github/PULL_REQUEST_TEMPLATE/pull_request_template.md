@@ -1,12 +1,15 @@
 ## Description
+
 <!-- Provide a brief description of the changes in this PR -->
 
 ## Type of Change
+
 <!-- Mark the relevant option with an "x" -->
 
 - [ ] 🐛 Bug fix (non-breaking change which fixes an issue)
 - [ ] ✨ New feature (non-breaking change which adds functionality)
-- [ ] 💥 Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] 💥 Breaking change (fix or feature that would cause existing functionality
+      to not work as expected)
 - [ ] 📝 Documentation update
 - [ ] 🎨 Style/UI update
 - [ ] ♻️ Code refactoring
@@ -16,19 +19,21 @@
 - [ ] 🔒 Security fix
 
 ## Related Issues
+
 <!-- Link any related issues here -->
-Fixes #
-Closes #
-Related to #
+
+Fixes # Closes # Related to #
 
 ## Changes Made
+
 <!-- List the main changes made in this PR -->
 
-- 
-- 
-- 
+-
+-
+-
 
 ## Testing
+
 <!-- Describe the testing you've done -->
 
 - [ ] Unit tests pass
@@ -37,12 +42,15 @@ Related to #
 - [ ] Browser testing (if applicable)
 
 ### Test Coverage
+
 <!-- Add information about test coverage if applicable -->
 
 ## Screenshots/Videos
+
 <!-- If applicable, add screenshots or videos to help explain your changes -->
 
 ## Checklist
+
 <!-- Mark completed items with an "x" -->
 
 - [ ] My code follows the project's style guidelines
@@ -55,14 +63,16 @@ Related to #
 - [ ] Any dependent changes have been merged and published
 
 ## Deployment Notes
+
 <!-- Add any notes about deployment, configuration changes, or migrations -->
 
 ## Additional Context
+
 <!-- Add any other context about the PR here -->
 
 ---
 
-<!-- 
+<!--
 For Reviewers:
 - Check that all CI checks pass
 - Review for security vulnerabilities

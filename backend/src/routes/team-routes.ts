@@ -140,16 +140,21 @@ export function createTeamRoutes(pool: Pool): Router {
   });
 
   // Get organization members
-  router.get('/:organizationId/members', authenticate(pool), checkOrgMembership, async (req, res) => {
-    try {
-      const organizationId = parseInt(req.params.organizationId);
-      const members = await teamService.getMembers(organizationId);
-      res.json({ members });
-    } catch (error) {
-      console.error('Get members error:', error);
-      res.status(500).json({ error: 'Failed to get members' });
+  router.get(
+    '/:organizationId/members',
+    authenticate(pool),
+    checkOrgMembership,
+    async (req, res) => {
+      try {
+        const organizationId = parseInt(req.params.organizationId);
+        const members = await teamService.getMembers(organizationId);
+        res.json({ members });
+      } catch (error) {
+        console.error('Get members error:', error);
+        res.status(500).json({ error: 'Failed to get members' });
+      }
     }
-  });
+  );
 
   // Update member role
   router.patch(
@@ -235,11 +240,7 @@ export function createTeamRoutes(pool: Pool): Router {
         return res.status(400).json({ error: 'Permission parameter is required' });
       }
 
-      const hasPermission = await teamService.checkProjectPermission(
-        projectId,
-        userId,
-        permission
-      );
+      const hasPermission = await teamService.checkProjectPermission(projectId, userId, permission);
 
       res.json({ hasPermission });
     } catch (error) {
@@ -249,19 +250,24 @@ export function createTeamRoutes(pool: Pool): Router {
   });
 
   // Get activity feed
-  router.get('/:organizationId/activity', authenticate(pool), checkOrgMembership, async (req, res) => {
-    try {
-      const organizationId = parseInt(req.params.organizationId);
-      const limit = parseInt(req.query.limit as string) || 50;
-      const offset = parseInt(req.query.offset as string) || 0;
+  router.get(
+    '/:organizationId/activity',
+    authenticate(pool),
+    checkOrgMembership,
+    async (req, res) => {
+      try {
+        const organizationId = parseInt(req.params.organizationId);
+        const limit = parseInt(req.query.limit as string) || 50;
+        const offset = parseInt(req.query.offset as string) || 0;
 
-      const activities = await teamService.getActivityFeed(organizationId, limit, offset);
-      res.json({ activities });
-    } catch (error) {
-      console.error('Get activity feed error:', error);
-      res.status(500).json({ error: 'Failed to get activity feed' });
+        const activities = await teamService.getActivityFeed(organizationId, limit, offset);
+        res.json({ activities });
+      } catch (error) {
+        console.error('Get activity feed error:', error);
+        res.status(500).json({ error: 'Failed to get activity feed' });
+      }
     }
-  });
+  );
 
   // Set shared environment variable
   router.post(
@@ -297,28 +303,33 @@ export function createTeamRoutes(pool: Pool): Router {
   );
 
   // Get shared environment variables
-  router.get('/:organizationId/env-variables', authenticate(pool), checkOrgMembership, async (req, res) => {
-    try {
-      const organizationId = parseInt(req.params.organizationId);
-      const decrypt = req.query.decrypt === 'true';
+  router.get(
+    '/:organizationId/env-variables',
+    authenticate(pool),
+    checkOrgMembership,
+    async (req, res) => {
+      try {
+        const organizationId = parseInt(req.params.organizationId);
+        const decrypt = req.query.decrypt === 'true';
 
-      const variables = await teamService.getSharedEnvVariables(
-        'organization',
-        organizationId,
-        decrypt
-      );
+        const variables = await teamService.getSharedEnvVariables(
+          'organization',
+          organizationId,
+          decrypt
+        );
 
-      // Mask values if not decrypting
-      const maskedVariables = decrypt
-        ? variables
-        : variables.map((v) => ({ ...v, value: '[ENCRYPTED]' }));
+        // Mask values if not decrypting
+        const maskedVariables = decrypt
+          ? variables
+          : variables.map((v) => ({ ...v, value: '[ENCRYPTED]' }));
 
-      res.json({ variables: maskedVariables });
-    } catch (error) {
-      console.error('Get env variables error:', error);
-      res.status(500).json({ error: 'Failed to get environment variables' });
+        res.json({ variables: maskedVariables });
+      } catch (error) {
+        console.error('Get env variables error:', error);
+        res.status(500).json({ error: 'Failed to get environment variables' });
+      }
     }
-  });
+  );
 
   // Delete shared environment variable
   router.delete(

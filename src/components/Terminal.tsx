@@ -37,13 +37,13 @@ const Terminal: React.FC = () => {
         brightBlue: '#3b8eea',
         brightMagenta: '#d670d6',
         brightCyan: '#29b8db',
-        brightWhite: '#e5e5e5'
-      }
+        brightWhite: '#e5e5e5',
+      },
     });
 
     const fitAddon = new FitAddon();
     const webLinksAddon = new WebLinksAddon();
-    
+
     term.loadAddon(fitAddon);
     term.loadAddon(webLinksAddon);
     term.open(terminalRef.current);
@@ -56,7 +56,7 @@ const Terminal: React.FC = () => {
     const wsHost = window.location.hostname;
     const wsPort = window.location.port ? `:${window.location.port}` : '';
     const wsUrl = `${wsProtocol}//${wsHost}${wsPort}/terminal`;
-    
+
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
 
@@ -66,7 +66,7 @@ const Terminal: React.FC = () => {
 
     ws.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      
+
       if (message.type === 'data') {
         term.write(message.data);
       } else if (message.type === 'ready') {

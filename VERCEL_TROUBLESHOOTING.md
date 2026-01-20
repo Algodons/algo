@@ -1,12 +1,14 @@
 # Vercel Deployment Troubleshooting Guide
 
-This document provides solutions to common issues encountered when deploying to Vercel.
+This document provides solutions to common issues encountered when deploying to
+Vercel.
 
 ## 🔍 Common Build Issues
 
 ### Issue 1: Build Fails with "Module not found"
 
 **Error Message:**
+
 ```
 Module not found: Can't resolve 'xyz'
 ```
@@ -14,6 +16,7 @@ Module not found: Can't resolve 'xyz'
 **Solutions:**
 
 1. **Missing dependency in package.json**
+
    ```bash
    cd frontend
    npm install xyz
@@ -29,13 +32,15 @@ Module not found: Can't resolve 'xyz'
 
 3. **Case-sensitive file names**
    - Vercel's file system is case-sensitive
-   - Check that file names match exactly (e.g., `Component.tsx` vs `component.tsx`)
+   - Check that file names match exactly (e.g., `Component.tsx` vs
+     `component.tsx`)
 
 ---
 
 ### Issue 2: Environment Variables Not Working
 
 **Symptoms:**
+
 - App loads but features don't work
 - API calls fail
 - `undefined` values in the console
@@ -47,10 +52,11 @@ Module not found: Can't resolve 'xyz'
    - Check all required variables are present
 
 2. **Client-side variables must be prefixed**
+
    ```env
    # ❌ Won't work on client
    API_URL=https://api.example.com
-   
+
    # ✅ Will work on client
    NEXT_PUBLIC_API_URL=https://api.example.com
    ```
@@ -60,13 +66,15 @@ Module not found: Can't resolve 'xyz'
    - Click "Redeploy" or push a new commit
 
 4. **Check variable scope**
-   - Ensure variables are set for the correct environment (Production/Preview/Development)
+   - Ensure variables are set for the correct environment
+     (Production/Preview/Development)
 
 ---
 
 ### Issue 3: "NEXTAUTH_SECRET" or "JWT_SECRET" Error
 
 **Error Message:**
+
 ```
 [next-auth][error][NO_SECRET]
 ```
@@ -74,6 +82,7 @@ Module not found: Can't resolve 'xyz'
 **Solutions:**
 
 1. **Generate a secure secret**
+
    ```bash
    openssl rand -base64 32
    ```
@@ -89,7 +98,7 @@ Module not found: Can't resolve 'xyz'
    export const authOptions = {
      secret: process.env.NEXTAUTH_SECRET,
      // ... other options
-   }
+   };
    ```
 
 ---
@@ -97,6 +106,7 @@ Module not found: Can't resolve 'xyz'
 ### Issue 4: API Calls Failing (CORS Errors)
 
 **Error Message in Browser Console:**
+
 ```
 Access to fetch at 'https://api.example.com' from origin 'https://yourapp.vercel.app' has been blocked by CORS policy
 ```
@@ -104,24 +114,29 @@ Access to fetch at 'https://api.example.com' from origin 'https://yourapp.vercel
 **Solutions:**
 
 1. **Configure CORS on backend**
+
    ```javascript
    // backend/src/index.ts
    import cors from 'cors';
-   
-   app.use(cors({
-     origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-     credentials: true,
-     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-     allowedHeaders: ['Content-Type', 'Authorization']
-   }));
+
+   app.use(
+     cors({
+       origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+       credentials: true,
+       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+       allowedHeaders: ['Content-Type', 'Authorization'],
+     })
+   );
    ```
 
 2. **Set correct FRONTEND_URL on backend**
+
    ```env
    FRONTEND_URL=https://yourapp.vercel.app
    ```
 
 3. **Verify API_URL is correct**
+
    ```env
    # On Vercel
    NEXT_PUBLIC_API_URL=https://your-backend.railway.app
@@ -136,6 +151,7 @@ Access to fetch at 'https://api.example.com' from origin 'https://yourapp.vercel
 ### Issue 5: WebSocket Connection Fails
 
 **Error Message:**
+
 ```
 WebSocket connection to 'ws://...' failed
 ```
@@ -143,10 +159,11 @@ WebSocket connection to 'ws://...' failed
 **Solutions:**
 
 1. **Use WSS instead of WS**
+
    ```env
    # ❌ Wrong
    NEXT_PUBLIC_WEBSOCKET_URL=ws://api.example.com
-   
+
    # ✅ Correct
    NEXT_PUBLIC_WEBSOCKET_URL=wss://api.example.com
    ```
@@ -161,8 +178,8 @@ WebSocket connection to 'ws://...' failed
    const io = new Server(server, {
      cors: {
        origin: process.env.FRONTEND_URL,
-       credentials: true
-     }
+       credentials: true,
+     },
    });
    ```
 
@@ -171,6 +188,7 @@ WebSocket connection to 'ws://...' failed
 ### Issue 6: Build Succeeds but Page Shows Error
 
 **Symptoms:**
+
 - Build completes successfully
 - Deployment shows "Ready"
 - But page shows error or blank screen
@@ -188,6 +206,7 @@ WebSocket connection to 'ws://...' failed
    - Look for error logs
 
 3. **Verify environment variables**
+
    ```javascript
    // Add debugging
    console.log('API_URL:', process.env.NEXT_PUBLIC_API_URL);
@@ -203,6 +222,7 @@ WebSocket connection to 'ws://...' failed
 ### Issue 7: Build Times Out
 
 **Error Message:**
+
 ```
 Error: Command "npm run build" exceeded the time limit of 15m
 ```
@@ -232,6 +252,7 @@ Error: Command "npm run build" exceeded the time limit of 15m
 ### Issue 8: "Module parse failed" Errors
 
 **Error Message:**
+
 ```
 Module parse failed: Unexpected token
 ```
@@ -239,6 +260,7 @@ Module parse failed: Unexpected token
 **Solutions:**
 
 1. **Check Next.js configuration**
+
    ```javascript
    // next.config.js
    module.exports = {
@@ -256,6 +278,7 @@ Module parse failed: Unexpected token
    ```
 
 2. **Update dependencies**
+
    ```bash
    cd frontend
    npm update
@@ -270,25 +293,23 @@ Module parse failed: Unexpected token
 ### Issue 9: Images Not Loading
 
 **Symptoms:**
+
 - Images show broken icon
 - Console shows 404 errors
 
 **Solutions:**
 
 1. **Use Next.js Image component**
+
    ```tsx
-   import Image from 'next/image'
-   
+   import Image from 'next/image';
+
    // Instead of <img>
-   <Image 
-     src="/logo.png" 
-     width={200} 
-     height={100} 
-     alt="Logo"
-   />
+   <Image src="/logo.png" width={200} height={100} alt="Logo" />;
    ```
 
 2. **Configure image domains**
+
    ```javascript
    // next.config.js
    module.exports = {
@@ -299,10 +320,11 @@ Module parse failed: Unexpected token
    ```
 
 3. **Check image paths**
+
    ```tsx
    // ✅ Correct - public folder
    <Image src="/images/logo.png" />
-   
+
    // ❌ Wrong
    <Image src="./images/logo.png" />
    ```
@@ -312,6 +334,7 @@ Module parse failed: Unexpected token
 ### Issue 10: Database Connection Issues
 
 **Error Message:**
+
 ```
 Error: connect ETIMEDOUT
 ```
@@ -319,6 +342,7 @@ Error: connect ETIMEDOUT
 **Solutions:**
 
 1. **Check database URL**
+
    ```env
    # Verify connection string is correct
    DATABASE_URL=postgresql://user:pass@host:5432/dbname
@@ -329,6 +353,7 @@ Error: connect ETIMEDOUT
    - Or allow all IPs (0.0.0.0/0) for testing
 
 3. **Use connection pooling**
+
    ```javascript
    // For PostgreSQL with Prisma
    datasource db {
@@ -350,11 +375,15 @@ Error: connect ETIMEDOUT
 ### Enable Verbose Logging
 
 Add to `next.config.js`:
+
 ```javascript
 module.exports = {
   // ... other config
   generateBuildId: async () => {
-    console.log('Building with Next.js version:', require('next/package.json').version);
+    console.log(
+      'Building with Next.js version:',
+      require('next/package.json').version
+    );
     return 'build-' + Date.now();
   },
 };
@@ -480,6 +509,7 @@ Before deploying, verify:
    - Test with production-like data in preview
 
 5. **Keep Dependencies Updated**
+
    ```bash
    npm outdated
    npm update
@@ -493,4 +523,5 @@ Before deploying, verify:
 
 ---
 
-Remember: Most deployment issues are due to environment variables or backend connectivity. Always check these first! 🚀
+Remember: Most deployment issues are due to environment variables or backend
+connectivity. Always check these first! 🚀

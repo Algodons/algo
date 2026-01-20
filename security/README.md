@@ -6,7 +6,8 @@ Enterprise-grade security features for the Algo Cloud IDE platform.
 
 This module provides:
 
-- **Encryption & Key Management** - AES-256-GCM encryption with secure key management
+- **Encryption & Key Management** - AES-256-GCM encryption with secure key
+  management
 - **Authentication & Access Control** - SAML 2.0 SSO and IP whitelisting
 - **Audit Logging** - Immutable, tamper-proof audit logs
 - **Compliance** - GDPR and SOC 2 Type II compliance tools
@@ -118,14 +119,17 @@ app.get('/auth/saml/metadata', samlMiddleware.metadata);
 ```typescript
 import { ipWhitelistMiddleware } from './auth/ip-whitelist';
 
-const ipWhitelist = ipWhitelistMiddleware({
-  enabled: true,
-  allowedIPs: [
-    '192.168.1.0/24',  // CIDR notation
-    '10.0.0.1',        // Single IP
-  ],
-  logBlockedAttempts: true,
-}, pool);
+const ipWhitelist = ipWhitelistMiddleware(
+  {
+    enabled: true,
+    allowedIPs: [
+      '192.168.1.0/24', // CIDR notation
+      '10.0.0.1', // Single IP
+    ],
+    logBlockedAttempts: true,
+  },
+  pool
+);
 
 // Apply to routes
 app.use('/api/admin', ipWhitelist);
@@ -138,16 +142,12 @@ import { AuditEventType, createAuditEvent } from './audit/events';
 
 // Log login event
 await auditLogger.log(
-  createAuditEvent(
-    AuditEventType.AUTH_LOGIN_SUCCESS,
-    'User login',
-    {
-      userId: user.id,
-      userEmail: user.email,
-      ipAddress: req.ip,
-      success: true,
-    }
-  )
+  createAuditEvent(AuditEventType.AUTH_LOGIN_SUCCESS, 'User login', {
+    userId: user.id,
+    userEmail: user.email,
+    ipAddress: req.ip,
+    success: true,
+  })
 );
 
 // Query logs
@@ -179,10 +179,7 @@ await gdprService.recordConsent({
 });
 
 // Check consent
-const hasConsent = await gdprService.hasConsent(
-  user.id,
-  ConsentType.MARKETING
-);
+const hasConsent = await gdprService.hasConsent(user.id, ConsentType.MARKETING);
 
 // Export user data (right to data portability)
 const requestId = await gdprService.requestDataExport(user.id, user.email);
@@ -510,7 +507,8 @@ When adding new security features:
 
 ## Security
 
-If you discover a security vulnerability, please email security@example.com with:
+If you discover a security vulnerability, please email security@example.com
+with:
 
 - Description of the vulnerability
 - Steps to reproduce

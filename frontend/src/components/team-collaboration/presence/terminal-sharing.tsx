@@ -130,16 +130,10 @@ export function TerminalSharing({ projectId, onConnect, onDisconnect }: Terminal
               className="bg-gray-900 rounded-lg p-4 h-64 font-mono text-sm text-green-400 overflow-auto"
             >
               <div className="mb-2">$ Terminal shared session</div>
-              <div className="text-gray-500">
-                Waiting for terminal connection...
-              </div>
-              <div className="mt-2 text-yellow-400">
-                Access mode: {accessControl}
-              </div>
+              <div className="text-gray-500">Waiting for terminal connection...</div>
+              <div className="mt-2 text-yellow-400">Access mode: {accessControl}</div>
               {isRecording && (
-                <div className="mt-1 text-red-400 animate-pulse">
-                  ● Recording session
-                </div>
+                <div className="mt-1 text-red-400 animate-pulse">● Recording session</div>
               )}
             </div>
 

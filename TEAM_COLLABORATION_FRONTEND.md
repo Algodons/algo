@@ -1,17 +1,22 @@
 # Team Collaboration Frontend Components - Implementation Guide
 
-This document describes the frontend UI components implemented for the team collaboration features.
+This document describes the frontend UI components implemented for the team
+collaboration features.
 
 ## Overview
 
-The frontend implementation provides a complete set of React components built with Next.js, TypeScript, and Tailwind CSS. All components are designed to work seamlessly with the existing backend API infrastructure.
+The frontend implementation provides a complete set of React components built
+with Next.js, TypeScript, and Tailwind CSS. All components are designed to work
+seamlessly with the existing backend API infrastructure.
 
 ## Components Implemented
 
 ### 1. Organization Management
 
 #### `OrganizationList`
-- **Location**: `frontend/src/components/team-collaboration/organizations/organization-list.tsx`
+
+- **Location**:
+  `frontend/src/components/team-collaboration/organizations/organization-list.tsx`
 - **Purpose**: Display and manage organizations
 - **Features**:
   - List all user's organizations
@@ -20,7 +25,9 @@ The frontend implementation provides a complete set of React components built wi
   - Navigate to organization settings
 
 #### `TeamMembers`
-- **Location**: `frontend/src/components/team-collaboration/organizations/team-members.tsx`
+
+- **Location**:
+  `frontend/src/components/team-collaboration/organizations/team-members.tsx`
 - **Purpose**: Manage team members and roles
 - **Features**:
   - Invite new members via email
@@ -30,7 +37,9 @@ The frontend implementation provides a complete set of React components built wi
   - View pending invitations
 
 #### `ActivityFeed`
-- **Location**: `frontend/src/components/team-collaboration/organizations/activity-feed.tsx`
+
+- **Location**:
+  `frontend/src/components/team-collaboration/organizations/activity-feed.tsx`
 - **Purpose**: Display team activity stream
 - **Features**:
   - Real-time activity updates
@@ -41,7 +50,9 @@ The frontend implementation provides a complete set of React components built wi
 ### 2. Real-Time Collaboration
 
 #### `PresenceIndicator`
-- **Location**: `frontend/src/components/team-collaboration/presence/presence-indicator.tsx`
+
+- **Location**:
+  `frontend/src/components/team-collaboration/presence/presence-indicator.tsx`
 - **Purpose**: Show active users with cursor tracking
 - **Features**:
   - Live user presence
@@ -52,7 +63,9 @@ The frontend implementation provides a complete set of React components built wi
   - Tooltip with detailed information
 
 #### `TerminalSharing`
-- **Location**: `frontend/src/components/team-collaboration/presence/terminal-sharing.tsx`
+
+- **Location**:
+  `frontend/src/components/team-collaboration/presence/terminal-sharing.tsx`
 - **Purpose**: Share terminal sessions with team
 - **Features**:
   - Start/stop terminal sharing
@@ -62,7 +75,9 @@ The frontend implementation provides a complete set of React components built wi
   - Session ID sharing
 
 #### `CodeComments`
-- **Location**: `frontend/src/components/team-collaboration/comments/code-comments.tsx`
+
+- **Location**:
+  `frontend/src/components/team-collaboration/comments/code-comments.tsx`
 - **Purpose**: In-line code commenting and discussions
 - **Features**:
   - Line-specific comments
@@ -74,7 +89,9 @@ The frontend implementation provides a complete set of React components built wi
 ### 3. Version Control
 
 #### `PullRequestList`
-- **Location**: `frontend/src/components/team-collaboration/pull-requests/pull-request-list.tsx`
+
+- **Location**:
+  `frontend/src/components/team-collaboration/pull-requests/pull-request-list.tsx`
 - **Purpose**: Browse and manage pull requests
 - **Features**:
   - List PRs by status (open/closed/all)
@@ -84,7 +101,9 @@ The frontend implementation provides a complete set of React components built wi
   - Time-based information
 
 #### `CreatePullRequest`
-- **Location**: `frontend/src/components/team-collaboration/pull-requests/create-pull-request.tsx`
+
+- **Location**:
+  `frontend/src/components/team-collaboration/pull-requests/create-pull-request.tsx`
 - **Purpose**: Create new pull requests
 - **Features**:
   - Branch selection (source/target)
@@ -95,7 +114,9 @@ The frontend implementation provides a complete set of React components built wi
   - Validation
 
 #### `MergeConflictResolver`
-- **Location**: `frontend/src/components/team-collaboration/pull-requests/merge-conflict-resolver.tsx`
+
+- **Location**:
+  `frontend/src/components/team-collaboration/pull-requests/merge-conflict-resolver.tsx`
 - **Purpose**: Visual merge conflict resolution
 - **Features**:
   - Three-way merge view (base/source/target)
@@ -108,7 +129,9 @@ The frontend implementation provides a complete set of React components built wi
 ### 4. Team Management
 
 #### `ProjectPermissionsManager`
-- **Location**: `frontend/src/components/team-collaboration/permissions/project-permissions.tsx`
+
+- **Location**:
+  `frontend/src/components/team-collaboration/permissions/project-permissions.tsx`
 - **Purpose**: Manage project access permissions
 - **Features**:
   - Granular permissions (read/write/deploy/admin)
@@ -118,7 +141,9 @@ The frontend implementation provides a complete set of React components built wi
   - Permission legend
 
 #### `EnvironmentVariables`
-- **Location**: `frontend/src/components/team-collaboration/env-vars/environment-variables.tsx`
+
+- **Location**:
+  `frontend/src/components/team-collaboration/env-vars/environment-variables.tsx`
 - **Purpose**: Manage encrypted environment variables
 - **Features**:
   - Add/delete variables
@@ -131,7 +156,9 @@ The frontend implementation provides a complete set of React components built wi
 ### 5. Team Billing
 
 #### `TeamBillingDashboard`
-- **Location**: `frontend/src/components/team-collaboration/billing/team-billing-dashboard.tsx`
+
+- **Location**:
+  `frontend/src/components/team-collaboration/billing/team-billing-dashboard.tsx`
 - **Purpose**: Track and visualize team usage and costs
 - **Features**:
   - Current billing period overview
@@ -144,6 +171,7 @@ The frontend implementation provides a complete set of React components built wi
 ## API Client
 
 ### `team-api.ts`
+
 - **Location**: `frontend/src/lib/team-api.ts`
 - **Purpose**: Centralized API client for all team collaboration endpoints
 - **Modules**:
@@ -160,6 +188,7 @@ The frontend implementation provides a complete set of React components built wi
 ## Type Definitions
 
 ### `collaboration.ts`
+
 - **Location**: `frontend/src/lib/types/collaboration.ts`
 - **Purpose**: TypeScript type definitions for all collaboration entities
 - **Types Included**:
@@ -174,6 +203,7 @@ The frontend implementation provides a complete set of React components built wi
 ## Usage Examples
 
 ### Using OrganizationList
+
 ```tsx
 import { OrganizationList } from '@/components/team-collaboration';
 
@@ -187,6 +217,7 @@ export default function OrganizationsPage() {
 ```
 
 ### Using PresenceIndicator
+
 ```tsx
 import { PresenceIndicator } from '@/components/team-collaboration';
 
@@ -201,6 +232,7 @@ export default function EditorPage({ projectId }: { projectId: number }) {
 ```
 
 ### Using PullRequestList
+
 ```tsx
 import { PullRequestList } from '@/components/team-collaboration';
 
@@ -215,16 +247,21 @@ export default function PullRequestsPage({ projectId }: { projectId: number }) {
 
 ## Integration with Existing Components
 
-The team collaboration components are designed to integrate seamlessly with the existing platform:
+The team collaboration components are designed to integrate seamlessly with the
+existing platform:
 
-1. **Authentication**: All API calls use the existing auth token from localStorage
-2. **UI Components**: Built using the same Radix UI and Tailwind CSS as existing components
-3. **State Management**: Uses React hooks and local state (can be integrated with Zustand if needed)
+1. **Authentication**: All API calls use the existing auth token from
+   localStorage
+2. **UI Components**: Built using the same Radix UI and Tailwind CSS as existing
+   components
+3. **State Management**: Uses React hooks and local state (can be integrated
+   with Zustand if needed)
 4. **Real-time**: Ready for WebSocket integration via Socket.io client
 
 ## Styling
 
 All components follow the existing design system:
+
 - **Tailwind CSS** for styling
 - **Radix UI** for accessible primitives
 - **Lucide Icons** for consistent iconography
@@ -294,6 +331,7 @@ frontend/src/lib/
 ## Dependencies
 
 All required dependencies are already in `package.json`:
+
 - `react` and `react-dom`
 - `next`
 - `typescript`
@@ -322,6 +360,7 @@ All required dependencies are already in `package.json`:
 ## Browser Support
 
 Components are compatible with:
+
 - Chrome/Edge (latest 2 versions)
 - Firefox (latest 2 versions)
 - Safari (latest 2 versions)
@@ -330,6 +369,7 @@ Components are compatible with:
 ## Accessibility
 
 All components follow WCAG 2.1 Level AA guidelines:
+
 - Keyboard navigation
 - Screen reader support
 - Focus management
@@ -339,6 +379,7 @@ All components follow WCAG 2.1 Level AA guidelines:
 ## Contributing
 
 When adding new components:
+
 1. Follow the existing component structure
 2. Use TypeScript with proper types
 3. Include loading and error states

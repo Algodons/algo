@@ -1,51 +1,51 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Search, File, Folder, FileText } from 'lucide-react'
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, File, Folder, FileText } from 'lucide-react';
 
 interface SearchResult {
-  id: string
-  title: string
-  type: 'file' | 'folder' | 'doc'
-  path: string
+  id: string;
+  title: string;
+  type: 'file' | 'folder' | 'doc';
+  path: string;
 }
 
 interface GlobalSearchProps {
-  onResultClick?: (result: SearchResult) => void
+  onResultClick?: (result: SearchResult) => void;
 }
 
 export function GlobalSearch({ onResultClick }: GlobalSearchProps) {
-  const [query, setQuery] = useState('')
-  const [isFocused, setIsFocused] = useState(false)
-  const [results, setResults] = useState<SearchResult[]>([])
+  const [query, setQuery] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+  const [results, setResults] = useState<SearchResult[]>([]);
 
   // Mock search function - replace with actual search logic
   const handleSearch = (value: string) => {
-    setQuery(value)
-    
+    setQuery(value);
+
     if (value.length > 0) {
       // Mock results
       setResults([
         { id: '1', title: 'index.tsx', type: 'file', path: '/src/app/index.tsx' },
         { id: '2', title: 'components', type: 'folder', path: '/src/components' },
         { id: '3', title: 'README.md', type: 'doc', path: '/README.md' },
-      ])
+      ]);
     } else {
-      setResults([])
+      setResults([]);
     }
-  }
+  };
 
   const getIcon = (type: SearchResult['type']) => {
     switch (type) {
       case 'file':
-        return <File className="h-4 w-4" />
+        return <File className="h-4 w-4" />;
       case 'folder':
-        return <Folder className="h-4 w-4" />
+        return <Folder className="h-4 w-4" />;
       case 'doc':
-        return <FileText className="h-4 w-4" />
+        return <FileText className="h-4 w-4" />;
     }
-  }
+  };
 
   return (
     <div className="relative w-full max-w-md">
@@ -82,9 +82,9 @@ export function GlobalSearch({ onResultClick }: GlobalSearchProps) {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
                   onClick={() => {
-                    onResultClick?.(result)
-                    setQuery('')
-                    setResults([])
+                    onResultClick?.(result);
+                    setQuery('');
+                    setResults([]);
                   }}
                   className="w-full flex items-center gap-3 px-3 py-2 hover:bg-white/5 transition-colors"
                 >
@@ -100,5 +100,5 @@ export function GlobalSearch({ onResultClick }: GlobalSearchProps) {
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }

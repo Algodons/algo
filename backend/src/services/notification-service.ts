@@ -32,7 +32,7 @@ export class NotificationService {
    */
   private initializeEmailService() {
     const sendGridKey = process.env.SENDGRID_API_KEY;
-    
+
     if (sendGridKey) {
       // Use SendGrid
       sgMail.setApiKey(sendGridKey);
@@ -75,7 +75,8 @@ export class NotificationService {
    */
   async sendEmail(options: EmailOptions): Promise<boolean> {
     try {
-      const fromEmail = process.env.BILLING_EMAIL_FROM || process.env.SMTP_FROM || 'noreply@algo-ide.com';
+      const fromEmail =
+        process.env.BILLING_EMAIL_FROM || process.env.SMTP_FROM || 'noreply@algo-ide.com';
 
       if (this.useSendGrid) {
         // Send via SendGrid
@@ -156,10 +157,9 @@ export class NotificationService {
   ): Promise<void> {
     try {
       // Get user contact information
-      const userResult = await this.pool.query(
-        `SELECT email, name FROM users WHERE id = $1`,
-        [userId]
-      );
+      const userResult = await this.pool.query(`SELECT email, name FROM users WHERE id = $1`, [
+        userId,
+      ]);
 
       if (userResult.rows.length === 0) {
         console.error(`User ${userId} not found`);
@@ -167,7 +167,7 @@ export class NotificationService {
       }
 
       const user = userResult.rows[0];
-      const metricLabel = metricType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      const metricLabel = metricType.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
 
       // Prepare email content
       const subject = `⚠️ Usage Alert: ${metricLabel} at ${percentageUsed.toFixed(1)}%`;
@@ -222,7 +222,7 @@ View your usage dashboard at: ${process.env.FRONTEND_URL || 'http://localhost:30
 
         if (phoneResult.rows.length > 0 && phoneResult.rows[0].phone_number) {
           const smsMessage = `Usage Alert: ${metricLabel} at ${percentageUsed.toFixed(0)}%. Current: ${currentValue.toFixed(0)}, Limit: ${thresholdValue.toFixed(0)}. View details at ${process.env.FRONTEND_URL || 'http://localhost:3000'}/billing`;
-          
+
           await this.sendSMS({
             to: phoneResult.rows[0].phone_number,
             message: smsMessage,
@@ -247,10 +247,9 @@ View your usage dashboard at: ${process.env.FRONTEND_URL || 'http://localhost:30
     currency: string
   ): Promise<void> {
     try {
-      const userResult = await this.pool.query(
-        `SELECT email, name FROM users WHERE id = $1`,
-        [userId]
-      );
+      const userResult = await this.pool.query(`SELECT email, name FROM users WHERE id = $1`, [
+        userId,
+      ]);
 
       if (userResult.rows.length === 0) {
         return;
@@ -294,10 +293,9 @@ View your usage dashboard at: ${process.env.FRONTEND_URL || 'http://localhost:30
     reason: string
   ): Promise<void> {
     try {
-      const userResult = await this.pool.query(
-        `SELECT email, name FROM users WHERE id = $1`,
-        [userId]
-      );
+      const userResult = await this.pool.query(`SELECT email, name FROM users WHERE id = $1`, [
+        userId,
+      ]);
 
       if (userResult.rows.length === 0) {
         return;

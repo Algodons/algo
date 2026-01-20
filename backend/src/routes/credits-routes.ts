@@ -43,16 +43,12 @@ export function createCreditsRoutes(pool: Pool) {
 
       // TODO: Create invoice and process payment before adding credits
       // For now, we'll just add the credits
-      const balance = await creditsService.purchaseCredits(
-        req.user.id,
-        amount,
-        paymentMethodId
-      );
+      const balance = await creditsService.purchaseCredits(req.user.id, amount, paymentMethodId);
 
-      res.json({ 
+      res.json({
         success: true,
         balance,
-        message: 'Credits purchased successfully' 
+        message: 'Credits purchased successfully',
       });
     } catch (error: any) {
       console.error('Error purchasing credits:', error);
@@ -100,8 +96,8 @@ export function createCreditsRoutes(pool: Pool) {
       }
 
       if (enabled && (!threshold || !amount)) {
-        return res.status(400).json({ 
-          error: 'Threshold and amount are required when enabling auto-reload' 
+        return res.status(400).json({
+          error: 'Threshold and amount are required when enabling auto-reload',
         });
       }
 
@@ -112,12 +108,12 @@ export function createCreditsRoutes(pool: Pool) {
         amount
       );
 
-      res.json({ 
+      res.json({
         success: true,
         balance,
-        message: enabled 
-          ? 'Auto-reload configured successfully' 
-          : 'Auto-reload disabled successfully' 
+        message: enabled
+          ? 'Auto-reload configured successfully'
+          : 'Auto-reload disabled successfully',
       });
     } catch (error: any) {
       console.error('Error configuring auto-reload:', error);
@@ -152,10 +148,10 @@ export function createCreditsRoutes(pool: Pool) {
         usageMetricId
       );
 
-      res.json({ 
+      res.json({
         success: true,
         balance,
-        message: 'Credits deducted successfully' 
+        message: 'Credits deducted successfully',
       });
     } catch (error: any) {
       console.error('Error deducting credits:', error);

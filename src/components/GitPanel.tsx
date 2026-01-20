@@ -19,7 +19,7 @@ const GitPanel: React.FC<GitPanelProps> = ({ workspaceId }) => {
       const response = await fetch('/api/git/clone', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: repoUrl, workspaceId })
+        body: JSON.stringify({ url: repoUrl, workspaceId }),
       });
       const data = await response.json();
       setMessage(data.success ? 'Repository cloned successfully' : data.error);
@@ -48,7 +48,7 @@ const GitPanel: React.FC<GitPanelProps> = ({ workspaceId }) => {
       const response = await fetch('/api/git/commit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ workspaceId, message: commitMessage })
+        body: JSON.stringify({ workspaceId, message: commitMessage }),
       });
       const data = await response.json();
       setMessage(data.success ? 'Changes committed' : data.error);
@@ -66,7 +66,7 @@ const GitPanel: React.FC<GitPanelProps> = ({ workspaceId }) => {
       const response = await fetch('/api/git/push', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ workspaceId })
+        body: JSON.stringify({ workspaceId }),
       });
       const data = await response.json();
       setMessage(data.success ? 'Changes pushed' : data.error);
@@ -82,7 +82,7 @@ const GitPanel: React.FC<GitPanelProps> = ({ workspaceId }) => {
       const response = await fetch('/api/git/pull', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ workspaceId })
+        body: JSON.stringify({ workspaceId }),
       });
       const data = await response.json();
       setMessage(data.success ? 'Changes pulled' : data.error);
@@ -96,7 +96,7 @@ const GitPanel: React.FC<GitPanelProps> = ({ workspaceId }) => {
   return (
     <div className="git-panel panel">
       <div className="panel-title">Git</div>
-      
+
       <div className="git-section">
         <input
           type="text"
@@ -115,7 +115,9 @@ const GitPanel: React.FC<GitPanelProps> = ({ workspaceId }) => {
         </button>
         {status && (
           <div className="git-status">
-            <p>Branch: <strong>{currentBranch}</strong></p>
+            <p>
+              Branch: <strong>{currentBranch}</strong>
+            </p>
             <p>Modified: {status.modified?.length || 0}</p>
             <p>Staged: {status.staged?.length || 0}</p>
           </div>
@@ -143,11 +145,7 @@ const GitPanel: React.FC<GitPanelProps> = ({ workspaceId }) => {
         </button>
       </div>
 
-      {message && (
-        <div className={message.includes('Failed') ? 'error' : 'success'}>
-          {message}
-        </div>
-      )}
+      {message && <div className={message.includes('Failed') ? 'error' : 'success'}>{message}</div>}
     </div>
   );
 };

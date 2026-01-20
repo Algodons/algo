@@ -172,9 +172,7 @@ export function CreatePullRequest({
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           />
-          <p className="text-xs text-gray-500 mt-1">
-            Support for markdown formatting
-          </p>
+          <p className="text-xs text-gray-500 mt-1">Support for markdown formatting</p>
         </div>
 
         {/* Labels */}

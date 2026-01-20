@@ -1,6 +1,7 @@
 # Disaster Recovery Runbook
 
-This document provides comprehensive disaster recovery procedures for the Algo Cloud IDE platform.
+This document provides comprehensive disaster recovery procedures for the Algo
+Cloud IDE platform.
 
 ## Table of Contents
 
@@ -16,6 +17,7 @@ This document provides comprehensive disaster recovery procedures for the Algo C
 ## Overview
 
 The disaster recovery plan ensures business continuity in the event of:
+
 - Hardware failures
 - Data center outages
 - Security breaches
@@ -31,12 +33,12 @@ The disaster recovery plan ensures business continuity in the event of:
 
 Maximum acceptable time to restore services after a disaster.
 
-| Component | RTO Target |
-|-----------|-----------|
-| Critical Services (Auth, API) | 1 hour |
-| Application Servers | 2 hours |
-| Database | 2 hours |
-| User Workspaces | 4 hours |
+| Component                     | RTO Target |
+| ----------------------------- | ---------- |
+| Critical Services (Auth, API) | 1 hour     |
+| Application Servers           | 2 hours    |
+| Database                      | 2 hours    |
+| User Workspaces               | 4 hours    |
 
 ### Recovery Point Objective (RPO)
 
@@ -44,12 +46,12 @@ Maximum acceptable time to restore services after a disaster.
 
 Maximum acceptable data loss measured in time.
 
-| Data Type | RPO Target | Backup Frequency |
-|-----------|-----------|------------------|
-| Application Code | 24 hours | Daily |
-| Database | 1 hour | Hourly snapshots |
-| User Workspaces | 24 hours | Daily |
-| Configuration | Immediate | Version controlled |
+| Data Type        | RPO Target | Backup Frequency   |
+| ---------------- | ---------- | ------------------ |
+| Application Code | 24 hours   | Daily              |
+| Database         | 1 hour     | Hourly snapshots   |
+| User Workspaces  | 24 hours   | Daily              |
+| Configuration    | Immediate  | Version controlled |
 
 ## Backup System
 
@@ -58,8 +60,8 @@ Maximum acceptable data loss measured in time.
 Backups run automatically according to the schedule:
 
 ```yaml
-Daily:   2:00 AM UTC (project code, database, workspaces)
-Weekly:  3:00 AM UTC Sunday
+Daily: 2:00 AM UTC (project code, database, workspaces)
+Weekly: 3:00 AM UTC Sunday
 Monthly: 4:00 AM UTC 1st of month
 ```
 
@@ -69,7 +71,6 @@ Monthly: 4:00 AM UTC 1st of month
    - Application source code
    - Configuration files
    - Dependencies manifest
-   
 2. **Database**
    - PostgreSQL database dump
    - Transaction logs
@@ -100,12 +101,12 @@ Every 90 days
 
 ### Retention Policy
 
-| Backup Type | Retention Period |
-|-------------|------------------|
-| Daily | 7 days |
-| Weekly | 30 days |
-| Monthly | 365 days |
-| Archive | 5 years (compliance) |
+| Backup Type | Retention Period     |
+| ----------- | -------------------- |
+| Daily       | 7 days               |
+| Weekly      | 30 days              |
+| Monthly     | 365 days             |
+| Archive     | 5 years (compliance) |
 
 ## Recovery Procedures
 
@@ -132,6 +133,7 @@ Every 90 days
 **Severity: CRITICAL**
 
 #### Detection
+
 - All services unresponsive
 - Monitoring alerts triggered
 - Unable to reach data center
@@ -139,6 +141,7 @@ Every 90 days
 #### Response (Execute immediately)
 
 **Step 1: Assess Situation (5 minutes)**
+
 ```bash
 # Check system status
 ping production-server.example.com
@@ -149,6 +152,7 @@ ssh admin@production-server.example.com
 ```
 
 **Step 2: Activate DR Site (15 minutes)**
+
 ```bash
 # SSH to DR site
 ssh admin@dr-server.example.com
@@ -165,6 +169,7 @@ export DB_PASSWORD="<secure_password>"
 ```
 
 **Step 3: Restore from Backup (2 hours)**
+
 ```bash
 # Run full disaster recovery
 sudo ./backup/scripts/restore.sh full daily
@@ -175,6 +180,7 @@ psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c "SELECT COUNT(*) FROM users;"
 ```
 
 **Step 4: Update DNS (30 minutes)**
+
 ```bash
 # Update DNS to point to DR site
 # Example using Cloudflare CLI
@@ -185,6 +191,7 @@ dig algo.example.com
 ```
 
 **Step 5: Start Services (30 minutes)**
+
 ```bash
 # Start application
 cd /var/restore/algo/project
@@ -197,6 +204,7 @@ curl https://algo.example.com/health
 ```
 
 **Step 6: Verify Functionality (30 minutes)**
+
 ```bash
 # Test critical paths
 curl -X POST https://algo.example.com/api/auth/login
@@ -208,6 +216,7 @@ curl -X GET https://algo.example.com/api/projects
 ```
 
 **Step 7: Notify Stakeholders (15 minutes)**
+
 ```bash
 # Send status updates
 # - Customers: "Service restored"
@@ -220,6 +229,7 @@ curl -X GET https://algo.example.com/api/projects
 **Severity: HIGH**
 
 #### Detection
+
 - Database errors in logs
 - Failed transactions
 - Data integrity issues
@@ -227,6 +237,7 @@ curl -X GET https://algo.example.com/api/projects
 #### Response
 
 **Step 1: Stop Application (Immediate)**
+
 ```bash
 # Stop all application servers
 pm2 stop all
@@ -235,6 +246,7 @@ pm2 stop all
 ```
 
 **Step 2: Assess Damage (15 minutes)**
+
 ```bash
 # Check database status
 psql -h $DB_HOST -U $DB_USER -d $DB_NAME
@@ -246,6 +258,7 @@ SELECT pg_catalog.pg_check_all();
 ```
 
 **Step 3: Restore Database (1 hour)**
+
 ```bash
 # List recent backups
 ./backup/scripts/restore.sh list
@@ -258,6 +271,7 @@ BACKUP_FILE="/var/backups/algo/daily/database_20241213_020000.sql.gz.enc"
 ```
 
 **Step 4: Verify Data (30 minutes)**
+
 ```bash
 # Run data validation queries
 psql -h $DB_HOST -U $DB_USER -d $DB_NAME <<EOF
@@ -270,6 +284,7 @@ EOF
 ```
 
 **Step 5: Restart Application (15 minutes)**
+
 ```bash
 # Start services
 pm2 start all
@@ -283,6 +298,7 @@ pm2 logs
 **Severity: CRITICAL**
 
 #### Detection
+
 - Files encrypted with unusual extensions
 - Ransom note on servers
 - Cannot access files
@@ -292,6 +308,7 @@ pm2 logs
 **IMPORTANT: DO NOT PAY RANSOM**
 
 **Step 1: Isolate Systems (Immediate)**
+
 ```bash
 # Disconnect from network
 sudo ifconfig eth0 down
@@ -304,6 +321,7 @@ pm2 stop all
 ```
 
 **Step 2: Preserve Evidence (15 minutes)**
+
 ```bash
 # Take disk snapshots
 sudo dd if=/dev/sda of=/mnt/forensics/disk.img
@@ -316,6 +334,7 @@ cp -r /var/log/syslog /mnt/forensics/
 ```
 
 **Step 3: Notify Authorities (30 minutes)**
+
 ```bash
 # Contact:
 # - Law enforcement
@@ -325,6 +344,7 @@ cp -r /var/log/syslog /mnt/forensics/
 ```
 
 **Step 4: Clean Rebuild (4 hours)**
+
 ```bash
 # Provision new clean servers
 # DO NOT restore from potentially infected backups
@@ -338,6 +358,7 @@ sha256sum /var/backups/algo/daily/database_20241201_*.enc
 ```
 
 **Step 5: Security Hardening (2 hours)**
+
 ```bash
 # Update all systems
 sudo apt update && sudo apt upgrade -y
@@ -353,6 +374,7 @@ sudo apt update && sudo apt upgrade -y
 **Severity: MEDIUM**
 
 #### Detection
+
 - User reports missing data
 - Empty tables in database
 - Deleted files
@@ -360,6 +382,7 @@ sudo apt update && sudo apt upgrade -y
 #### Response
 
 **Step 1: Stop Further Changes (Immediate)**
+
 ```bash
 # Put application in read-only mode
 # or stop the application
@@ -367,12 +390,13 @@ pm2 stop all
 ```
 
 **Step 2: Identify Deletion Timestamp (15 minutes)**
+
 ```bash
 # Check audit logs
 psql -h $DB_HOST -U $DB_USER -d $DB_NAME <<EOF
-  SELECT * FROM audit_logs 
-  WHERE action = 'delete' 
-  ORDER BY timestamp DESC 
+  SELECT * FROM audit_logs
+  WHERE action = 'delete'
+  ORDER BY timestamp DESC
   LIMIT 100;
 EOF
 
@@ -380,6 +404,7 @@ EOF
 ```
 
 **Step 3: Point-in-Time Recovery (1 hour)**
+
 ```bash
 # Restore to point before deletion
 ./backup/scripts/restore.sh pitr "2024-12-13 10:30:00"
@@ -388,6 +413,7 @@ EOF
 ```
 
 **Step 4: Selective Restore (30 minutes)**
+
 ```bash
 # If full restore not needed, restore specific tables
 
@@ -422,6 +448,7 @@ Tertiary Region (eu-west-1)
 ### Failover Procedure
 
 **Automatic Failover (if configured)**
+
 ```yaml
 # Configured in cloudflare.yaml
 load_balancing:
@@ -433,6 +460,7 @@ load_balancing:
 ```
 
 **Manual Failover**
+
 ```bash
 # 1. Stop primary region (if still running)
 ssh admin@primary.example.com
@@ -457,6 +485,7 @@ psql -c "SELECT NOW() - pg_last_xact_replay_timestamp() AS lag;"
 ### Communication Plan
 
 **Internal Communication**
+
 - **Incident Commander**: Coordinates response
 - **Technical Lead**: Executes recovery
 - **Communications Lead**: Updates stakeholders
@@ -464,6 +493,7 @@ psql -c "SELECT NOW() - pg_last_xact_replay_timestamp() AS lag;"
 **External Communication Templates**
 
 **Initial Notification:**
+
 ```
 Subject: Service Disruption - Algo Cloud IDE
 
@@ -478,6 +508,7 @@ Status Page: https://status.example.com
 ```
 
 **Progress Update:**
+
 ```
 Subject: Service Recovery Update
 
@@ -489,6 +520,7 @@ ETA: [time]
 ```
 
 **Resolution:**
+
 ```
 Subject: Service Restored - Algo Cloud IDE
 
@@ -502,13 +534,13 @@ We apologize for the disruption. If you experience any issues, please contact su
 
 ### Escalation Matrix
 
-| Time Elapsed | Action | Contact |
-|--------------|--------|---------|
-| 0 min | Incident detected | On-call engineer |
-| 15 min | Escalate if unresolved | Team lead |
-| 30 min | Escalate if critical | Engineering manager |
-| 1 hour | Escalate if ongoing | VP Engineering, CTO |
-| 2 hours | Executive notification | CEO |
+| Time Elapsed | Action                 | Contact             |
+| ------------ | ---------------------- | ------------------- |
+| 0 min        | Incident detected      | On-call engineer    |
+| 15 min       | Escalate if unresolved | Team lead           |
+| 30 min       | Escalate if critical   | Engineering manager |
+| 1 hour       | Escalate if ongoing    | VP Engineering, CTO |
+| 2 hours      | Executive notification | CEO                 |
 
 ## Testing & Validation
 
@@ -517,6 +549,7 @@ We apologize for the disruption. If you experience any issues, please contact su
 **Schedule: Quarterly**
 
 **Drill 1: Database Restore**
+
 ```bash
 # Test database restore process
 # Duration: 1 hour
@@ -524,6 +557,7 @@ We apologize for the disruption. If you experience any issues, please contact su
 ```
 
 **Drill 2: Full System Recovery**
+
 ```bash
 # Test complete system restore
 # Duration: 4 hours
@@ -531,6 +565,7 @@ We apologize for the disruption. If you experience any issues, please contact su
 ```
 
 **Drill 3: Failover Test**
+
 ```bash
 # Test multi-region failover
 # Duration: 2 hours
@@ -560,20 +595,21 @@ Document each test in `/docs/dr-tests/`:
 ```markdown
 # DR Test - [Date]
 
-**Type**: Full System Recovery
-**Duration**: 3 hours 45 minutes
-**RTO Target**: 4 hours
-**Status**: PASSED
+**Type**: Full System Recovery **Duration**: 3 hours 45 minutes **RTO Target**:
+4 hours **Status**: PASSED
 
 ## Issues Found
+
 1. DNS propagation took longer than expected
 2. Monitoring alerts not working
 
 ## Actions Taken
+
 1. Pre-configure DNS failover
 2. Fix monitoring configuration
 
 ## Lessons Learned
+
 - Need better automation for DNS updates
 - Should test monitoring separately
 ```
@@ -582,20 +618,20 @@ Document each test in `/docs/dr-tests/`:
 
 ### Emergency Contacts
 
-| Role | Name | Phone | Email |
-|------|------|-------|-------|
+| Role               | Name   | Phone   | Email   |
+| ------------------ | ------ | ------- | ------- |
 | Incident Commander | [Name] | [Phone] | [Email] |
-| DBA | [Name] | [Phone] | [Email] |
-| DevOps Lead | [Name] | [Phone] | [Email] |
-| Security Lead | [Name] | [Phone] | [Email] |
+| DBA                | [Name] | [Phone] | [Email] |
+| DevOps Lead        | [Name] | [Phone] | [Email] |
+| Security Lead      | [Name] | [Phone] | [Email] |
 
 ### Vendor Contacts
 
-| Vendor | Service | Support | SLA |
-|--------|---------|---------|-----|
-| AWS | Cloud Infrastructure | 1-800-XXX-XXXX | 24/7 |
-| Cloudflare | DDoS Protection | support@cloudflare.com | 24/7 |
-| Database Provider | Managed PostgreSQL | [Contact] | 24/7 |
+| Vendor            | Service              | Support                | SLA  |
+| ----------------- | -------------------- | ---------------------- | ---- |
+| AWS               | Cloud Infrastructure | 1-800-XXX-XXXX         | 24/7 |
+| Cloudflare        | DDoS Protection      | support@cloudflare.com | 24/7 |
+| Database Provider | Managed PostgreSQL   | [Contact]              | 24/7 |
 
 ### External Resources
 

@@ -1,17 +1,17 @@
-import { useRef } from 'react'
-import Editor from '@monaco-editor/react'
-import './EditorPane.css'
-import { EditorTab, EditorConfig } from '../types'
+import { useRef } from 'react';
+import Editor from '@monaco-editor/react';
+import './EditorPane.css';
+import { EditorTab, EditorConfig } from '../types';
 
 interface EditorPaneProps {
-  tabs: EditorTab[]
-  activeTab: string | null
-  onTabClick: (tabId: string) => void
-  onTabClose: (tabId: string) => void
-  onContentChange: (tabId: string, content: string) => void
-  onSave: (tabId: string) => void
-  config: EditorConfig
-  splitView: 'single' | 'horizontal' | 'vertical' | 'grid'
+  tabs: EditorTab[];
+  activeTab: string | null;
+  onTabClick: (tabId: string) => void;
+  onTabClose: (tabId: string) => void;
+  onContentChange: (tabId: string, content: string) => void;
+  onSave: (tabId: string) => void;
+  config: EditorConfig;
+  splitView: 'single' | 'horizontal' | 'vertical' | 'grid';
 }
 
 const EditorPane = ({
@@ -22,43 +22,43 @@ const EditorPane = ({
   onContentChange,
   onSave,
   config,
-  splitView
+  splitView,
 }: EditorPaneProps) => {
-  const editorRef = useRef<any>(null)
+  const editorRef = useRef<any>(null);
 
   const handleEditorDidMount = (editor: any, monaco: any) => {
-    editorRef.current = editor
+    editorRef.current = editor;
 
     // Configure vim/emacs keybindings if needed
     if (config.keyBindings === 'vim') {
       // Monaco doesn't have built-in vim mode, would need a plugin
-      console.log('Vim keybindings requested')
+      console.log('Vim keybindings requested');
     } else if (config.keyBindings === 'emacs') {
-      console.log('Emacs keybindings requested')
+      console.log('Emacs keybindings requested');
     }
 
     // Add save command
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
       if (activeTab) {
-        onSave(activeTab)
+        onSave(activeTab);
       }
-    })
+    });
 
     // Track cursor position
     // Note: Direct mutation is intentional here for performance - cursor position
     // is transient UI state that updates frequently and doesn't need re-renders
     editor.onDidChangeCursorPosition((e: any) => {
-      const tab = tabs.find(t => t.id === activeTab)
+      const tab = tabs.find((t) => t.id === activeTab);
       if (tab) {
         tab.cursorPosition = {
           lineNumber: e.position.lineNumber,
-          column: e.position.column
-        }
+          column: e.position.column,
+        };
       }
-    })
-  }
+    });
+  };
 
-  const activeTabData = tabs.find(t => t.id === activeTab)
+  const activeTabData = tabs.find((t) => t.id === activeTab);
 
   const editorOptions = {
     fontSize: config.fontSize,
@@ -78,14 +78,14 @@ const EditorPane = ({
     snippetSuggestions: 'top' as const,
     suggest: {
       showWords: true,
-      showSnippets: true
-    }
-  }
+      showSnippets: true,
+    },
+  };
 
   return (
     <div className="editor-pane">
       <div className="tabs-bar">
-        {tabs.map(tab => (
+        {tabs.map((tab) => (
           <div
             key={tab.id}
             className={`tab ${tab.id === activeTab ? 'active' : ''} ${tab.modified ? 'modified' : ''}`}
@@ -96,8 +96,8 @@ const EditorPane = ({
             <button
               className="tab-close"
               onClick={(e) => {
-                e.stopPropagation()
-                onTabClose(tab.id)
+                e.stopPropagation();
+                onTabClose(tab.id);
               }}
             >
               ×
@@ -116,7 +116,7 @@ const EditorPane = ({
             options={editorOptions}
             onChange={(value) => {
               if (value !== undefined && activeTab) {
-                onContentChange(activeTab, value)
+                onContentChange(activeTab, value);
               }
             }}
             onMount={handleEditorDidMount}
@@ -129,11 +129,21 @@ const EditorPane = ({
               <div className="shortcuts">
                 <h3>Keyboard Shortcuts:</h3>
                 <ul>
-                  <li><kbd>Ctrl/Cmd + S</kbd> - Save file</li>
-                  <li><kbd>Ctrl/Cmd + F</kbd> - Find in file</li>
-                  <li><kbd>Ctrl/Cmd + Shift + F</kbd> - Find in files</li>
-                  <li><kbd>Ctrl/Cmd + P</kbd> - Quick open</li>
-                  <li><kbd>Ctrl/Cmd + `</kbd> - Toggle terminal</li>
+                  <li>
+                    <kbd>Ctrl/Cmd + S</kbd> - Save file
+                  </li>
+                  <li>
+                    <kbd>Ctrl/Cmd + F</kbd> - Find in file
+                  </li>
+                  <li>
+                    <kbd>Ctrl/Cmd + Shift + F</kbd> - Find in files
+                  </li>
+                  <li>
+                    <kbd>Ctrl/Cmd + P</kbd> - Quick open
+                  </li>
+                  <li>
+                    <kbd>Ctrl/Cmd + `</kbd> - Toggle terminal
+                  </li>
                 </ul>
               </div>
             </div>
@@ -141,7 +151,7 @@ const EditorPane = ({
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default EditorPane
+export default EditorPane;

@@ -1,10 +1,12 @@
 # Automation System Examples
 
-This document provides practical examples of using the Intelligent Automation System.
+This document provides practical examples of using the Intelligent Automation
+System.
 
 ## Example 1: Auto-Detect and Setup React Project
 
 ### Create a sample React project
+
 ```bash
 mkdir my-react-app
 cd my-react-app
@@ -14,6 +16,7 @@ npm install -D @types/react @types/react-dom typescript vite
 ```
 
 ### Create package.json with build scripts
+
 ```json
 {
   "name": "my-react-app",
@@ -37,6 +40,7 @@ npm install -D @types/react @types/react-dom typescript vite
 ```
 
 ### Auto-detect the project
+
 ```bash
 curl -X POST http://localhost:4000/api/automation/detect \
   -H "Content-Type: application/json" \
@@ -46,6 +50,7 @@ curl -X POST http://localhost:4000/api/automation/detect \
 ```
 
 ### Expected Response
+
 ```json
 {
   "success": true,
@@ -57,7 +62,14 @@ curl -X POST http://localhost:4000/api/automation/detect \
         "version": "^18.2.0",
         "language": "JavaScript/TypeScript",
         "packageManager": "npm",
-        "dependencies": ["react", "react-dom", "@types/react", "@types/react-dom", "typescript", "vite"]
+        "dependencies": [
+          "react",
+          "react-dom",
+          "@types/react",
+          "@types/react-dom",
+          "typescript",
+          "vite"
+        ]
       }
     ],
     "commands": {
@@ -81,6 +93,7 @@ curl -X POST http://localhost:4000/api/automation/detect \
 ## Example 2: Generate Infrastructure for FastAPI Project
 
 ### Sample FastAPI project structure
+
 ```
 my-fastapi-app/
 ├── main.py
@@ -89,6 +102,7 @@ my-fastapi-app/
 ```
 
 ### main.py
+
 ```python
 from fastapi import FastAPI
 
@@ -108,12 +122,14 @@ if __name__ == "__main__":
 ```
 
 ### requirements.txt
+
 ```
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 ```
 
 ### Generate IaC
+
 ```bash
 curl -X POST http://localhost:4000/api/automation/generate-iac \
   -H "Content-Type: application/json" \
@@ -125,6 +141,7 @@ curl -X POST http://localhost:4000/api/automation/generate-iac \
 ```
 
 ### Response includes:
+
 - **Dockerfile**: Multi-stage Python container optimized for FastAPI
 - **Kubernetes manifests**: Deployment, Service, Ingress, ConfigMap, HPA
 - **nginx config**: Reverse proxy with SSL
@@ -133,6 +150,7 @@ curl -X POST http://localhost:4000/api/automation/generate-iac \
 ## Example 3: Initialize from Template
 
 ### Create a new project from template
+
 ```bash
 curl -X POST http://localhost:4000/api/automation/init-template \
   -H "Content-Type: application/json" \
@@ -155,6 +173,7 @@ curl -X POST http://localhost:4000/api/automation/init-template \
 ```
 
 ### This creates a complete Express API project with:
+
 - TypeScript configuration
 - Express server setup
 - Docker and docker-compose files
@@ -164,6 +183,7 @@ curl -X POST http://localhost:4000/api/automation/init-template \
 ## Example 4: Import from GitHub and Setup
 
 ### Import a public repository
+
 ```bash
 curl -X POST http://localhost:4000/api/automation/import-github \
   -H "Content-Type: application/json" \
@@ -174,6 +194,7 @@ curl -X POST http://localhost:4000/api/automation/import-github \
 ```
 
 ### Then run full setup
+
 ```bash
 curl -X POST http://localhost:4000/api/automation/setup \
   -H "Content-Type: application/json" \
@@ -189,6 +210,7 @@ curl -X POST http://localhost:4000/api/automation/setup \
 ```
 
 ### This will:
+
 1. Auto-detect the Next.js framework
 2. Install all dependencies (npm install)
 3. Generate complete infrastructure:
@@ -200,6 +222,7 @@ curl -X POST http://localhost:4000/api/automation/setup \
 ## Example 5: Full Stack MERN Application
 
 ### Initialize MERN template
+
 ```bash
 curl -X POST http://localhost:4000/api/automation/init-template \
   -H "Content-Type: application/json" \
@@ -225,12 +248,14 @@ curl -X POST http://localhost:4000/api/automation/init-template \
 ## Example 6: Server Setup Script
 
 ### One-command server setup
+
 ```bash
 # On a fresh Ubuntu/Debian/CentOS server
 curl -fsSL https://install.gxqstudio.com | bash
 ```
 
 ### This installs:
+
 - Docker and Docker Compose
 - Node.js (via nvm)
 - Python 3
@@ -240,6 +265,7 @@ curl -fsSL https://install.gxqstudio.com | bash
 - Configures firewall (ports 22, 80, 443)
 
 ### After installation, deploy your app:
+
 ```bash
 # Clone your repo
 git clone https://github.com/yourusername/your-app.git
@@ -269,6 +295,7 @@ certbot --nginx -d yourdomain.com
 ## Example 7: Multi-Service Application with Docker Compose
 
 ### Generate infrastructure for microservices
+
 ```bash
 # API Service
 curl -X POST http://localhost:4000/api/automation/generate-iac \
@@ -288,27 +315,28 @@ curl -X POST http://localhost:4000/api/automation/generate-iac \
 ```
 
 ### Create docker-compose.yml
+
 ```yaml
 version: '3.8'
 services:
   frontend:
     build: ./frontend
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - API_URL=http://api:4000
     depends_on:
       - api
-  
+
   api:
     build: ./api-service
     ports:
-      - "4000:4000"
+      - '4000:4000'
     environment:
       - DATABASE_URL=postgresql://db:5432/mydb
     depends_on:
       - db
-  
+
   db:
     image: postgres:15-alpine
     environment:
@@ -325,6 +353,7 @@ volumes:
 ## Example 8: Kubernetes Deployment
 
 ### Generate Kubernetes manifests
+
 ```bash
 curl -X POST http://localhost:4000/api/automation/generate-iac \
   -H "Content-Type: application/json" \
@@ -335,6 +364,7 @@ curl -X POST http://localhost:4000/api/automation/generate-iac \
 ```
 
 ### Extract and apply manifests
+
 ```bash
 # Extract deployment
 jq -r '.data.kubernetes.deployment' k8s-manifests.json > deployment.yaml
@@ -356,6 +386,7 @@ kubectl apply -f hpa.yaml
 ## Example 9: Environment Variable Detection
 
 ### Project with environment variables
+
 ```javascript
 // src/config.js
 const config = {
@@ -368,6 +399,7 @@ const config = {
 ```
 
 ### Auto-detect will find:
+
 - PORT
 - DATABASE_URL
 - API_KEY
@@ -375,6 +407,7 @@ const config = {
 - REDIS_URL
 
 ### These are automatically included in:
+
 - Generated .env.example files
 - Kubernetes ConfigMap templates
 - Docker environment configuration
@@ -382,6 +415,7 @@ const config = {
 ## Example 10: Progressive Migration
 
 ### Start with manual setup
+
 ```bash
 # Create project manually
 mkdir my-project
@@ -391,6 +425,7 @@ npm install express
 ```
 
 ### Use automation for infrastructure
+
 ```bash
 # Generate Dockerfile
 curl -X POST http://localhost:4000/api/automation/generate-iac \
@@ -404,6 +439,7 @@ docker run -p 3000:3000 my-project
 ```
 
 ### Add Kubernetes later
+
 ```bash
 # Generate K8s manifests
 curl -X POST http://localhost:4000/api/automation/generate-iac \
@@ -421,33 +457,47 @@ kubectl apply -f k8s/
 
 1. **Start Simple**: Use auto-detect first to understand your project
 2. **Incremental Adoption**: Generate one piece of infrastructure at a time
-3. **Review Generated Code**: Always review Dockerfiles and configs before production
+3. **Review Generated Code**: Always review Dockerfiles and configs before
+   production
 4. **Test Locally**: Test Docker and docker-compose setups locally first
 5. **Version Control**: Commit generated infrastructure to version control
-6. **Environment Variables**: Use .env files for local development, secrets management for production
-7. **Security**: Update generated configs with your specific security requirements
-8. **Monitoring**: Add your monitoring and logging solutions to generated configs
+6. **Environment Variables**: Use .env files for local development, secrets
+   management for production
+7. **Security**: Update generated configs with your specific security
+   requirements
+8. **Monitoring**: Add your monitoring and logging solutions to generated
+   configs
 
 ## Troubleshooting
 
 ### Issue: Auto-detect doesn't find my framework
-**Solution**: Ensure your configuration files (package.json, requirements.txt, etc.) are in the project root
+
+**Solution**: Ensure your configuration files (package.json, requirements.txt,
+etc.) are in the project root
 
 ### Issue: Generated Dockerfile is too large
-**Solution**: The generator creates multi-stage builds. You can further optimize by:
+
+**Solution**: The generator creates multi-stage builds. You can further optimize
+by:
+
 - Adding more specific .dockerignore rules
 - Using alpine base images (already default)
 - Removing unnecessary build dependencies
 
 ### Issue: Kubernetes deployment fails
+
 **Solution**: Check:
+
 - Image is pushed to registry
 - Secrets and ConfigMaps are created
 - Ingress controller is installed
 - DNS is configured
 
 ### Issue: Port conflicts
-**Solution**: The system detects ports from config files and defaults. You can override:
+
+**Solution**: The system detects ports from config files and defaults. You can
+override:
+
 - In generated docker-compose.yml
 - In Kubernetes service definitions
 - In nginx configuration

@@ -1,10 +1,13 @@
 # Modern UI/UX Implementation Guide
 
-This document describes the modern UI/UX components and features implemented in the Algo IDE frontend.
+This document describes the modern UI/UX components and features implemented in
+the Algo IDE frontend.
 
 ## Overview
 
-The implementation includes a comprehensive set of modern UI components built with:
+The implementation includes a comprehensive set of modern UI components built
+with:
+
 - **React 18** - Core UI framework
 - **Next.js 15** - App router and server components
 - **Tailwind CSS** - Utility-first styling
@@ -20,6 +23,7 @@ The implementation includes a comprehensive set of modern UI components built wi
 A complete dark/light theme system with system preference detection.
 
 **Features:**
+
 - Dark mode (default)
 - Light mode
 - System preference detection
@@ -27,17 +31,14 @@ A complete dark/light theme system with system preference detection.
 - Smooth theme transitions
 
 **Usage:**
+
 ```tsx
-import { useTheme } from '@/lib/hooks/use-theme'
+import { useTheme } from '@/lib/hooks/use-theme';
 
 function MyComponent() {
-  const { theme, setTheme } = useTheme()
-  
-  return (
-    <button onClick={() => setTheme('dark')}>
-      Dark Mode
-    </button>
-  )
+  const { theme, setTheme } = useTheme();
+
+  return <button onClick={() => setTheme('dark')}>Dark Mode</button>;
 }
 ```
 
@@ -48,6 +49,7 @@ function MyComponent() {
 A searchable command palette for quick actions and navigation.
 
 **Features:**
+
 - Opens with `Cmd/Ctrl + K`
 - Quick actions (New File, Open Terminal, etc.)
 - View switching
@@ -63,6 +65,7 @@ A searchable command palette for quick actions and navigation.
 An animated sidebar with full and icon-only modes.
 
 **Features:**
+
 - Full expanded mode with labels
 - Icon-only compact mode
 - Smooth spring animations
@@ -78,6 +81,7 @@ An animated sidebar with full and icon-only modes.
 Context-aware breadcrumb navigation for current location.
 
 **Features:**
+
 - Home icon navigation
 - Path hierarchy display
 - Click-to-navigate
@@ -90,6 +94,7 @@ Context-aware breadcrumb navigation for current location.
 Non-obtrusive toast notifications using react-hot-toast.
 
 **Features:**
+
 - Success, error, and loading states
 - Glassmorphism styling
 - Auto-dismiss
@@ -97,12 +102,13 @@ Non-obtrusive toast notifications using react-hot-toast.
 - Custom duration per type
 
 **Usage:**
-```tsx
-import toast from 'react-hot-toast'
 
-toast.success('File saved successfully')
-toast.error('Failed to connect')
-toast.loading('Processing...')
+```tsx
+import toast from 'react-hot-toast';
+
+toast.success('File saved successfully');
+toast.error('Failed to connect');
+toast.loading('Processing...');
 ```
 
 ### 6. Skeleton Loaders
@@ -112,12 +118,14 @@ toast.loading('Processing...')
 Loading state placeholders with smooth animations.
 
 **Components:**
+
 - `Skeleton` - Basic skeleton
 - `SkeletonCard` - Card placeholder
 - `SkeletonList` - List placeholder
 - `SkeletonTable` - Table placeholder
 
 **Usage:**
+
 ```tsx
 import { SkeletonCard, SkeletonList } from '@/components/modern-ui'
 
@@ -132,6 +140,7 @@ import { SkeletonCard, SkeletonList } from '@/components/modern-ui'
 Helpful empty state components with call-to-action buttons.
 
 **Features:**
+
 - Icon display
 - Title and description
 - Primary action button
@@ -139,9 +148,10 @@ Helpful empty state components with call-to-action buttons.
 - Animated entrance
 
 **Usage:**
+
 ```tsx
-import { EmptyState } from '@/components/modern-ui'
-import { FileText } from 'lucide-react'
+import { EmptyState } from '@/components/modern-ui';
+import { FileText } from 'lucide-react';
 
 <EmptyState
   icon={FileText}
@@ -149,9 +159,9 @@ import { FileText } from 'lucide-react'
   description="Get started by creating a new file"
   action={{
     label: 'Create New File',
-    onClick: () => handleCreate()
+    onClick: () => handleCreate(),
   }}
-/>
+/>;
 ```
 
 ### 8. Context Menu
@@ -161,6 +171,7 @@ import { FileText } from 'lucide-react'
 Right-click context menus for any component.
 
 **Features:**
+
 - Icon support
 - Keyboard shortcuts display
 - Disabled states
@@ -169,6 +180,7 @@ Right-click context menus for any component.
 - Click-outside to close
 
 **Usage:**
+
 ```tsx
 import { ContextMenu } from '@/components/modern-ui'
 import { Copy, Trash2 } from 'lucide-react'
@@ -200,21 +212,22 @@ const items = [
 Global keyboard shortcut handler.
 
 **Usage:**
+
 ```tsx
-import { useKeyboardShortcuts } from '@/lib/hooks/use-keyboard-shortcuts'
+import { useKeyboardShortcuts } from '@/lib/hooks/use-keyboard-shortcuts';
 
 useKeyboardShortcuts([
   {
     key: 'k',
     ctrlKey: true,
-    handler: () => openCommandPalette()
+    handler: () => openCommandPalette(),
   },
   {
     key: 's',
     ctrlKey: true,
-    handler: () => saveFile()
-  }
-])
+    handler: () => saveFile(),
+  },
+]);
 ```
 
 ### 10. Keyboard Shortcuts Dialog
@@ -232,6 +245,7 @@ A help dialog showing all available keyboard shortcuts.
 An animated toggle for switching between themes.
 
 **Features:**
+
 - Light/Dark/System modes
 - Animated background
 - Icon indicators
@@ -244,6 +258,7 @@ An animated toggle for switching between themes.
 Search across projects, files, and documentation.
 
 **Features:**
+
 - Live search results
 - File type icons
 - Path display
@@ -257,10 +272,12 @@ Search across projects, files, and documentation.
 Hoverable tooltips and tutorial tooltips for onboarding.
 
 **Components:**
+
 - `Tooltip` - Standard tooltip
 - `TutorialTooltip` - Step-by-step tutorial tooltip
 
 **Usage:**
+
 ```tsx
 import { Tooltip, TutorialTooltip } from '@/components/modern-ui'
 
@@ -286,12 +303,14 @@ import { Tooltip, TutorialTooltip } from '@/components/modern-ui'
 Utility functions and styles for glassmorphism effects.
 
 **Variants:**
+
 - `card` - Standard card with blur
 - `cardLight` - Light mode card
 - `panel` - Sidebar/panel styling
 - `popup` - Modal/dialog styling
 
 **Usage:**
+
 ```tsx
 import { getGlassmorphismStyle, getGlassmorphismClass } from '@/lib/glassmorphism'
 
@@ -309,22 +328,22 @@ import { getGlassmorphismStyle, getGlassmorphismClass } from '@/lib/glassmorphis
 
 ## Keyboard Shortcuts Reference
 
-| Shortcut | Action |
-|----------|--------|
-| `Ctrl/Cmd + K` | Open command palette |
-| `Ctrl/Cmd + B` | Toggle sidebar |
-| `Ctrl/Cmd + /` | Show keyboard shortcuts help |
-| `Ctrl/Cmd + P` | Quick project switcher |
-| `Ctrl/Cmd + N` | New file |
-| `Ctrl/Cmd + Shift + N` | New folder |
-| `Ctrl/Cmd + S` | Save file |
-| `Ctrl/Cmd + W` | Close file |
-| `Ctrl/Cmd + Shift + E` | Toggle Explorer |
-| `Ctrl/Cmd + Shift + F` | Toggle Search |
-| `Ctrl/Cmd + Shift + G` | Toggle Source Control |
-| `Ctrl/Cmd + Shift + D` | Toggle Database |
-| ``Ctrl/Cmd + ` `` | Toggle Terminal |
-| `Esc` | Close dialogs/modals |
+| Shortcut               | Action                       |
+| ---------------------- | ---------------------------- |
+| `Ctrl/Cmd + K`         | Open command palette         |
+| `Ctrl/Cmd + B`         | Toggle sidebar               |
+| `Ctrl/Cmd + /`         | Show keyboard shortcuts help |
+| `Ctrl/Cmd + P`         | Quick project switcher       |
+| `Ctrl/Cmd + N`         | New file                     |
+| `Ctrl/Cmd + Shift + N` | New folder                   |
+| `Ctrl/Cmd + S`         | Save file                    |
+| `Ctrl/Cmd + W`         | Close file                   |
+| `Ctrl/Cmd + Shift + E` | Toggle Explorer              |
+| `Ctrl/Cmd + Shift + F` | Toggle Search                |
+| `Ctrl/Cmd + Shift + G` | Toggle Source Control        |
+| `Ctrl/Cmd + Shift + D` | Toggle Database              |
+| ``Ctrl/Cmd + ` ``      | Toggle Terminal              |
+| `Esc`                  | Close dialogs/modals         |
 
 ## Accessibility
 
@@ -368,9 +387,9 @@ All animations use Framer Motion with:
 Here's a complete example integrating multiple components:
 
 ```tsx
-'use client'
+'use client';
 
-import { useState } from 'react'
+import { useState } from 'react';
 import {
   CommandPalette,
   CollapsibleSidebar,
@@ -379,34 +398,36 @@ import {
   GlobalSearch,
   EmptyState,
   ToastProvider,
-} from '@/components/modern-ui'
-import { useTheme } from '@/lib/hooks/use-theme'
-import { useKeyboardShortcuts } from '@/lib/hooks/use-keyboard-shortcuts'
-import toast from 'react-hot-toast'
+} from '@/components/modern-ui';
+import { useTheme } from '@/lib/hooks/use-theme';
+import { useKeyboardShortcuts } from '@/lib/hooks/use-keyboard-shortcuts';
+import toast from 'react-hot-toast';
 
 export default function Page() {
-  const [isCommandOpen, setIsCommandOpen] = useState(false)
-  const { setTheme } = useTheme()
+  const [isCommandOpen, setIsCommandOpen] = useState(false);
+  const { setTheme } = useTheme();
 
   useKeyboardShortcuts([
     {
       key: 'k',
       ctrlKey: true,
-      handler: () => setIsCommandOpen(true)
-    }
-  ])
+      handler: () => setIsCommandOpen(true),
+    },
+  ]);
 
   return (
     <div className="flex h-screen bg-gray-950">
       <CollapsibleSidebar />
-      
+
       <div className="flex-1 flex flex-col">
         <header className="glass-panel h-16 flex items-center justify-between px-6">
-          <Breadcrumb items={[
-            { label: 'Projects', href: '/projects' },
-            { label: 'My Project' }
-          ]} />
-          
+          <Breadcrumb
+            items={[
+              { label: 'Projects', href: '/projects' },
+              { label: 'My Project' },
+            ]}
+          />
+
           <div className="flex items-center gap-4">
             <GlobalSearch />
             <ThemeToggle />
@@ -420,7 +441,7 @@ export default function Page() {
             description="Get started by creating a new file"
             action={{
               label: 'Create File',
-              onClick: () => toast.success('Creating...')
+              onClick: () => toast.success('Creating...'),
             }}
           />
         </main>
@@ -434,7 +455,7 @@ export default function Page() {
 
       <ToastProvider />
     </div>
-  )
+  );
 }
 ```
 
@@ -468,11 +489,11 @@ module.exports = {
         brand: {
           primary: '#3b82f6',
           secondary: '#8b5cf6',
-        }
-      }
-    }
-  }
-}
+        },
+      },
+    },
+  },
+};
 ```
 
 ## Best Practices
@@ -488,4 +509,5 @@ module.exports = {
 
 ## Support
 
-For issues or questions about the UI components, please refer to the component source code or create an issue in the repository.
+For issues or questions about the UI components, please refer to the component
+source code or create an issue in the repository.

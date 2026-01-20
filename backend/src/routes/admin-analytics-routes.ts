@@ -71,7 +71,7 @@ export function createAdminAnalyticsRoutes(pool: Pool) {
         '12m': '12 months',
         '24m': '24 months',
       };
-      const safePeriod = validPeriods.includes(period as string) ? period as string : '12m';
+      const safePeriod = validPeriods.includes(period as string) ? (period as string) : '12m';
       const interval = intervalMap[safePeriod];
 
       // Calculate MRR (Monthly Recurring Revenue)
@@ -182,11 +182,11 @@ export function createAdminAnalyticsRoutes(pool: Pool) {
          ORDER BY cohort_month DESC`
       );
 
-      const cohortAnalysis = cohortResult.rows.map(row => ({
+      const cohortAnalysis = cohortResult.rows.map((row) => ({
         cohortMonth: row.cohort_month,
         users: parseInt(row.users),
         retainedUsers: parseInt(row.retained_users),
-        retentionRate: (parseInt(row.retained_users) / parseInt(row.users) * 100).toFixed(2),
+        retentionRate: ((parseInt(row.retained_users) / parseInt(row.users)) * 100).toFixed(2),
       }));
 
       res.json({
@@ -215,7 +215,7 @@ export function createAdminAnalyticsRoutes(pool: Pool) {
         '30d': { period: '30 days', interval: 'day' },
       };
       const validPeriods = Object.keys(periodMap);
-      const safePeriod = validPeriods.includes(period as string) ? period as string : '24h';
+      const safePeriod = validPeriods.includes(period as string) ? (period as string) : '24h';
       const { period: intervalPeriod, interval } = periodMap[safePeriod];
 
       // Get resource metrics - use safe interval value
@@ -399,7 +399,7 @@ export function createAdminAnalyticsRoutes(pool: Pool) {
         '7d': '7 days',
         '30d': '30 days',
       };
-      const safePeriod = validPeriods.includes(period as string) ? period as string : '24h';
+      const safePeriod = validPeriods.includes(period as string) ? (period as string) : '24h';
       const intervalPeriod = periodMap[safePeriod];
 
       // Get API performance metrics

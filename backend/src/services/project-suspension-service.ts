@@ -122,9 +122,7 @@ export class ProjectSuspensionService extends EventEmitter {
    */
   private async findIdleProjects(client: any): Promise<Project[]> {
     const thresholdDate = new Date();
-    thresholdDate.setDate(
-      thresholdDate.getDate() - this.config.inactivityThresholdDays
-    );
+    thresholdDate.setDate(thresholdDate.getDate() - this.config.inactivityThresholdDays);
 
     // Using compound index: idx_projects_status_activity
     const result = await client.query(
@@ -149,9 +147,7 @@ export class ProjectSuspensionService extends EventEmitter {
     for (const days of this.config.notificationDays) {
       const notificationDate = new Date();
       notificationDate.setDate(
-        notificationDate.getDate() -
-          this.config.inactivityThresholdDays +
-          days
+        notificationDate.getDate() - this.config.inactivityThresholdDays + days
       );
 
       const projects = await client.query(
@@ -263,10 +259,7 @@ export class ProjectSuspensionService extends EventEmitter {
   /**
    * Capture project state before suspension
    */
-  private async captureProjectState(
-    projectId: string,
-    client: any
-  ): Promise<any> {
+  private async captureProjectState(projectId: string, client: any): Promise<any> {
     const state: any = {
       timestamp: new Date(),
       environment: {},
@@ -275,10 +268,9 @@ export class ProjectSuspensionService extends EventEmitter {
     };
 
     // Get project configuration
-    const configResult = await client.query(
-      'SELECT * FROM project_configs WHERE project_id = $1',
-      [projectId]
-    );
+    const configResult = await client.query('SELECT * FROM project_configs WHERE project_id = $1', [
+      projectId,
+    ]);
     state.config = configResult.rows[0];
 
     // Get running services
@@ -289,10 +281,9 @@ export class ProjectSuspensionService extends EventEmitter {
     state.services = servicesResult.rows;
 
     // Get environment variables
-    const envResult = await client.query(
-      'SELECT * FROM project_env WHERE project_id = $1',
-      [projectId]
-    );
+    const envResult = await client.query('SELECT * FROM project_env WHERE project_id = $1', [
+      projectId,
+    ]);
     state.environment = envResult.rows;
 
     return state;
@@ -342,10 +333,7 @@ export class ProjectSuspensionService extends EventEmitter {
 
     try {
       // Get project
-      const result = await client.query(
-        'SELECT * FROM projects WHERE id = $1',
-        [projectId]
-      );
+      const result = await client.query('SELECT * FROM projects WHERE id = $1', [projectId]);
 
       if (result.rows.length === 0) {
         throw new Error('Project not found');
@@ -360,10 +348,7 @@ export class ProjectSuspensionService extends EventEmitter {
       console.log(`Waking up project: ${projectId}`);
 
       // Update status to waking
-      await client.query(
-        'UPDATE projects SET status = $2 WHERE id = $1',
-        [projectId, 'waking']
-      );
+      await client.query('UPDATE projects SET status = $2 WHERE id = $1', [projectId, 'waking']);
 
       // Emit waking event
       this.emit('waking', {
@@ -372,9 +357,7 @@ export class ProjectSuspensionService extends EventEmitter {
       });
 
       // Restore project state
-      const state = project.suspended_state
-        ? JSON.parse(project.suspended_state)
-        : {};
+      const state = project.suspended_state ? JSON.parse(project.suspended_state) : {};
 
       // Start project resources
       await this.startProjectResources(projectId, state);
@@ -403,10 +386,7 @@ export class ProjectSuspensionService extends EventEmitter {
       console.error(`Error waking up project ${projectId}:`, error);
 
       // Revert to suspended status on error
-      await client.query(
-        'UPDATE projects SET status = $2 WHERE id = $1',
-        [projectId, 'suspended']
-      );
+      await client.query('UPDATE projects SET status = $2 WHERE id = $1', [projectId, 'suspended']);
 
       throw error;
     } finally {
@@ -419,10 +399,7 @@ export class ProjectSuspensionService extends EventEmitter {
    * TODO: Integrate with Docker/Kubernetes API
    * See: https://github.com/Algodons/algo/issues/XXX
    */
-  private async startProjectResources(
-    projectId: string,
-    state: any
-  ): Promise<void> {
+  private async startProjectResources(projectId: string, state: any): Promise<void> {
     console.log(`Starting resources for project: ${projectId}`);
 
     try {
@@ -448,9 +425,9 @@ export class ProjectSuspensionService extends EventEmitter {
       }
 
       // For now, emit event for manual handling
-      this.emit('resources_start_requested', { 
+      this.emit('resources_start_requested', {
         project_id: projectId,
-        state 
+        state,
       });
     } catch (error) {
       console.error(`Error starting resources for project ${projectId}:`, error);
@@ -463,10 +440,7 @@ export class ProjectSuspensionService extends EventEmitter {
    */
   async trackActivity(projectId: string): Promise<void> {
     try {
-      await this.pool.query(
-        'UPDATE projects SET last_activity = NOW() WHERE id = $1',
-        [projectId]
-      );
+      await this.pool.query('UPDATE projects SET last_activity = NOW() WHERE id = $1', [projectId]);
     } catch (error) {
       console.error(`Error tracking activity for project ${projectId}:`, error);
     }
@@ -497,10 +471,7 @@ export class ProjectSuspensionService extends EventEmitter {
       const daysSinceActivity = Math.floor(
         (Date.now() - new Date(project.last_activity).getTime()) / 86400000
       );
-      daysUntilSuspension = Math.max(
-        0,
-        this.config.inactivityThresholdDays - daysSinceActivity
-      );
+      daysUntilSuspension = Math.max(0, this.config.inactivityThresholdDays - daysSinceActivity);
     }
 
     return {
@@ -530,9 +501,7 @@ export class ProjectSuspensionService extends EventEmitter {
 /**
  * Wake-on-request middleware
  */
-export function wakeOnRequestMiddleware(
-  suspensionService: ProjectSuspensionService
-) {
+export function wakeOnRequestMiddleware(suspensionService: ProjectSuspensionService) {
   return async (req: any, res: any, next: any) => {
     const projectId = req.params.projectId || req.query.projectId;
 

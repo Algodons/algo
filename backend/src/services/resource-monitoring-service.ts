@@ -1,5 +1,11 @@
 import { Pool } from 'pg';
-import { ResourceMetric, ResourceUsageSummary, BillingPeriod, UsageForecast, ResourceAlert } from '../types/dashboard';
+import {
+  ResourceMetric,
+  ResourceUsageSummary,
+  BillingPeriod,
+  UsageForecast,
+  ResourceAlert,
+} from '../types/dashboard';
 
 export class ResourceMonitoringService {
   constructor(private pool: Pool) {}
@@ -101,7 +107,7 @@ export class ResourceMonitoringService {
   ): Promise<{ timestamp: Date; value: number }[]> {
     // Validate hours parameter to prevent SQL injection
     const validHours = Math.max(1, Math.min(parseInt(String(hours), 10), 8760)); // Max 1 year
-    
+
     const result = await this.pool.query(
       `SELECT 
         date_trunc('hour', timestamp) as hour,
@@ -180,10 +186,7 @@ export class ResourceMonitoringService {
 
   async calculateCosts(userId: number, periodId: number): Promise<void> {
     // Get all metrics for the period
-    const period = await this.pool.query(
-      'SELECT * FROM billing_periods WHERE id = $1',
-      [periodId]
-    );
+    const period = await this.pool.query('SELECT * FROM billing_periods WHERE id = $1', [periodId]);
 
     if (period.rows.length === 0) {
       throw new Error('Billing period not found');
@@ -288,7 +291,7 @@ export class ResourceMonitoringService {
     }
 
     // Forecast for 30 days ahead
-    const forecastedValue = currentValue + (trendValue * 4); // 4 weeks
+    const forecastedValue = currentValue + trendValue * 4; // 4 weeks
     const confidence = Math.min(historical.rows.length / 30, 0.9);
 
     return {
@@ -329,11 +332,7 @@ export class ResourceMonitoringService {
     return result.rows;
   }
 
-  private async checkAlerts(
-    userId: number,
-    metricType: string,
-    value: number
-  ): Promise<void> {
+  private async checkAlerts(userId: number, metricType: string, value: number): Promise<void> {
     const alerts = await this.pool.query(
       `SELECT * FROM resource_alerts
        WHERE user_id = $1

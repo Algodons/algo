@@ -26,16 +26,16 @@ export interface IPWhitelistConfig {
 function parseCIDR(cidr: string): IPRange {
   const [ip, prefixLength] = cidr.split('/');
   const prefix = parseInt(prefixLength, 10);
-  
+
   // Convert IP to number using unsigned operations
-  const ipParts = ip.split('.').map(p => parseInt(p, 10));
+  const ipParts = ip.split('.').map((p) => parseInt(p, 10));
   const ipNum = ((ipParts[0] << 24) | (ipParts[1] << 16) | (ipParts[2] << 8) | ipParts[3]) >>> 0;
-  
+
   // Calculate range using unsigned operations
-  const mask = (~((1 << (32 - prefix)) - 1)) >>> 0;
+  const mask = ~((1 << (32 - prefix)) - 1) >>> 0;
   const startNum = (ipNum & mask) >>> 0;
   const endNum = (startNum | (~mask >>> 0)) >>> 0;
-  
+
   // Convert back to IP strings
   const start = [
     (startNum >>> 24) & 255,
@@ -43,14 +43,14 @@ function parseCIDR(cidr: string): IPRange {
     (startNum >>> 8) & 255,
     startNum & 255,
   ].join('.');
-  
+
   const end = [
     (endNum >>> 24) & 255,
     (endNum >>> 16) & 255,
     (endNum >>> 8) & 255,
     endNum & 255,
   ].join('.');
-  
+
   return { start, end };
 }
 
@@ -59,8 +59,8 @@ function parseCIDR(cidr: string): IPRange {
  * Uses unsigned 32-bit operations
  */
 function ipToNumber(ip: string): number {
-  const parts = ip.split('.').map(p => parseInt(p, 10));
-  return (((parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3]) >>> 0);
+  const parts = ip.split('.').map((p) => parseInt(p, 10));
+  return ((parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3]) >>> 0;
 }
 
 /**
@@ -70,7 +70,7 @@ function isIPInRange(ip: string, range: IPRange): boolean {
   const ipNum = ipToNumber(ip);
   const startNum = ipToNumber(range.start);
   const endNum = ipToNumber(range.end);
-  
+
   return ipNum >= startNum && ipNum <= endNum;
 }
 
@@ -81,18 +81,19 @@ export function getClientIP(req: Request): string {
   // Check X-Forwarded-For header (for proxies/load balancers)
   const forwardedFor = req.headers['x-forwarded-for'];
   if (forwardedFor) {
-    const ips = typeof forwardedFor === 'string' 
-      ? forwardedFor.split(',').map(ip => ip.trim())
-      : forwardedFor;
+    const ips =
+      typeof forwardedFor === 'string'
+        ? forwardedFor.split(',').map((ip) => ip.trim())
+        : forwardedFor;
     return ips[0];
   }
-  
+
   // Check X-Real-IP header
   const realIP = req.headers['x-real-ip'];
   if (realIP && typeof realIP === 'string') {
     return realIP;
   }
-  
+
   // Fallback to connection remote address
   return req.ip || req.socket.remoteAddress || '';
 }
@@ -138,11 +139,7 @@ export function isIPWhitelisted(ip: string, config: IPWhitelistConfig): boolean 
 /**
  * Log blocked IP attempt
  */
-async function logBlockedAttempt(
-  ip: string,
-  path: string,
-  pool?: Pool
-): Promise<void> {
+async function logBlockedAttempt(ip: string, path: string, pool?: Pool): Promise<void> {
   if (!pool) {
     console.warn(`Blocked IP attempt from ${ip} to ${path}`);
     return;
@@ -173,7 +170,7 @@ export function ipWhitelistMiddleware(config: IPWhitelistConfig, pool?: Pool) {
       }
 
       const message = config.blockMessage || 'Access denied from this IP address';
-      
+
       return res.status(403).json({
         error: message,
         ip: clientIP,

@@ -26,7 +26,7 @@ export function createResourcesRoutes(pool: Pool): Router {
       const projectId = req.query.project_id;
       const startDate = req.query.start_date as string;
       const endDate = req.query.end_date as string;
-      const metric = req.query.metric as string || 'all';
+      const metric = (req.query.metric as string) || 'all';
 
       try {
         let query = `
@@ -82,11 +82,14 @@ export function createResourcesRoutes(pool: Pool): Router {
             };
           }
           aggregates[row.metric].total += parseFloat(row.value);
-          aggregates[row.metric].peak = Math.max(aggregates[row.metric].peak, parseFloat(row.value));
+          aggregates[row.metric].peak = Math.max(
+            aggregates[row.metric].peak,
+            parseFloat(row.value)
+          );
           aggregates[row.metric].count++;
         });
 
-        Object.keys(aggregates).forEach(key => {
+        Object.keys(aggregates).forEach((key) => {
           aggregates[key].average = aggregates[key].total / aggregates[key].count;
         });
 
@@ -109,15 +112,12 @@ export function createResourcesRoutes(pool: Pool): Router {
   );
 
   // GET /api/v1/resources/limits - Get resource limits
-  router.get(
-    '/limits',
-    authenticate(pool),
-    async (req: Request, res: Response) => {
-      const userId = (req as any).user?.id;
+  router.get('/limits', authenticate(pool), async (req: Request, res: Response) => {
+    const userId = (req as any).user?.id;
 
-      try {
-        const result = await pool.query(
-          `SELECT 
+    try {
+      const result = await pool.query(
+        `SELECT 
             u.id,
             s.name as plan_name,
             s.cpu_limit,
@@ -131,38 +131,37 @@ export function createResourcesRoutes(pool: Pool): Router {
            LEFT JOIN user_subscriptions us ON u.id = us.user_id AND us.status = 'active'
            LEFT JOIN subscriptions s ON us.subscription_id = s.id
            WHERE u.id = $1`,
-          [userId]
-        );
+        [userId]
+      );
 
-        if (result.rows.length === 0) {
-          // Return default free tier limits
-          return res.json({
-            success: true,
-            data: {
-              plan_name: 'Free',
-              cpu_limit: 1,
-              memory_limit: 512,
-              storage_limit: 1024,
-              bandwidth_limit: 10240,
-              max_projects: 3,
-            },
-          });
-        }
-
-        res.json({
+      if (result.rows.length === 0) {
+        // Return default free tier limits
+        return res.json({
           success: true,
-          data: result.rows[0],
-        });
-      } catch (error: any) {
-        console.error('Error fetching resource limits:', error);
-        res.status(500).json({
-          success: false,
-          error: 'Failed to fetch resource limits',
-          details: error.message,
+          data: {
+            plan_name: 'Free',
+            cpu_limit: 1,
+            memory_limit: 512,
+            storage_limit: 1024,
+            bandwidth_limit: 10240,
+            max_projects: 3,
+          },
         });
       }
+
+      res.json({
+        success: true,
+        data: result.rows[0],
+      });
+    } catch (error: any) {
+      console.error('Error fetching resource limits:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch resource limits',
+        details: error.message,
+      });
     }
-  );
+  });
 
   return router;
 }

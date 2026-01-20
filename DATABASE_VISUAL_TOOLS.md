@@ -1,10 +1,14 @@
 # Database Visual Tools Documentation
 
-This document describes the visual database management tools implemented in the Algo Cloud IDE platform.
+This document describes the visual database management tools implemented in the
+Algo Cloud IDE platform.
 
 ## Overview
 
-The database visual tools provide a comprehensive, no-code interface for managing databases, building queries, browsing data, managing migrations, and automating backups. These tools integrate seamlessly with the existing backend infrastructure that supports 7 database types:
+The database visual tools provide a comprehensive, no-code interface for
+managing databases, building queries, browsing data, managing migrations, and
+automating backups. These tools integrate seamlessly with the existing backend
+infrastructure that supports 7 database types:
 
 - **Relational**: PostgreSQL, MySQL, SQLite
 - **NoSQL**: MongoDB, Redis
@@ -17,6 +21,7 @@ The database visual tools provide a comprehensive, no-code interface for managin
 A drag-and-drop interface for building SQL queries without writing code.
 
 **Features:**
+
 - Table selection with automatic column discovery
 - SELECT column configuration with aggregations (COUNT, SUM, AVG, MIN, MAX)
 - JOIN support (INNER, LEFT, RIGHT, FULL OUTER)
@@ -28,6 +33,7 @@ A drag-and-drop interface for building SQL queries without writing code.
 - One-click query execution
 
 **Usage:**
+
 1. Connect to your database
 2. Select the "Query Builder" tab
 3. Choose a base table
@@ -40,6 +46,7 @@ A drag-and-drop interface for building SQL queries without writing code.
 10. Click "Execute Query" to run
 
 **Security:**
+
 - Implements basic SQL escaping for string values
 - Numeric values are not quoted
 - Backend uses parameterized queries for execution
@@ -47,9 +54,11 @@ A drag-and-drop interface for building SQL queries without writing code.
 
 ### 2. Data Browser
 
-Browse and explore database tables with pagination, sorting, and export capabilities.
+Browse and explore database tables with pagination, sorting, and export
+capabilities.
 
 **Features:**
+
 - Table selection dropdown
 - Paginated data view (50 rows per page)
 - Sortable columns (click header to sort)
@@ -59,6 +68,7 @@ Browse and explore database tables with pagination, sorting, and export capabili
 - Row count display
 
 **Usage:**
+
 1. Connect to your database
 2. Select the "Data Browser" tab
 3. Choose a table from the dropdown
@@ -67,6 +77,7 @@ Browse and explore database tables with pagination, sorting, and export capabili
 6. Click "Export CSV" to download data
 
 **Performance:**
+
 - Efficient pagination with OFFSET/LIMIT
 - Configurable page size (default: 50 rows)
 - Minimal data transfer
@@ -76,6 +87,7 @@ Browse and explore database tables with pagination, sorting, and export capabili
 Version-controlled schema changes with up/down migrations.
 
 **Features:**
+
 - Create new migrations with UP and DOWN SQL
 - View migration history with status tracking
 - Apply individual migrations
@@ -86,6 +98,7 @@ Version-controlled schema changes with up/down migrations.
 - Timestamp tracking
 
 **Usage:**
+
 1. Connect to your database
 2. Select the "Migrations" tab
 3. Click "+ New Migration" to create a migration
@@ -97,6 +110,7 @@ Version-controlled schema changes with up/down migrations.
 9. Use "Rollback" to reverse applied migrations
 
 **Best Practices:**
+
 - Keep migrations small and focused
 - Always test migrations in development first
 - Write complete DOWN migrations for rollback
@@ -108,6 +122,7 @@ Version-controlled schema changes with up/down migrations.
 Automated backup scheduling with retention policies and restore capabilities.
 
 **Features:**
+
 - Manual backup creation
 - Scheduled automated backups (cron-based)
 - Multiple backup formats (SQL, Custom, TAR)
@@ -119,6 +134,7 @@ Automated backup scheduling with retention policies and restore capabilities.
 - Size and metadata display
 
 **Usage - Manual Backup:**
+
 1. Connect to your database
 2. Select the "Backups" tab
 3. Click "+ Create Backup"
@@ -128,25 +144,29 @@ Automated backup scheduling with retention policies and restore capabilities.
 7. Click "Create Backup Now"
 
 **Usage - Scheduled Backups:**
+
 1. Click "Schedule Backup"
-2. Enter cron expression (e.g., "0 2 * * *" for daily at 2 AM)
+2. Enter cron expression (e.g., "0 2 \* \* \*" for daily at 2 AM)
 3. Set retention period in days
 4. Configure backup options
 5. Click "Create Schedule"
 
 **Cron Expression Examples:**
+
 - `0 2 * * *` - Daily at 2:00 AM
 - `0 0 * * 0` - Weekly on Sunday at midnight
 - `0 */6 * * *` - Every 6 hours
 - `0 0 1 * *` - Monthly on the 1st at midnight
 
 **Restore:**
+
 1. Find the backup you want to restore
 2. Click "Restore"
 3. Confirm the action
 4. Wait for restoration to complete
 
-**Warning:** Restoring a backup will overwrite current data. Always back up current data before restoring.
+**Warning:** Restoring a backup will overwrite current data. Always back up
+current data before restoring.
 
 ## Database Connection
 
@@ -185,6 +205,7 @@ The visual tools support connections to:
 ### Connection Management
 
 **Creating a Connection:**
+
 1. Open the Database Panel
 2. Enter connection name
 3. Select database type
@@ -192,11 +213,13 @@ The visual tools support connections to:
 5. Click "Connect"
 
 **Connection Status:**
+
 - Green indicator (●) shows active connection
 - Connection name displayed in status bar
 - Disconnect button available when connected
 
 **Security:**
+
 - Credentials encrypted with AES-256
 - Secure storage in backend
 - Connection pooling for performance
@@ -209,17 +232,20 @@ The visual tools integrate with the backend REST API:
 ### Endpoints Used
 
 **Connection Management:**
+
 - `POST /api/databases/connections` - Create connection
 - `GET /api/databases/connections` - List connections
 - `GET /api/databases/connections/:id` - Get connection details
 - `DELETE /api/databases/connections/:id` - Delete connection
 
 **Query Execution:**
+
 - `POST /api/databases/connections/:id/query` - Execute SQL query
 - `GET /api/databases/connections/:id/tables` - List tables
 - `GET /api/databases/connections/:id/tables/:table/schema` - Get schema
 
 **Migrations:**
+
 - `POST /api/databases/connections/:id/migrations` - Create migration
 - `GET /api/databases/connections/:id/migrations` - List migrations
 - `POST /api/databases/connections/:id/migrations/:id/apply` - Apply migration
@@ -227,13 +253,15 @@ The visual tools integrate with the backend REST API:
 - `POST /api/databases/connections/:id/migrations/apply-all` - Apply all pending
 
 **Backups:**
+
 - `POST /api/databases/connections/:id/backups` - Create backup
 - `GET /api/databases/connections/:id/backups` - List backups
 - `POST /api/databases/connections/:id/backups/:id/restore` - Restore backup
 - `DELETE /api/databases/connections/:id/backups/:id` - Delete backup
 - `POST /api/databases/connections/:id/backups/schedules` - Create schedule
 - `GET /api/databases/connections/:id/backups/schedules` - List schedules
-- `DELETE /api/databases/connections/:id/backups/schedules/:id` - Delete schedule
+- `DELETE /api/databases/connections/:id/backups/schedules/:id` - Delete
+  schedule
 
 ## Architecture
 
@@ -302,31 +330,31 @@ src/components/
 
 ### Connection Issues
 
-**Problem:** Cannot connect to database
-**Solutions:**
+**Problem:** Cannot connect to database **Solutions:**
+
 - Verify credentials are correct
 - Check host and port are accessible
 - Ensure database server is running
 - Check firewall rules
 - Verify network connectivity
 
-**Problem:** Connection timeout
-**Solutions:**
+**Problem:** Connection timeout **Solutions:**
+
 - Increase timeout in backend configuration
 - Check network latency
 - Verify database server load
 
 ### Query Issues
 
-**Problem:** Query execution fails
-**Solutions:**
+**Problem:** Query execution fails **Solutions:**
+
 - Check SQL syntax in generated query
 - Verify table and column names exist
 - Check user permissions on database
 - Review error message in console
 
-**Problem:** Slow query performance
-**Solutions:**
+**Problem:** Slow query performance **Solutions:**
+
 - Add indexes to frequently queried columns
 - Use LIMIT to reduce result set size
 - Optimize WHERE conditions
@@ -334,30 +362,30 @@ src/components/
 
 ### Migration Issues
 
-**Problem:** Migration fails to apply
-**Solutions:**
+**Problem:** Migration fails to apply **Solutions:**
+
 - Check SQL syntax in migration
 - Verify dependencies are met
 - Review database logs
 - Test migration in development first
 
-**Problem:** Cannot rollback migration
-**Solutions:**
+**Problem:** Cannot rollback migration **Solutions:**
+
 - Check DOWN migration SQL is correct
 - Verify migration was applied
 - Check for dependent migrations
 
 ### Backup Issues
 
-**Problem:** Backup creation fails
-**Solutions:**
+**Problem:** Backup creation fails **Solutions:**
+
 - Check disk space on server
 - Verify write permissions
 - Check database size
 - Review backup format compatibility
 
-**Problem:** Restore fails
-**Solutions:**
+**Problem:** Restore fails **Solutions:**
+
 - Verify backup file integrity
 - Check backup format matches database
 - Ensure sufficient disk space

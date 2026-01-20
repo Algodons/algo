@@ -6,7 +6,8 @@ export const GITHUB_CONFIG = {
   authorizeUrl: 'https://github.com/login/oauth/authorize',
   tokenUrl: 'https://github.com/login/oauth/access_token',
   scopes: ['repo', 'read:user', 'write:repo_hook'],
-  callbackUrl: process.env.GITHUB_CALLBACK_URL || 'http://localhost:4000/api/integrations/github/callback',
+  callbackUrl:
+    process.env.GITHUB_CALLBACK_URL || 'http://localhost:4000/api/integrations/github/callback',
 };
 
 export const GITHUB_EVENTS = {

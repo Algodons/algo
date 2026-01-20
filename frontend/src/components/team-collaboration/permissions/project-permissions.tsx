@@ -107,9 +107,7 @@ export function ProjectPermissionsManager({ projectId }: ProjectPermissionsManag
         <Card className="p-8 text-center">
           <Shield className="w-12 h-12 mx-auto mb-4 text-gray-400" />
           <h3 className="text-lg font-medium mb-2">No permissions set</h3>
-          <p className="text-gray-500 mb-4">
-            Add permissions to control access to this project
-          </p>
+          <p className="text-gray-500 mb-4">Add permissions to control access to this project</p>
           <Button>
             <Plus className="w-4 h-4 mr-2" />
             Add First Permission
@@ -152,11 +150,7 @@ export function ProjectPermissionsManager({ projectId }: ProjectPermissionsManag
                         type="checkbox"
                         checked={perm.permissions[permType]}
                         onChange={() =>
-                          handleTogglePermission(
-                            perm.id,
-                            permType,
-                            perm.permissions[permType]
-                          )
+                          handleTogglePermission(perm.id, permType, perm.permissions[permType])
                         }
                         className="w-4 h-4"
                       />

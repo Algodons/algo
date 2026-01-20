@@ -389,7 +389,7 @@ export class CreditsService {
       // Generate invoice for auto-reload
       const invoiceNumber = `AR-${Date.now()}-${userId}`;
       const dueDate = new Date();
-      
+
       const invoiceResult = await client.query(
         `INSERT INTO invoices 
           (user_id, invoice_number, amount, currency, status, issued_at, due_at)

@@ -1,17 +1,17 @@
-'use client'
+'use client';
 
-import { motion, AnimatePresence } from 'framer-motion'
-import { X } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion';
+import { X } from 'lucide-react';
 
 interface Shortcut {
-  keys: string[]
-  description: string
-  category: string
+  keys: string[];
+  description: string;
+  category: string;
 }
 
 interface KeyboardShortcutsDialogProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 const shortcuts: Shortcut[] = [
@@ -21,36 +21,36 @@ const shortcuts: Shortcut[] = [
   { keys: ['Ctrl', '/'], description: 'Show keyboard shortcuts', category: 'General' },
   { keys: ['Ctrl', 'P'], description: 'Quick project switcher', category: 'General' },
   { keys: ['Esc'], description: 'Close dialogs', category: 'General' },
-  
+
   // File Operations
   { keys: ['Ctrl', 'N'], description: 'New file', category: 'File' },
   { keys: ['Ctrl', 'Shift', 'N'], description: 'New folder', category: 'File' },
   { keys: ['Ctrl', 'S'], description: 'Save file', category: 'File' },
   { keys: ['Ctrl', 'W'], description: 'Close file', category: 'File' },
-  
+
   // View
   { keys: ['Ctrl', 'Shift', 'E'], description: 'Toggle Explorer', category: 'View' },
   { keys: ['Ctrl', 'Shift', 'F'], description: 'Toggle Search', category: 'View' },
   { keys: ['Ctrl', 'Shift', 'G'], description: 'Toggle Source Control', category: 'View' },
   { keys: ['Ctrl', 'Shift', 'D'], description: 'Toggle Database', category: 'View' },
   { keys: ['Ctrl', '`'], description: 'Toggle Terminal', category: 'View' },
-  
+
   // Editor
   { keys: ['Ctrl', 'F'], description: 'Find in file', category: 'Editor' },
   { keys: ['Ctrl', 'H'], description: 'Replace in file', category: 'Editor' },
   { keys: ['Ctrl', 'D'], description: 'Select next occurrence', category: 'Editor' },
   { keys: ['Ctrl', '/'], description: 'Toggle comment', category: 'Editor' },
-  
+
   // Navigation
   { keys: ['Ctrl', 'Tab'], description: 'Next editor', category: 'Navigation' },
   { keys: ['Ctrl', 'Shift', 'Tab'], description: 'Previous editor', category: 'Navigation' },
   { keys: ['Ctrl', 'G'], description: 'Go to line', category: 'Navigation' },
-]
+];
 
 export function KeyboardShortcutsDialog({ isOpen, onClose }: KeyboardShortcutsDialogProps) {
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
-  const categories = Array.from(new Set(shortcuts.map((s) => s.category)))
+  const categories = Array.from(new Set(shortcuts.map((s) => s.category)));
 
   return (
     <AnimatePresence>
@@ -71,10 +71,7 @@ export function KeyboardShortcutsDialog({ isOpen, onClose }: KeyboardShortcutsDi
         >
           <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
             <h2 className="text-xl font-semibold">Keyboard Shortcuts</h2>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-white transition-colors"
-            >
+            <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -82,9 +79,7 @@ export function KeyboardShortcutsDialog({ isOpen, onClose }: KeyboardShortcutsDi
           <div className="overflow-y-auto p-6 max-h-[calc(80vh-80px)]">
             {categories.map((category) => (
               <div key={category} className="mb-6 last:mb-0">
-                <h3 className="text-sm font-semibold text-gray-400 uppercase mb-3">
-                  {category}
-                </h3>
+                <h3 className="text-sm font-semibold text-gray-400 uppercase mb-3">{category}</h3>
                 <div className="space-y-2">
                   {shortcuts
                     .filter((s) => s.category === category)
@@ -115,5 +110,5 @@ export function KeyboardShortcutsDialog({ isOpen, onClose }: KeyboardShortcutsDi
         </motion.div>
       </motion.div>
     </AnimatePresence>
-  )
+  );
 }
