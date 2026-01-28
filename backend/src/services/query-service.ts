@@ -27,11 +27,7 @@ export class QueryService {
   /**
    * Execute a query on a specific connection
    */
-  async executeQuery(
-    connectionId: string,
-    query: string,
-    params?: any[]
-  ): Promise<QueryResult> {
+  async executeQuery(connectionId: string, query: string, params?: any[]): Promise<QueryResult> {
     const adapter = this.connectionService.getAdapter(connectionId);
 
     if (!adapter) {

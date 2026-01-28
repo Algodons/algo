@@ -1,6 +1,7 @@
 # GitHub Branch Protection Setup Guide
 
-This document provides instructions for configuring branch protection rules to ensure code quality and security in the Algodons/algo repository.
+This document provides instructions for configuring branch protection rules to
+ensure code quality and security in the Algodons/algo repository.
 
 ## Prerequisites
 
@@ -18,6 +19,7 @@ This document provides instructions for configuring branch protection rules to e
 ### Step 2: Configure Protection for `main` Branch
 
 #### Branch Name Pattern
+
 ```
 main
 ```
@@ -25,6 +27,7 @@ main
 #### Required Settings
 
 **1. Require a pull request before merging**
+
 - ✅ Enable this option
 - **Required approvals:** 1 (recommended minimum)
 - ✅ Dismiss stale pull request approvals when new commits are pushed
@@ -32,6 +35,7 @@ main
 - ⚠️ Optional: Require approval of the most recent reviewable push
 
 **2. Require status checks to pass before merging**
+
 - ✅ Enable this option
 - ✅ Require branches to be up to date before merging
 - **Required status checks:**
@@ -46,31 +50,38 @@ main
   - `Dependency Review` - Dependency vulnerability scan
 
 **3. Require conversation resolution before merging**
+
 - ✅ Enable this option (recommended)
 - Ensures all review comments are addressed
 
 **4. Require signed commits**
+
 - ⚠️ Optional but recommended for security
 - Helps verify commit authenticity
 
 **5. Require linear history**
+
 - ⚠️ Optional (prevents merge commits)
 - Use if you prefer rebase/squash workflow
 
 **6. Include administrators**
+
 - ✅ Enable this option (highly recommended)
 - Applies rules to repository administrators as well
 
 **7. Restrict who can push to matching branches**
+
 - ⚠️ Optional
 - Configure if you want to limit who can push directly
 - Even with this disabled, PR requirements still apply
 
 **8. Allow force pushes**
+
 - ❌ Disable this option (recommended)
 - Prevents history rewriting
 
 **9. Allow deletions**
+
 - ❌ Disable this option (recommended)
 - Prevents accidental branch deletion
 
@@ -79,18 +90,21 @@ main
 Repeat Step 2 with the following adjustments:
 
 #### Branch Name Pattern
+
 ```
 develop
 ```
 
 #### Recommended Differences
+
 - **Required approvals:** Can be reduced to 1 or even 0 for faster iteration
 - **Require branches to be up to date:** Can be disabled for faster merges
 - More relaxed settings appropriate for development branch
 
 ## Rulesets (New GitHub Feature)
 
-As an alternative to traditional branch protection rules, GitHub now offers Rulesets which provide more flexibility:
+As an alternative to traditional branch protection rules, GitHub now offers
+Rulesets which provide more flexibility:
 
 ### Creating a Ruleset
 
@@ -99,16 +113,20 @@ As an alternative to traditional branch protection rules, GitHub now offers Rule
 3. Configure the following:
 
 #### Basic Settings
+
 - **Ruleset Name:** "Production Branch Protection"
 - **Enforcement status:** Active
 - **Bypass list:** (empty or specific admin users)
 
 #### Target Branches
+
 - **Add target:** `Include by pattern`
 - **Pattern:** `main`
 
 #### Rules
+
 Select the following rules:
+
 - ✅ Restrict deletions
 - ✅ Require a pull request before merging
   - Required approvals: 1
@@ -119,18 +137,16 @@ Select the following rules:
 
 ## Auto-Approval Configuration
 
-The repository includes an auto-approval workflow (`.github/workflows/auto-approve.yml`) that can automatically approve PRs from trusted contributors.
+The repository includes an auto-approval workflow
+(`.github/workflows/auto-approve.yml`) that can automatically approve PRs from
+trusted contributors.
 
 ### Configuring Trusted Contributors
 
 Edit `.github/workflows/auto-approve.yml` and update the `TRUSTED_USERS` array:
 
 ```yaml
-TRUSTED_USERS=(
-  "owner-username"
-  "maintainer-username"
-  "trusted-contributor"
-)
+TRUSTED_USERS=( "owner-username" "maintainer-username" "trusted-contributor" )
 ```
 
 ### Required Permissions
@@ -138,7 +154,8 @@ TRUSTED_USERS=(
 For auto-approval to work, you need to:
 
 1. Create a GitHub App or use a Personal Access Token (PAT)
-2. Add the token as a repository secret named `GITHUB_TOKEN` (automatically available) or create a custom secret
+2. Add the token as a repository secret named `GITHUB_TOKEN` (automatically
+   available) or create a custom secret
 3. Grant the following permissions:
    - `pull-requests: write`
    - `contents: read`
@@ -147,12 +164,14 @@ For auto-approval to work, you need to:
 
 ⚠️ **Important Security Notes:**
 
-1. **Auto-approval is NOT a replacement for human review** - it's a convenience feature for trusted contributors
+1. **Auto-approval is NOT a replacement for human review** - it's a convenience
+   feature for trusted contributors
 2. The workflow still requires:
    - All CI checks to pass
    - No security vulnerabilities detected
    - Clean CodeQL scan
-3. Even with auto-approval, we recommend having at least one human reviewer verify changes before merging
+3. Even with auto-approval, we recommend having at least one human reviewer
+   verify changes before merging
 4. Consider using auto-approval only for:
    - Minor documentation updates
    - Dependency updates (after automated testing)
@@ -160,15 +179,19 @@ For auto-approval to work, you need to:
 
 ## Required Repository Secrets
 
-Configure the following secrets in **Settings** → **Secrets and variables** → **Actions**:
+Configure the following secrets in **Settings** → **Secrets and variables** →
+**Actions**:
 
 ### Optional Secrets
+
 - `CODECOV_TOKEN` - For code coverage reporting (if using Codecov)
 - Custom GitHub token if using auto-approval with enhanced permissions
 
 ## Notifications Setup
 
-The repository includes a notification workflow (`.github/workflows/pr-notifications.yml`) that:
+The repository includes a notification workflow
+(`.github/workflows/pr-notifications.yml`) that:
+
 - Notifies reviewers when PRs are opened
 - Updates on review status changes
 - Auto-labels PRs based on changed files
@@ -192,16 +215,19 @@ After setting up branch protection:
 ## Troubleshooting
 
 ### Status checks not appearing
+
 - Ensure workflows have run at least once
 - Check that workflow names match exactly
 - Verify workflows are on the default branch
 
 ### Cannot merge even with passing checks
+
 - Verify all required status checks are selected
 - Check that branch is up to date
 - Ensure all conversations are resolved
 
 ### Auto-approval not working
+
 - Check workflow logs in Actions tab
 - Verify user is in trusted list
 - Ensure all CI checks passed
@@ -217,6 +243,7 @@ After setting up branch protection:
 ## Maintenance
 
 Review and update these settings:
+
 - **Quarterly:** Review branch protection rules
 - **After major changes:** Update required status checks
 - **When adding team members:** Update CODEOWNERS and trusted contributors list

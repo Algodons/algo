@@ -23,13 +23,13 @@ import { AlgoSDK } from '@algo/sdk';
 
 const algo = new AlgoSDK({
   apiKey: 'your-api-key',
-  baseURL: 'https://api.algo.dev/v1'
+  baseURL: 'https://api.algo.dev/v1',
 });
 
 // Create a project
 const project = await algo.projects.create({
   name: 'My Project',
-  description: 'A cool project'
+  description: 'A cool project',
 });
 
 // Deploy
@@ -50,50 +50,50 @@ console.log('Deployment URL:', deployment.deployment_url);
 
 ```typescript
 // Users
-algo.users.create(data)
-algo.users.get(id)
-algo.users.update(id, data)
-algo.users.delete(id)
-algo.users.list(params)
+algo.users.create(data);
+algo.users.get(id);
+algo.users.update(id, data);
+algo.users.delete(id);
+algo.users.list(params);
 
 // Projects
-algo.projects.create(data)
-algo.projects.get(id)
-algo.projects.list(params)
-algo.projects.deploy(id)
-algo.projects.clone(id, name)
-algo.projects.delete(id)
+algo.projects.create(data);
+algo.projects.get(id);
+algo.projects.list(params);
+algo.projects.deploy(id);
+algo.projects.clone(id, name);
+algo.projects.delete(id);
 
 // Files
-algo.files.read(path, projectId)
-algo.files.create(path, projectId, content, directory)
-algo.files.update(path, projectId, content)
-algo.files.delete(path, projectId)
+algo.files.read(path, projectId);
+algo.files.create(path, projectId, content, directory);
+algo.files.update(path, projectId, content);
+algo.files.delete(path, projectId);
 
 // Deployments
-algo.deployments.get(id)
-algo.deployments.rollback(id)
+algo.deployments.get(id);
+algo.deployments.rollback(id);
 
 // Webhooks
-algo.webhooks.create(data)
-algo.webhooks.get(id)
-algo.webhooks.list(params)
-algo.webhooks.update(id, data)
-algo.webhooks.delete(id)
-algo.webhooks.deliveries(id, params)
+algo.webhooks.create(data);
+algo.webhooks.get(id);
+algo.webhooks.list(params);
+algo.webhooks.update(id, data);
+algo.webhooks.delete(id);
+algo.webhooks.deliveries(id, params);
 
 // Resources
-algo.resources.usage(params)
-algo.resources.limits()
+algo.resources.usage(params);
+algo.resources.limits();
 
 // Billing
-algo.billing.get(params)
+algo.billing.get(params);
 
 // AI
-algo.ai.agents.list(params)
-algo.ai.agents.invoke(agentId, input, context, parameters)
-algo.ai.models.list(params)
-algo.ai.models.predict(modelId, input, parameters)
+algo.ai.agents.list(params);
+algo.ai.agents.invoke(agentId, input, context, parameters);
+algo.ai.models.list(params);
+algo.ai.models.predict(modelId, input, parameters);
 ```
 
 ## Python SDK
@@ -261,7 +261,7 @@ const algo = new AlgoSDK({ apiKey: 'key' });
 // 1. Create project
 const project = await algo.projects.create({
   name: 'My App',
-  template: 'react'
+  template: 'react',
 });
 
 // 2. Add files
@@ -272,7 +272,7 @@ await algo.files.create('src/index.js', project.id, 'console.log("Hello");');
 await algo.webhooks.create({
   url: 'https://my-domain.com/webhook',
   events: ['deployment.completed'],
-  project_id: project.id
+  project_id: project.id,
 });
 
 // 4. Deploy
@@ -281,7 +281,7 @@ const deployment = await algo.projects.deploy(project.id);
 // 5. Monitor
 let status = 'pending';
 while (status === 'pending' || status === 'building') {
-  await new Promise(r => setTimeout(r, 5000));
+  await new Promise((r) => setTimeout(r, 5000));
   const dep = await algo.deployments.get(deployment.id);
   status = dep.status;
   console.log('Status:', status);
@@ -323,7 +323,8 @@ while status in ['pending', 'building']:
 
 ## Contributing
 
-We welcome contributions to the SDKs! Please see the [CONTRIBUTING.md](../CONTRIBUTING.md) file for guidelines.
+We welcome contributions to the SDKs! Please see the
+[CONTRIBUTING.md](../CONTRIBUTING.md) file for guidelines.
 
 ## License
 

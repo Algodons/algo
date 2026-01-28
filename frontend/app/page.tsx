@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
+import { useState } from 'react';
 import {
   CommandPalette,
   CollapsibleSidebar,
@@ -11,19 +11,19 @@ import {
   EmptyState,
   ContextMenu,
   Tooltip,
-} from '@/components/modern-ui'
-import type { ContextMenuItem } from '@/components/modern-ui/context-menu'
-import { useTheme } from '@/lib/hooks/use-theme'
-import { useKeyboardShortcuts } from '@/lib/hooks/use-keyboard-shortcuts'
-import { FileText, Settings, Plus, Copy, Trash2, Edit } from 'lucide-react'
-import toast from 'react-hot-toast'
-import { motion } from 'framer-motion'
+} from '@/components/modern-ui';
+import type { ContextMenuItem } from '@/components/modern-ui/context-menu';
+import { useTheme } from '@/lib/hooks/use-theme';
+import { useKeyboardShortcuts } from '@/lib/hooks/use-keyboard-shortcuts';
+import { FileText, Settings, Plus, Copy, Trash2, Edit } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { motion } from 'framer-motion';
 
 export default function Home() {
-  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false)
-  const [isShortcutsDialogOpen, setIsShortcutsDialogOpen] = useState(false)
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
-  const { setTheme } = useTheme()
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isShortcutsDialogOpen, setIsShortcutsDialogOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const { setTheme } = useTheme();
 
   // Keyboard shortcuts
   useKeyboardShortcuts([
@@ -36,8 +36,8 @@ export default function Home() {
       key: 'b',
       ctrlKey: true,
       handler: () => {
-        setIsSidebarCollapsed(!isSidebarCollapsed)
-        toast.success(isSidebarCollapsed ? 'Sidebar expanded' : 'Sidebar collapsed')
+        setIsSidebarCollapsed(!isSidebarCollapsed);
+        toast.success(isSidebarCollapsed ? 'Sidebar expanded' : 'Sidebar collapsed');
       },
     },
     {
@@ -45,13 +45,13 @@ export default function Home() {
       ctrlKey: true,
       handler: () => setIsShortcutsDialogOpen(true),
     },
-  ])
+  ]);
 
   const breadcrumbItems = [
     { label: 'Projects', href: '/projects' },
     { label: 'My Workspace', href: '/workspace' },
     { label: 'index.tsx' },
-  ]
+  ];
 
   const contextMenuItems: ContextMenuItem[] = [
     {
@@ -80,7 +80,7 @@ export default function Home() {
       danger: true,
       shortcut: 'Del',
     },
-  ]
+  ];
 
   return (
     <div className="flex h-screen bg-gray-950 text-white">
@@ -96,10 +96,10 @@ export default function Home() {
           className="glass-panel h-16 flex items-center justify-between px-6 border-b border-white/10"
         >
           <Breadcrumb items={breadcrumbItems} />
-          
+
           <div className="flex items-center gap-4">
             <GlobalSearch onResultClick={(result) => toast.success(`Opening ${result.title}`)} />
-            
+
             <Tooltip content="Settings (Ctrl+,)">
               <button
                 className="p-2 hover:bg-white/5 rounded-lg transition-colors"
@@ -108,7 +108,7 @@ export default function Home() {
                 <Settings className="h-5 w-5" />
               </button>
             </Tooltip>
-            
+
             <ThemeToggle />
           </div>
         </motion.header>
@@ -121,15 +121,21 @@ export default function Home() {
             transition={{ delay: 0.1 }}
           >
             <h1 className="text-3xl font-bold mb-2">Welcome to Algo IDE</h1>
-            <p className="text-gray-400 mb-8">
-              A modern cloud-based IDE with a beautiful UI/UX
-            </p>
+            <p className="text-gray-400 mb-8">A modern cloud-based IDE with a beautiful UI/UX</p>
 
             {/* Demo Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {[
-                { title: 'Command Palette', shortcut: 'Ctrl+K', desc: 'Quick actions and navigation' },
-                { title: 'Global Search', shortcut: 'Ctrl+P', desc: 'Search files, folders, and docs' },
+                {
+                  title: 'Command Palette',
+                  shortcut: 'Ctrl+K',
+                  desc: 'Quick actions and navigation',
+                },
+                {
+                  title: 'Global Search',
+                  shortcut: 'Ctrl+P',
+                  desc: 'Search files, folders, and docs',
+                },
                 { title: 'Keyboard Shortcuts', shortcut: 'Ctrl+/', desc: 'View all shortcuts' },
               ].map((item, index) => (
                 <ContextMenu key={index} items={contextMenuItems}>
@@ -209,5 +215,5 @@ export default function Home() {
         onClose={() => setIsShortcutsDialogOpen(false)}
       />
     </div>
-  )
+  );
 }

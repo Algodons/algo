@@ -1,5 +1,10 @@
 import crypto from 'crypto';
-import { DatabaseConnection, DatabaseType, DatabaseCredentials, ConnectionStatus } from '../types/database';
+import {
+  DatabaseConnection,
+  DatabaseType,
+  DatabaseCredentials,
+  ConnectionStatus,
+} from '../types/database';
 import { IDatabaseAdapter } from '../adapters/base-adapter';
 import { AdapterFactory } from '../adapters';
 

@@ -185,10 +185,7 @@ export class ImportExportService {
   /**
    * Export data to CSV
    */
-  async exportCSV(
-    connectionId: string,
-    options: ExportOptions
-  ): Promise<string> {
+  async exportCSV(connectionId: string, options: ExportOptions): Promise<string> {
     const adapter = this.connectionService.getAdapter(connectionId);
 
     if (!adapter) {
@@ -213,7 +210,7 @@ export class ImportExportService {
     if (options.compress) {
       const gzip = zlib.createGzip();
       const writeStream = fs.createWriteStream(filePath + '.gz');
-      
+
       await new Promise<void>((resolve, reject) => {
         Readable.from(csvData)
           .pipe(gzip)
@@ -232,10 +229,7 @@ export class ImportExportService {
   /**
    * Export data to JSON
    */
-  async exportJSON(
-    connectionId: string,
-    options: ExportOptions
-  ): Promise<string> {
+  async exportJSON(connectionId: string, options: ExportOptions): Promise<string> {
     const adapter = this.connectionService.getAdapter(connectionId);
 
     if (!adapter) {
@@ -252,7 +246,7 @@ export class ImportExportService {
     if (options.compress) {
       const gzip = zlib.createGzip();
       const writeStream = fs.createWriteStream(filePath + '.gz');
-      
+
       await new Promise<void>((resolve, reject) => {
         Readable.from(jsonData)
           .pipe(gzip)
@@ -271,10 +265,7 @@ export class ImportExportService {
   /**
    * Export data as SQL dump
    */
-  async exportSQL(
-    connectionId: string,
-    options: ExportOptions
-  ): Promise<string> {
+  async exportSQL(connectionId: string, options: ExportOptions): Promise<string> {
     const adapter = this.connectionService.getAdapter(connectionId);
 
     if (!adapter) {
@@ -402,11 +393,7 @@ export class ImportExportService {
     const gzip = zlib.createGzip();
 
     return new Promise((resolve, reject) => {
-      readStream
-        .pipe(gzip)
-        .pipe(writeStream)
-        .on('finish', resolve)
-        .on('error', reject);
+      readStream.pipe(gzip).pipe(writeStream).on('finish', resolve).on('error', reject);
     });
   }
 }

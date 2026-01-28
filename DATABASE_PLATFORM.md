@@ -1,19 +1,24 @@
 # Database Management Platform
 
-A comprehensive database management and tooling platform that supports multiple database types with full lifecycle management capabilities.
+A comprehensive database management and tooling platform that supports multiple
+database types with full lifecycle management capabilities.
 
 ## Supported Databases
 
 ### Relational Databases
-- **PostgreSQL** - Full support with connection pooling, schema introspection, and EXPLAIN/ANALYZE
+
+- **PostgreSQL** - Full support with connection pooling, schema introspection,
+  and EXPLAIN/ANALYZE
 - **MySQL** - Complete CRUD operations with schema management
 - **SQLite** - Lightweight embedded database with backup/restore capabilities
 
 ### NoSQL Databases
+
 - **MongoDB** - Document database with aggregation pipeline support
 - **Redis** - Key-value store for caching and real-time applications
 
 ### Vector Databases (AI/ML)
+
 - **Pinecone** - Vector database for semantic search and embeddings
 - **Weaviate** - Vector search engine with GraphQL API
 
@@ -22,6 +27,7 @@ A comprehensive database management and tooling platform that supports multiple 
 ### 1. Database Connection & Management
 
 **Unified Connection Manager**
+
 - Single interface for all database types
 - Connection pooling with configurable limits
 - Secure credential storage with AES-256 encryption
@@ -29,6 +35,7 @@ A comprehensive database management and tooling platform that supports multiple 
 - Multi-tenant connection isolation
 
 **API Endpoints:**
+
 ```
 POST   /api/databases/connections              - Create a new connection
 GET    /api/databases/connections              - List all connections
@@ -41,6 +48,7 @@ GET    /api/databases/connections/stats/overview - Get statistics
 ```
 
 **Example:**
+
 ```bash
 # Create a PostgreSQL connection
 curl -X POST http://localhost:4000/api/databases/connections \
@@ -61,6 +69,7 @@ curl -X POST http://localhost:4000/api/databases/connections \
 ### 2. Query Execution & History
 
 **Query Service Features:**
+
 - Execute SQL queries with parameter binding
 - Query history tracking (last 100 queries per connection)
 - Transaction support (BEGIN, COMMIT, ROLLBACK)
@@ -68,6 +77,7 @@ curl -X POST http://localhost:4000/api/databases/connections \
 - Error handling and logging
 
 **API Endpoints:**
+
 ```
 POST   /api/databases/connections/:id/query                 - Execute query
 GET    /api/databases/connections/:id/query/history         - Get query history
@@ -79,6 +89,7 @@ POST   /api/databases/connections/:id/transaction/rollback  - Rollback transacti
 ```
 
 **Example:**
+
 ```bash
 # Execute a query
 curl -X POST http://localhost:4000/api/databases/connections/{id}/query \
@@ -92,6 +103,7 @@ curl -X POST http://localhost:4000/api/databases/connections/{id}/query \
 ### 3. Schema Management
 
 **Schema Service Features:**
+
 - Complete schema introspection
 - Create, modify, and drop tables
 - Column modifications (add, modify, drop)
@@ -101,6 +113,7 @@ curl -X POST http://localhost:4000/api/databases/connections/{id}/query \
 - Multi-database schema export
 
 **API Endpoints:**
+
 ```
 GET    /api/databases/connections/:id/schema                     - Get full schema
 GET    /api/databases/connections/:id/schema/:table              - Get table schema
@@ -115,6 +128,7 @@ POST   /api/databases/schema/compare                             - Compare schem
 ```
 
 **Example:**
+
 ```bash
 # Create a new table
 curl -X POST http://localhost:4000/api/databases/connections/{id}/schema/tables \
@@ -133,6 +147,7 @@ curl -X POST http://localhost:4000/api/databases/connections/{id}/schema/tables 
 ### 4. Migration Manager
 
 **Migration Service Features:**
+
 - Version-controlled schema changes
 - Up/down migration support
 - Dependency tracking between migrations
@@ -142,6 +157,7 @@ curl -X POST http://localhost:4000/api/databases/connections/{id}/schema/tables 
 - Locking mechanism to prevent concurrent runs
 
 **API Endpoints:**
+
 ```
 POST   /api/databases/connections/:id/migrations/init              - Initialize system
 POST   /api/databases/connections/:id/migrations                   - Create migration
@@ -156,6 +172,7 @@ GET    /api/databases/connections/:id/migrations/:migrationId/dry-run - Dry run
 ```
 
 **Example:**
+
 ```bash
 # Create a migration
 curl -X POST http://localhost:4000/api/databases/connections/{id}/migrations \
@@ -170,6 +187,7 @@ curl -X POST http://localhost:4000/api/databases/connections/{id}/migrations \
 ### 5. Import/Export Tools
 
 **Import Features:**
+
 - CSV import with column mapping
 - JSON import (single records or arrays)
 - SQL dump import
@@ -180,6 +198,7 @@ curl -X POST http://localhost:4000/api/databases/connections/{id}/migrations \
 - Duplicate handling strategies
 
 **Export Features:**
+
 - CSV export with custom delimiters
 - JSON export (formatted or compact)
 - SQL dump generation (schema + data)
@@ -188,6 +207,7 @@ curl -X POST http://localhost:4000/api/databases/connections/{id}/migrations \
 - Schema-only or data-only exports
 
 **API Endpoints:**
+
 ```
 POST /api/databases/connections/:id/import/csv     - Import CSV file
 POST /api/databases/connections/:id/import/json    - Import JSON file
@@ -197,6 +217,7 @@ POST /api/databases/connections/:id/export/sql     - Export to SQL dump
 ```
 
 **Example:**
+
 ```bash
 # Export data to CSV
 curl -X POST http://localhost:4000/api/databases/connections/{id}/export/csv \
@@ -212,6 +233,7 @@ curl -X POST http://localhost:4000/api/databases/connections/{id}/export/csv \
 ### 6. Backup Automation
 
 **Backup Service Features:**
+
 - Manual on-demand backups
 - Scheduled automated backups (cron-based)
 - Incremental and full backup strategies
@@ -222,6 +244,7 @@ curl -X POST http://localhost:4000/api/databases/connections/{id}/export/csv \
 - Point-in-time recovery (PITR)
 
 **API Endpoints:**
+
 ```
 POST   /api/databases/connections/:id/backups                       - Create backup
 GET    /api/databases/connections/:id/backups                       - List backups
@@ -238,6 +261,7 @@ POST   /api/databases/connections/:id/backups/pitr                  - Point-in-t
 ```
 
 **Example:**
+
 ```bash
 # Create a backup
 curl -X POST http://localhost:4000/api/databases/connections/{id}/backups \
@@ -265,6 +289,7 @@ curl -X POST http://localhost:4000/api/databases/connections/{id}/backups/schedu
 ### 7. Performance Metrics
 
 **Query Performance Features:**
+
 - EXPLAIN/ANALYZE query plan visualization
 - Execution time tracking
 - Rows scanned vs returned analysis
@@ -272,6 +297,7 @@ curl -X POST http://localhost:4000/api/databases/connections/{id}/backups/schedu
 - Query plan tree inspection
 
 **Example:**
+
 ```bash
 # Get query metrics
 curl -X POST http://localhost:4000/api/databases/connections/{id}/query/metrics \
@@ -316,7 +342,8 @@ interface IDatabaseAdapter {
 ### Security Features
 
 - **Credential Encryption** - AES-256 encryption for stored credentials
-- **Connection Pooling** - Configurable pool limits to prevent resource exhaustion
+- **Connection Pooling** - Configurable pool limits to prevent resource
+  exhaustion
 - **Input Validation** - SQL injection prevention and parameter binding
 - **Health Monitoring** - Automatic connection health checks
 - **Transaction Safety** - ACID compliance for supported databases
@@ -429,7 +456,8 @@ npm start
 
 ## Contributing
 
-Contributions are welcome! Please read our contributing guidelines before submitting pull requests.
+Contributions are welcome! Please read our contributing guidelines before
+submitting pull requests.
 
 ## License
 
@@ -438,5 +466,6 @@ MIT
 ## Support
 
 For issues and questions:
+
 - GitHub Issues: https://github.com/Algodons/algo/issues
 - Documentation: See `/docs` directory

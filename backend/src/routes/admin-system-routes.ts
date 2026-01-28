@@ -1,6 +1,11 @@
 import { Router, Request, Response } from 'express';
 import { Pool } from 'pg';
-import { requireAdmin, requireSuperAdmin, require2FA, logAdminAction } from '../middleware/admin-auth';
+import {
+  requireAdmin,
+  requireSuperAdmin,
+  require2FA,
+  logAdminAction,
+} from '../middleware/admin-auth';
 
 export function createAdminSystemRoutes(pool: Pool) {
   const router = Router();
@@ -25,7 +30,7 @@ export function createAdminSystemRoutes(pool: Pool) {
         '24h': '24 hours',
         '7d': '7 days',
       };
-      const safePeriod = validPeriods.includes(period as string) ? period as string : '1h';
+      const safePeriod = validPeriods.includes(period as string) ? (period as string) : '1h';
       const intervalPeriod = periodMap[safePeriod];
 
       const result = await pool.query(
@@ -111,7 +116,7 @@ export function createAdminSystemRoutes(pool: Pool) {
         '24h': '24 hours',
         '7d': '7 days',
       };
-      const safePeriod = validPeriods.includes(period as string) ? period as string : '1h';
+      const safePeriod = validPeriods.includes(period as string) ? (period as string) : '1h';
       const intervalPeriod = periodMap[safePeriod];
 
       // Get pod status
@@ -396,9 +401,7 @@ export function createAdminSystemRoutes(pool: Pool) {
    */
   router.get('/feature-flags', async (req: Request, res: Response) => {
     try {
-      const result = await pool.query(
-        'SELECT * FROM feature_flags ORDER BY created_at DESC'
-      );
+      const result = await pool.query('SELECT * FROM feature_flags ORDER BY created_at DESC');
 
       res.json({ featureFlags: result.rows });
     } catch (error) {
@@ -411,112 +414,129 @@ export function createAdminSystemRoutes(pool: Pool) {
    * POST /api/admin/system/feature-flags
    * Create feature flag
    */
-  router.post('/feature-flags', requireSuperAdmin, require2FA(pool), async (req: Request, res: Response) => {
-    try {
-      const { name, description, isEnabled, rolloutPercentage, targetSegments, metadata } = req.body;
+  router.post(
+    '/feature-flags',
+    requireSuperAdmin,
+    require2FA(pool),
+    async (req: Request, res: Response) => {
+      try {
+        const { name, description, isEnabled, rolloutPercentage, targetSegments, metadata } =
+          req.body;
 
-      if (!name) {
-        return res.status(400).json({ error: 'Feature flag name is required' });
-      }
+        if (!name) {
+          return res.status(400).json({ error: 'Feature flag name is required' });
+        }
 
-      const result = await pool.query(
-        `INSERT INTO feature_flags 
+        const result = await pool.query(
+          `INSERT INTO feature_flags 
          (name, description, is_enabled, rollout_percentage, target_segments, metadata, created_by)
          VALUES ($1, $2, $3, $4, $5, $6, $7)
          RETURNING *`,
-        [
-          name,
-          description || null,
-          isEnabled || false,
-          rolloutPercentage || 0,
-          targetSegments ? JSON.stringify(targetSegments) : null,
-          metadata ? JSON.stringify(metadata) : null,
-          req.user!.id,
-        ]
-      );
+          [
+            name,
+            description || null,
+            isEnabled || false,
+            rolloutPercentage || 0,
+            targetSegments ? JSON.stringify(targetSegments) : null,
+            metadata ? JSON.stringify(metadata) : null,
+            req.user!.id,
+          ]
+        );
 
-      res.json({ featureFlag: result.rows[0] });
-    } catch (error) {
-      console.error('Error creating feature flag:', error);
-      res.status(500).json({ error: 'Failed to create feature flag' });
+        res.json({ featureFlag: result.rows[0] });
+      } catch (error) {
+        console.error('Error creating feature flag:', error);
+        res.status(500).json({ error: 'Failed to create feature flag' });
+      }
     }
-  });
+  );
 
   /**
    * PUT /api/admin/system/feature-flags/:id
    * Update feature flag
    */
-  router.put('/feature-flags/:id', requireSuperAdmin, require2FA(pool), async (req: Request, res: Response) => {
-    try {
-      const { id } = req.params;
-      const { isEnabled, rolloutPercentage, targetSegments, changeReason } = req.body;
-
-      // Get current values for history
-      const currentResult = await pool.query('SELECT * FROM feature_flags WHERE id = $1', [id]);
-      if (currentResult.rows.length === 0) {
-        return res.status(404).json({ error: 'Feature flag not found' });
-      }
-
-      const current = currentResult.rows[0];
-
-      const client = await pool.connect();
+  router.put(
+    '/feature-flags/:id',
+    requireSuperAdmin,
+    require2FA(pool),
+    async (req: Request, res: Response) => {
       try {
-        await client.query('BEGIN');
+        const { id } = req.params;
+        const { isEnabled, rolloutPercentage, targetSegments, changeReason } = req.body;
 
-        // Update feature flag
-        const updates: string[] = [];
-        const params: any[] = [];
-        let paramIndex = 1;
-
-        if (isEnabled !== undefined) {
-          updates.push(`is_enabled = $${paramIndex}`);
-          params.push(isEnabled);
-          paramIndex++;
+        // Get current values for history
+        const currentResult = await pool.query('SELECT * FROM feature_flags WHERE id = $1', [id]);
+        if (currentResult.rows.length === 0) {
+          return res.status(404).json({ error: 'Feature flag not found' });
         }
 
-        if (rolloutPercentage !== undefined) {
-          updates.push(`rollout_percentage = $${paramIndex}`);
-          params.push(rolloutPercentage);
-          paramIndex++;
-        }
+        const current = currentResult.rows[0];
 
-        if (targetSegments !== undefined) {
-          updates.push(`target_segments = $${paramIndex}`);
-          params.push(JSON.stringify(targetSegments));
-          paramIndex++;
-        }
+        const client = await pool.connect();
+        try {
+          await client.query('BEGIN');
 
-        if (updates.length === 0) {
-          await client.query('ROLLBACK');
-          return res.status(400).json({ error: 'No fields to update' });
-        }
+          // Update feature flag
+          const updates: string[] = [];
+          const params: any[] = [];
+          let paramIndex = 1;
 
-        params.push(id);
+          if (isEnabled !== undefined) {
+            updates.push(`is_enabled = $${paramIndex}`);
+            params.push(isEnabled);
+            paramIndex++;
+          }
 
-        const query = `UPDATE feature_flags SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`;
-        const result = await client.query(query, params);
+          if (rolloutPercentage !== undefined) {
+            updates.push(`rollout_percentage = $${paramIndex}`);
+            params.push(rolloutPercentage);
+            paramIndex++;
+          }
 
-        // Record history
-        await client.query(
-          `INSERT INTO feature_flag_history (feature_flag_id, changed_by, previous_value, new_value, change_reason)
+          if (targetSegments !== undefined) {
+            updates.push(`target_segments = $${paramIndex}`);
+            params.push(JSON.stringify(targetSegments));
+            paramIndex++;
+          }
+
+          if (updates.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(400).json({ error: 'No fields to update' });
+          }
+
+          params.push(id);
+
+          const query = `UPDATE feature_flags SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`;
+          const result = await client.query(query, params);
+
+          // Record history
+          await client.query(
+            `INSERT INTO feature_flag_history (feature_flag_id, changed_by, previous_value, new_value, change_reason)
            VALUES ($1, $2, $3, $4, $5)`,
-          [id, req.user!.id, JSON.stringify(current), JSON.stringify(result.rows[0]), changeReason || null]
-        );
+            [
+              id,
+              req.user!.id,
+              JSON.stringify(current),
+              JSON.stringify(result.rows[0]),
+              changeReason || null,
+            ]
+          );
 
-        await client.query('COMMIT');
+          await client.query('COMMIT');
 
-        res.json({ featureFlag: result.rows[0] });
+          res.json({ featureFlag: result.rows[0] });
+        } catch (error) {
+          await client.query('ROLLBACK');
+          throw error;
+        } finally {
+          client.release();
+        }
       } catch (error) {
-        await client.query('ROLLBACK');
-        throw error;
-      } finally {
-        client.release();
+        console.error('Error updating feature flag:', error);
+        res.status(500).json({ error: 'Failed to update feature flag' });
       }
-    } catch (error) {
-      console.error('Error updating feature flag:', error);
-      res.status(500).json({ error: 'Failed to update feature flag' });
     }
-  });
+  );
 
   /**
    * GET /api/admin/system/rate-limits
@@ -543,69 +563,86 @@ export function createAdminSystemRoutes(pool: Pool) {
    * POST /api/admin/system/rate-limits
    * Create rate limit
    */
-  router.post('/rate-limits', requireSuperAdmin, require2FA(pool), async (req: Request, res: Response) => {
-    try {
-      const { userId, ipAddress, endpointPattern, limitType, requestsPerMinute, requestsPerHour, requestsPerDay } =
-        req.body;
+  router.post(
+    '/rate-limits',
+    requireSuperAdmin,
+    require2FA(pool),
+    async (req: Request, res: Response) => {
+      try {
+        const {
+          userId,
+          ipAddress,
+          endpointPattern,
+          limitType,
+          requestsPerMinute,
+          requestsPerHour,
+          requestsPerDay,
+        } = req.body;
 
-      if (!limitType) {
-        return res.status(400).json({ error: 'Limit type is required' });
-      }
+        if (!limitType) {
+          return res.status(400).json({ error: 'Limit type is required' });
+        }
 
-      const result = await pool.query(
-        `INSERT INTO rate_limits 
+        const result = await pool.query(
+          `INSERT INTO rate_limits 
          (user_id, ip_address, endpoint_pattern, limit_type, requests_per_minute, requests_per_hour, requests_per_day, created_by)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
          RETURNING *`,
-        [
-          userId || null,
-          ipAddress || null,
-          endpointPattern || null,
-          limitType,
-          requestsPerMinute || null,
-          requestsPerHour || null,
-          requestsPerDay || null,
-          req.user!.id,
-        ]
-      );
+          [
+            userId || null,
+            ipAddress || null,
+            endpointPattern || null,
+            limitType,
+            requestsPerMinute || null,
+            requestsPerHour || null,
+            requestsPerDay || null,
+            req.user!.id,
+          ]
+        );
 
-      res.json({ rateLimit: result.rows[0] });
-    } catch (error) {
-      console.error('Error creating rate limit:', error);
-      res.status(500).json({ error: 'Failed to create rate limit' });
+        res.json({ rateLimit: result.rows[0] });
+      } catch (error) {
+        console.error('Error creating rate limit:', error);
+        res.status(500).json({ error: 'Failed to create rate limit' });
+      }
     }
-  });
+  );
 
   /**
    * POST /api/admin/system/cdn/purge
    * Purge CDN cache
    */
-  router.post('/cdn/purge', requireSuperAdmin, require2FA(pool), async (req: Request, res: Response) => {
-    try {
-      const { operationType, targetPattern, urls } = req.body;
+  router.post(
+    '/cdn/purge',
+    requireSuperAdmin,
+    require2FA(pool),
+    async (req: Request, res: Response) => {
+      try {
+        const { operationType, targetPattern, urls } = req.body;
 
-      if (!operationType) {
-        return res.status(400).json({ error: 'Operation type is required' });
-      }
+        if (!operationType) {
+          return res.status(400).json({ error: 'Operation type is required' });
+        }
 
-      const result = await pool.query(
-        `INSERT INTO cdn_cache_operations (operation_type, target_pattern, urls_purged, initiated_by)
+        const result = await pool.query(
+          `INSERT INTO cdn_cache_operations (operation_type, target_pattern, urls_purged, initiated_by)
          VALUES ($1, $2, $3, $4)
          RETURNING *`,
-        [operationType, targetPattern || null, urls?.length || 0, req.user!.id]
-      );
+          [operationType, targetPattern || null, urls?.length || 0, req.user!.id]
+        );
 
-      // TODO: Integrate with CDN provider (CloudFlare, CloudFront, etc.)
+        // TODO: Integrate with CDN provider (CloudFlare, CloudFront, etc.)
 
-      res.json({
-        operation: result.rows[0],
-        message: 'CDN purge initiated',
-      });
-    } catch (error) {
-      console.error('Error purging CDN cache:', error);
-      res.status(500).json({ error: 'Failed to purge CDN cache' });
+        res.json({
+          operation: result.rows[0],
+          message: 'CDN purge initiated',
+        });
+      } catch (error) {
+        console.error('Error purging CDN cache:', error);
+        res.status(500).json({ error: 'Failed to purge CDN cache' });
+      }
     }
-  });
+  );
 
   return router;
 }

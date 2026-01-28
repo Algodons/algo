@@ -11,7 +11,11 @@
     "start:dev": "NODE_ENV=development node dist/index.js",
     "lint": "eslint src --ext .ts"
   },
-  "keywords": ["cloud-ide", "api", "websocket"],
+  "keywords": [
+    "cloud-ide",
+    "api",
+    "websocket"
+  ],
   "author": "Algo Team",
   "license": "MIT",
   "dependencies": {

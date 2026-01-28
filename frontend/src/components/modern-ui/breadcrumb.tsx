@@ -1,17 +1,17 @@
-'use client'
+'use client';
 
-import { ChevronRight, Home } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { ChevronRight, Home } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface BreadcrumbItem {
-  label: string
-  href?: string
-  icon?: React.ReactNode
+  label: string;
+  href?: string;
+  icon?: React.ReactNode;
 }
 
 interface BreadcrumbProps {
-  items: BreadcrumbItem[]
-  onNavigate?: (href: string) => void
+  items: BreadcrumbItem[];
+  onNavigate?: (href: string) => void;
 }
 
 export function Breadcrumb({ items, onNavigate }: BreadcrumbProps) {
@@ -49,5 +49,5 @@ export function Breadcrumb({ items, onNavigate }: BreadcrumbProps) {
         </div>
       ))}
     </nav>
-  )
+  );
 }

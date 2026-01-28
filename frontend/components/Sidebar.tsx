@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
+import { useState } from 'react';
 
 interface FileItem {
-  name: string
-  type: 'file' | 'folder'
-  children?: FileItem[]
+  name: string;
+  type: 'file' | 'folder';
+  children?: FileItem[];
 }
 
 const Sidebar = () => {
@@ -21,25 +21,23 @@ const Sidebar = () => {
     {
       name: 'public',
       type: 'folder',
-      children: [
-        { name: 'index.html', type: 'file' },
-      ],
+      children: [{ name: 'index.html', type: 'file' }],
     },
     { name: 'package.json', type: 'file' },
     { name: 'README.md', type: 'file' },
-  ])
+  ]);
 
-  const [expanded, setExpanded] = useState<Set<string>>(new Set(['src', 'public']))
+  const [expanded, setExpanded] = useState<Set<string>>(new Set(['src', 'public']));
 
   const toggleFolder = (folderName: string) => {
-    const newExpanded = new Set(expanded)
+    const newExpanded = new Set(expanded);
     if (newExpanded.has(folderName)) {
-      newExpanded.delete(folderName)
+      newExpanded.delete(folderName);
     } else {
-      newExpanded.add(folderName)
+      newExpanded.add(folderName);
     }
-    setExpanded(newExpanded)
-  }
+    setExpanded(newExpanded);
+  };
 
   const renderFileTree = (items: FileItem[], level = 0) => {
     return items.map((item, index) => (
@@ -59,8 +57,8 @@ const Sidebar = () => {
           <div>{renderFileTree(item.children, level + 1)}</div>
         )}
       </div>
-    ))
-  }
+    ));
+  };
 
   return (
     <div className="w-64 bg-gray-800 border-r border-gray-700 flex flex-col">
@@ -69,14 +67,12 @@ const Sidebar = () => {
       </div>
       <div className="flex-1 overflow-y-auto p-2">
         <div className="mb-4">
-          <h3 className="text-gray-400 text-xs uppercase font-semibold mb-2 px-2">
-            Explorer
-          </h3>
+          <h3 className="text-gray-400 text-xs uppercase font-semibold mb-2 px-2">Explorer</h3>
           {renderFileTree(files)}
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;

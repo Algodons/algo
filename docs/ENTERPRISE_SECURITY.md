@@ -1,6 +1,7 @@
 # Enterprise Security Features
 
-This document provides comprehensive documentation for the enterprise-grade security features implemented in the Algo Cloud IDE platform.
+This document provides comprehensive documentation for the enterprise-grade
+security features implemented in the Algo Cloud IDE platform.
 
 ## Table of Contents
 
@@ -126,14 +127,17 @@ Enable IP-based access control for enterprise accounts:
 ```typescript
 import { ipWhitelistMiddleware } from './security/auth/ip-whitelist';
 
-const ipWhitelist = ipWhitelistMiddleware({
-  enabled: true,
-  allowedIPs: [
-    '192.168.1.0/24',  // CIDR notation
-    '10.0.0.1',        // Single IP
-  ],
-  logBlockedAttempts: true,
-}, pool);
+const ipWhitelist = ipWhitelistMiddleware(
+  {
+    enabled: true,
+    allowedIPs: [
+      '192.168.1.0/24', // CIDR notation
+      '10.0.0.1', // Single IP
+    ],
+    logBlockedAttempts: true,
+  },
+  pool
+);
 
 app.use('/api/admin', ipWhitelist);
 ```
@@ -185,15 +189,11 @@ const auditLogger = await initializeAuditLogger({
 
 // Log events
 await auditLogger.log(
-  createAuditEvent(
-    AuditEventType.AUTH_LOGIN_SUCCESS,
-    'User login',
-    {
-      userId: user.id,
-      userEmail: user.email,
-      ipAddress: req.ip,
-    }
-  )
+  createAuditEvent(AuditEventType.AUTH_LOGIN_SUCCESS, 'User login', {
+    userId: user.id,
+    userEmail: user.email,
+    ipAddress: req.ip,
+  })
 );
 ```
 
@@ -251,20 +251,14 @@ await gdprService.recordConsent({
 });
 
 // Check consent
-const hasConsent = await gdprService.hasConsent(
-  user.id,
-  ConsentType.ANALYTICS
-);
+const hasConsent = await gdprService.hasConsent(user.id, ConsentType.ANALYTICS);
 ```
 
 #### Right to Data Portability
 
 ```typescript
 // Request data export
-const requestId = await gdprService.requestDataExport(
-  user.id,
-  user.email
-);
+const requestId = await gdprService.requestDataExport(user.id, user.email);
 
 // Data will be available at /api/gdpr/download/{requestId}
 ```
@@ -289,7 +283,7 @@ await gdprService.cancelDataDeletion(requestId, user.id);
 // Set retention policy
 await gdprService.setRetentionPolicy(
   'user_data',
-  365,  // days
+  365, // days
   DataProcessingPurpose.SERVICE_DELIVERY,
   'Contractual necessity'
 );
@@ -351,6 +345,7 @@ The platform includes multiple security scanning workflows:
 ### CI/CD Integration
 
 Security scans run automatically on:
+
 - Every push to main/develop branches
 - Every pull request
 - Daily scheduled scans
@@ -359,6 +354,7 @@ Security scans run automatically on:
 ### Viewing Results
 
 Security findings are available in:
+
 - GitHub Security tab
 - SARIF files uploaded to Code Scanning
 - Workflow run logs
@@ -380,12 +376,12 @@ security:
     mfa:
       enabled: true
       required_for_admin: true
-  
+
   encryption:
     at_rest:
-      algorithm: "AES-256-GCM"
+      algorithm: 'AES-256-GCM'
       key_rotation_days: 90
-  
+
   rate_limiting:
     enabled: true
     global:
@@ -401,14 +397,14 @@ Cloudflare configuration in `/config/cloudflare.yaml`:
 cloudflare:
   ddos_protection:
     enabled: true
-    security_level: "high"
-  
+    security_level: 'high'
+
   rate_limiting:
     enabled: true
     rules:
       - threshold: 100
         period: 60
-        action: "challenge"
+        action: 'challenge'
 ```
 
 ## API Reference
@@ -511,7 +507,8 @@ await soc2Service.storeControlEvidence(controlId, type, description);
 
 ## Reporting Security Issues
 
-If you discover a security vulnerability, please email security@example.com with:
+If you discover a security vulnerability, please email security@example.com
+with:
 
 - Description of the vulnerability
 - Steps to reproduce
@@ -525,6 +522,7 @@ We will respond within 48 hours and work on a fix as quickly as possible.
 ## Support
 
 For questions about security features:
+
 - Email: security@example.com
 - Slack: #security-team
 - Documentation: https://docs.example.com/security
@@ -532,6 +530,7 @@ For questions about security features:
 ## Changelog
 
 ### v2.0.0 (2024-12-13)
+
 - Added enterprise security features
 - Implemented SAML 2.0 SSO
 - Added GDPR compliance tools
@@ -540,6 +539,7 @@ For questions about security features:
 - Implemented backup and disaster recovery
 
 ### v1.0.0 (2024-01-01)
+
 - Initial security implementation
 - Basic authentication
 - SQL injection prevention

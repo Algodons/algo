@@ -40,12 +40,7 @@ export function createTeamBillingRoutes(pool: Pool): Router {
       const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
       const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
 
-      const usage = await billingService.getMemberUsage(
-        organizationId,
-        userId,
-        startDate,
-        endDate
-      );
+      const usage = await billingService.getMemberUsage(organizationId, userId, startDate, endDate);
 
       res.json({ usage });
     } catch (error) {
@@ -61,9 +56,7 @@ export function createTeamBillingRoutes(pool: Pool): Router {
       const startDate = req.query.startDate
         ? new Date(req.query.startDate as string)
         : new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-      const endDate = req.query.endDate
-        ? new Date(req.query.endDate as string)
-        : new Date();
+      const endDate = req.query.endDate ? new Date(req.query.endDate as string) : new Date();
 
       const usage = await billingService.getAggregatedUsageByMember(
         organizationId,
@@ -85,9 +78,7 @@ export function createTeamBillingRoutes(pool: Pool): Router {
       const startDate = req.query.startDate
         ? new Date(req.query.startDate as string)
         : new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-      const endDate = req.query.endDate
-        ? new Date(req.query.endDate as string)
-        : new Date();
+      const endDate = req.query.endDate ? new Date(req.query.endDate as string) : new Date();
 
       const usage = await billingService.getAggregatedUsageByProject(
         organizationId,

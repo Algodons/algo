@@ -33,7 +33,9 @@ interface AnalyticsSummary {
 }
 
 export const AdminDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'summary' | 'users' | 'analytics' | 'affiliates' | 'financial' | 'system'>('summary');
+  const [activeTab, setActiveTab] = useState<
+    'summary' | 'users' | 'analytics' | 'affiliates' | 'financial' | 'system'
+  >('summary');
   const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
@@ -53,7 +55,7 @@ export const AdminDashboard: React.FC = () => {
     try {
       const response = await fetch('/api/admin/analytics/summary', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+          Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
         },
       });
 
@@ -76,7 +78,7 @@ export const AdminDashboard: React.FC = () => {
     try {
       const response = await fetch(`/api/admin/users/search?email=${searchQuery}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+          Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
         },
       });
 
@@ -102,7 +104,7 @@ export const AdminDashboard: React.FC = () => {
       const response = await fetch(`/api/admin/users/${userId}/suspend`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+          Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
           'Content-Type': 'application/json',
           'X-2FA-Token': prompt('Enter 2FA token:') || '',
         },
@@ -179,9 +181,7 @@ export const AdminDashboard: React.FC = () => {
               <h3>Users</h3>
               <div className="stat-value">{summary.users.total_users.toLocaleString()}</div>
               <div className="stat-label">Total Users</div>
-              <div className="stat-subtext">
-                +{summary.users.new_users_30d} new in last 30 days
-              </div>
+              <div className="stat-subtext">+{summary.users.new_users_30d} new in last 30 days</div>
             </div>
 
             <div className="summary-card">
@@ -195,7 +195,9 @@ export const AdminDashboard: React.FC = () => {
 
             <div className="summary-card">
               <h3>Revenue</h3>
-              <div className="stat-value">${parseFloat(summary.subscriptions.monthly_revenue).toLocaleString()}</div>
+              <div className="stat-value">
+                ${parseFloat(summary.subscriptions.monthly_revenue).toLocaleString()}
+              </div>
               <div className="stat-label">Monthly Revenue</div>
               <div className="stat-subtext">
                 {summary.subscriptions.total_subscriptions} active subscriptions
@@ -204,7 +206,9 @@ export const AdminDashboard: React.FC = () => {
 
             <div className="summary-card">
               <h3>Deployments</h3>
-              <div className="stat-value">{summary.deployments.total_deployments.toLocaleString()}</div>
+              <div className="stat-value">
+                {summary.deployments.total_deployments.toLocaleString()}
+              </div>
               <div className="stat-label">Total Deployments</div>
               <div className="stat-subtext">
                 {summary.deployments.deployments_24h} in last 24 hours
@@ -259,7 +263,7 @@ export const AdminDashboard: React.FC = () => {
                       <div className="action-buttons">
                         <button
                           className="btn-small"
-                          onClick={() => window.location.href = `/admin/users/${user.id}`}
+                          onClick={() => (window.location.href = `/admin/users/${user.id}`)}
                         >
                           View
                         </button>
@@ -279,9 +283,7 @@ export const AdminDashboard: React.FC = () => {
             </table>
 
             {users.length === 0 && !loading && (
-              <div className="no-results">
-                No users found. Try searching for a user.
-              </div>
+              <div className="no-results">No users found. Try searching for a user.</div>
             )}
           </div>
         )}

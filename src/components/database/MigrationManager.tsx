@@ -42,7 +42,7 @@ const MigrationManager: React.FC<MigrationManagerProps> = ({ connectionId }) => 
         `http://localhost:4000/api/databases/connections/${connectionId}/migrations`
       );
       const data = await response.json();
-      
+
       if (data.error) {
         setError(data.error);
       } else {
@@ -75,7 +75,7 @@ const MigrationManager: React.FC<MigrationManagerProps> = ({ connectionId }) => 
       );
 
       const data = await response.json();
-      
+
       if (data.error) {
         setError(data.error);
       } else {
@@ -101,7 +101,7 @@ const MigrationManager: React.FC<MigrationManagerProps> = ({ connectionId }) => 
       );
 
       const data = await response.json();
-      
+
       if (data.error) {
         setError(data.error);
       } else {
@@ -125,7 +125,7 @@ const MigrationManager: React.FC<MigrationManagerProps> = ({ connectionId }) => 
       );
 
       const data = await response.json();
-      
+
       if (data.error) {
         setError(data.error);
       } else {
@@ -149,7 +149,7 @@ const MigrationManager: React.FC<MigrationManagerProps> = ({ connectionId }) => 
       );
 
       const data = await response.json();
-      
+
       if (data.error) {
         setError(data.error);
       } else {
@@ -197,10 +197,7 @@ const MigrationManager: React.FC<MigrationManagerProps> = ({ connectionId }) => 
               Apply All Pending
             </button>
           )}
-          <button
-            className="btn-small"
-            onClick={() => setShowCreateForm(!showCreateForm)}
-          >
+          <button className="btn-small" onClick={() => setShowCreateForm(!showCreateForm)}>
             {showCreateForm ? 'Cancel' : '+ New Migration'}
           </button>
         </div>
@@ -250,12 +247,15 @@ const MigrationManager: React.FC<MigrationManagerProps> = ({ connectionId }) => 
         {migrations.length === 0 && !loading && (
           <div className="mm-empty">No migrations found. Create your first migration!</div>
         )}
-        
+
         {migrations.map((migration) => (
           <div key={migration.id} className="mm-item">
-            <div className="mm-item-header" onClick={() => setExpandedMigration(
-              expandedMigration === migration.id ? null : migration.id
-            )}>
+            <div
+              className="mm-item-header"
+              onClick={() =>
+                setExpandedMigration(expandedMigration === migration.id ? null : migration.id)
+              }
+            >
               <div className="mm-item-info">
                 <span className="mm-item-name">{migration.name}</span>
                 <span className="mm-item-version">v{migration.version}</span>
@@ -287,7 +287,7 @@ const MigrationManager: React.FC<MigrationManagerProps> = ({ connectionId }) => 
                 )}
               </div>
             </div>
-            
+
             {expandedMigration === migration.id && (
               <div className="mm-item-details">
                 <div className="mm-sql-section">

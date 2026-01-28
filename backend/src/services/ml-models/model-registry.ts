@@ -1,6 +1,6 @@
 /**
  * ML Model Registry Service
- * 
+ *
  * Manages ML model registration, versioning, and inference.
  */
 
@@ -45,10 +45,8 @@ export class ModelRegistry {
    */
   async initialize(): Promise<void> {
     try {
-      const result = await this.pool.query(
-        'SELECT * FROM ml_models WHERE active = true'
-      );
-      
+      const result = await this.pool.query('SELECT * FROM ml_models WHERE active = true');
+
       result.rows.forEach((model: MLModel) => {
         this.models.set(model.id, model);
       });
@@ -82,7 +80,7 @@ export class ModelRegistry {
 
       const newModel = result.rows[0];
       this.models.set(newModel.id, newModel);
-      
+
       return newModel;
     } catch (error) {
       console.error('Failed to register model:', error);
@@ -102,11 +100,11 @@ export class ModelRegistry {
    */
   listModels(type?: string): MLModel[] {
     const models = Array.from(this.models.values());
-    
+
     if (type) {
-      return models.filter(model => model.type === type);
+      return models.filter((model) => model.type === type);
     }
-    
+
     return models;
   }
 
@@ -115,7 +113,7 @@ export class ModelRegistry {
    */
   async predict(request: PredictionRequest): Promise<PredictionResult> {
     const model = this.models.get(request.modelId);
-    
+
     if (!model) {
       throw new Error(`Model not found: ${request.modelId}`);
     }
@@ -170,7 +168,7 @@ export class ModelRegistry {
   ): Promise<PredictionResult> {
     // This is where model-specific inference logic would be implemented
     // For now, return a mock response based on model type
-    
+
     const executionTime = Math.floor(Math.random() * 500) + 50;
     let prediction: any;
     let confidence: number | undefined;
@@ -213,7 +211,7 @@ export class ModelRegistry {
         'UPDATE ml_models SET active = false, updated_at = NOW() WHERE id = $1',
         [modelId]
       );
-      
+
       this.models.delete(modelId);
     } catch (error) {
       console.error('Failed to deactivate model:', error);

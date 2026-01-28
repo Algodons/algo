@@ -101,10 +101,7 @@ export class VersionControlService {
   /**
    * Get pull requests for a project
    */
-  async getPullRequests(
-    projectId: number,
-    status?: PullRequestStatus
-  ): Promise<PullRequest[]> {
+  async getPullRequests(projectId: number, status?: PullRequestStatus): Promise<PullRequest[]> {
     let query = `
       SELECT pr.*, u.name as author_name, u.email as author_email
       FROM pull_requests pr
@@ -196,11 +193,12 @@ export class VersionControlService {
   /**
    * Check if PR can be merged based on branch protection rules
    */
-  async canMergePullRequest(pullRequestId: number): Promise<{ canMerge: boolean; reasons: string[] }> {
-    const prResult = await this.pool.query(
-      'SELECT * FROM pull_requests WHERE id = $1',
-      [pullRequestId]
-    );
+  async canMergePullRequest(
+    pullRequestId: number
+  ): Promise<{ canMerge: boolean; reasons: string[] }> {
+    const prResult = await this.pool.query('SELECT * FROM pull_requests WHERE id = $1', [
+      pullRequestId,
+    ]);
 
     if (prResult.rows.length === 0) {
       return { canMerge: false, reasons: ['Pull request not found'] };
@@ -238,9 +236,7 @@ export class VersionControlService {
 
       const approvalCount = parseInt(approvalResult.rows[0].approval_count);
       if (approvalCount < rule.required_approvals) {
-        reasons.push(
-          `Requires ${rule.required_approvals} approvals, has ${approvalCount}`
-        );
+        reasons.push(`Requires ${rule.required_approvals} approvals, has ${approvalCount}`);
       }
     }
 
@@ -275,10 +271,9 @@ export class VersionControlService {
       throw new Error(`Cannot merge: ${canMerge.reasons.join(', ')}`);
     }
 
-    const prResult = await this.pool.query(
-      'SELECT * FROM pull_requests WHERE id = $1',
-      [pullRequestId]
-    );
+    const prResult = await this.pool.query('SELECT * FROM pull_requests WHERE id = $1', [
+      pullRequestId,
+    ]);
 
     if (prResult.rows.length === 0) {
       throw new Error('Pull request not found');
@@ -482,11 +477,7 @@ export class VersionControlService {
   /**
    * Reject deployment
    */
-  async rejectDeployment(
-    approvalId: number,
-    userId: number,
-    reason?: string
-  ): Promise<void> {
+  async rejectDeployment(approvalId: number, userId: number, reason?: string): Promise<void> {
     await this.pool.query(
       `UPDATE deployment_approvals 
        SET status = 'rejected', approved_by = $1, approved_at = CURRENT_TIMESTAMP, rejection_reason = $3
@@ -530,12 +521,12 @@ export class VersionControlService {
       try {
         // Try to merge
         await git.merge([sourceBranch, '--no-commit', '--no-ff']);
-        
+
         // No conflicts
         await git.merge(['--abort']);
         await git.checkout(targetBranch);
         await git.deleteLocalBranch(tempBranch);
-        
+
         return { hasConflicts: false, conflictingFiles: [] };
       } catch (error) {
         // Check for conflicts

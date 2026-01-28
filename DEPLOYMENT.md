@@ -1,6 +1,7 @@
 # Deployment Guide
 
 ## Table of Contents
+
 1. [Development Setup](#development-setup)
 2. [Production Deployment](#production-deployment)
 3. [Docker Deployment](#docker-deployment)
@@ -10,6 +11,7 @@
 ## Development Setup
 
 ### Prerequisites
+
 - Node.js 18 or higher
 - npm or yarn
 - Git
@@ -18,33 +20,39 @@
 ### Step-by-Step Setup
 
 1. **Clone the Repository**
+
 ```bash
 git clone https://github.com/Algodons/algo.git
 cd algo
 ```
 
 2. **Install Dependencies**
+
 ```bash
 npm install
 ```
 
 3. **Configure Environment**
+
 ```bash
 cp .env.example .env
 ```
 
 Edit `.env` file:
+
 ```env
 PORT=5000
 WORKSPACE_DIR=./workspaces
 ```
 
 4. **Start Development Servers**
+
 ```bash
 npm run dev
 ```
 
 This starts:
+
 - Frontend (Vite): http://localhost:3000
 - Backend (Express): http://localhost:5000
 
@@ -60,15 +68,18 @@ This starts:
 ### Build for Production
 
 1. **Build the Application**
+
 ```bash
 npm run build
 ```
 
 This creates:
+
 - `dist/client/` - Frontend static files
 - `dist/server/` - Compiled backend code
 
 2. **Start Production Server**
+
 ```bash
 npm start
 ```
@@ -163,22 +174,26 @@ pm2 startup
 ### Using Docker Compose (Recommended)
 
 1. **Start all services**
+
 ```bash
 docker-compose up -d
 ```
 
 Services included:
+
 - Cloud IDE application (ports 3000, 5000)
 - PostgreSQL (port 5432)
 - MySQL (port 3306)
 - MongoDB (port 27017)
 
 2. **View logs**
+
 ```bash
 docker-compose logs -f app
 ```
 
 3. **Stop services**
+
 ```bash
 docker-compose down
 ```
@@ -186,11 +201,13 @@ docker-compose down
 ### Using Docker Only
 
 1. **Build image**
+
 ```bash
 docker build -t cloud-ide .
 ```
 
 2. **Run container**
+
 ```bash
 docker run -d \
   -p 3000:3000 \
@@ -206,12 +223,14 @@ docker run -d \
 
 1. **Launch EC2 instance** (t3.medium or larger)
 2. **Install dependencies**
+
 ```bash
 sudo apt update
 sudo apt install -y nodejs npm git nginx
 ```
 
 3. **Clone and build**
+
 ```bash
 git clone https://github.com/Algodons/algo.git
 cd algo
@@ -226,21 +245,25 @@ npm run build
 ### Heroku
 
 1. **Create app**
+
 ```bash
 heroku create your-cloud-ide
 ```
 
 2. **Add buildpack**
+
 ```bash
 heroku buildpacks:add heroku/nodejs
 ```
 
 3. **Configure environment**
+
 ```bash
 heroku config:set NODE_ENV=production
 ```
 
 4. **Deploy**
+
 ```bash
 git push heroku main
 ```
@@ -265,26 +288,31 @@ See `k8s/` directory for Kubernetes manifests (if provided).
 ### Common Issues
 
 **1. WebSocket Connection Failed**
+
 - Check if backend is running on correct port
 - Verify no firewall blocking WebSocket connections
 - Ensure Nginx WebSocket proxy is configured
 
 **2. Terminal Not Working**
+
 - Ensure node-pty is properly installed
 - Check platform compatibility (Windows/Linux/Mac)
 - Verify shell path in terminal-server.ts
 
 **3. Yjs Sync Issues**
+
 - Check WebSocket connection to /yjs endpoint
 - Verify document names are correct
 - Check browser console for errors
 
 **4. Database Connection Failed**
+
 - Verify database credentials
 - Check network connectivity
 - Ensure database server is running
 
 **5. Build Errors**
+
 - Clear node_modules: `rm -rf node_modules && npm install`
 - Check Node.js version: `node -v` (should be 18+)
 - Verify TypeScript is installed
@@ -292,6 +320,7 @@ See `k8s/` directory for Kubernetes manifests (if provided).
 ### Debug Mode
 
 Enable debug logging:
+
 ```bash
 DEBUG=* npm run dev
 ```
@@ -299,11 +328,13 @@ DEBUG=* npm run dev
 ### Health Check
 
 Check if services are running:
+
 ```bash
 curl http://localhost:5000/api/health
 ```
 
 Expected response:
+
 ```json
 {
   "status": "ok",
@@ -316,6 +347,7 @@ Expected response:
 ### Production Tips
 
 1. **Enable compression**
+
 ```javascript
 // In server/index.ts
 import compression from 'compression';
@@ -325,11 +357,13 @@ app.use(compression());
 2. **Use CDN** for static assets
 3. **Enable caching** for API responses
 4. **Monitor with PM2**
+
 ```bash
 pm2 monit
 ```
 
 5. **Database connection pooling**
+
 - Configure max connections in database clients
 
 ## Security Considerations
@@ -339,6 +373,7 @@ pm2 monit
 3. **Validate all inputs**
 4. **Use environment variables** for secrets
 5. **Regular security updates**
+
 ```bash
 npm audit
 npm audit fix
@@ -347,11 +382,13 @@ npm audit fix
 ## Scaling
 
 ### Horizontal Scaling
+
 - Use Redis for session storage
 - Implement sticky sessions for WebSocket
 - Use load balancer (Nginx/HAProxy)
 
 ### Vertical Scaling
+
 - Increase server resources (CPU/RAM)
 - Optimize database queries
 - Use caching (Redis/Memcached)
@@ -359,6 +396,7 @@ npm audit fix
 ## Monitoring
 
 Recommended tools:
+
 - **PM2**: Process monitoring
 - **Prometheus**: Metrics collection
 - **Grafana**: Visualization
@@ -367,6 +405,7 @@ Recommended tools:
 ## Backup
 
 Important directories to backup:
+
 - `workspaces/` - User workspaces
 - Database backups
 - Configuration files
@@ -374,5 +413,6 @@ Important directories to backup:
 ## Support
 
 For issues and questions:
+
 - GitHub Issues: https://github.com/Algodons/algo/issues
 - Documentation: See README.md

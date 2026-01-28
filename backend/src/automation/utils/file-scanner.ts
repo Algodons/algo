@@ -47,20 +47,20 @@ export class FileScanner {
    */
   async findFiles(projectPath: string, pattern: RegExp): Promise<string[]> {
     const results: string[] = [];
-    
+
     async function scanDir(dirPath: string) {
       try {
         const entries = await fs.readdir(dirPath, { withFileTypes: true });
-        
+
         for (const entry of entries) {
           const fullPath = path.join(dirPath, entry.name);
           const relativePath = path.relative(projectPath, fullPath);
-          
+
           // Skip node_modules and hidden directories
           if (entry.name.startsWith('.') || entry.name === 'node_modules') {
             continue;
           }
-          
+
           if (entry.isDirectory()) {
             await scanDir(fullPath);
           } else if (entry.isFile() && pattern.test(entry.name)) {
@@ -71,7 +71,7 @@ export class FileScanner {
         // Skip directories we can't read
       }
     }
-    
+
     await scanDir(projectPath);
     return results;
   }
@@ -81,21 +81,21 @@ export class FileScanner {
    */
   async listFiles(projectPath: string, maxDepth: number = 2): Promise<string[]> {
     const results: string[] = [];
-    
+
     async function scanDir(dirPath: string, currentDepth: number) {
       if (currentDepth > maxDepth) return;
-      
+
       try {
         const entries = await fs.readdir(dirPath, { withFileTypes: true });
-        
+
         for (const entry of entries) {
           const fullPath = path.join(dirPath, entry.name);
           const relativePath = path.relative(projectPath, fullPath);
-          
+
           if (entry.name.startsWith('.') || entry.name === 'node_modules') {
             continue;
           }
-          
+
           if (entry.isDirectory()) {
             await scanDir(fullPath, currentDepth + 1);
           } else if (entry.isFile()) {
@@ -106,7 +106,7 @@ export class FileScanner {
         // Skip directories we can't read
       }
     }
-    
+
     await scanDir(projectPath, 0);
     return results;
   }
@@ -115,21 +115,21 @@ export class FileScanner {
    * Search for specific content in files
    */
   async searchInFiles(
-    projectPath: string, 
-    pattern: RegExp, 
+    projectPath: string,
+    pattern: RegExp,
     fileExtensions: string[]
   ): Promise<Array<{ file: string; matches: string[] }>> {
     const results: Array<{ file: string; matches: string[] }> = [];
     const files = await this.listFiles(projectPath);
-    
+
     for (const file of files) {
       const ext = path.extname(file);
       if (!fileExtensions.includes(ext)) continue;
-      
+
       try {
         const content = await this.readTextFile(projectPath, file);
         const matches = content.match(pattern);
-        
+
         if (matches && matches.length > 0) {
           results.push({ file, matches: Array.from(new Set(matches)) });
         }
@@ -137,7 +137,7 @@ export class FileScanner {
         // Skip files we can't read
       }
     }
-    
+
     return results;
   }
 }

@@ -1,6 +1,6 @@
 /**
  * Gamification Service
- * 
+ *
  * Manages leaderboards, achievements, milestone rewards, and gamified
  * experiences for affiliates and users.
  */
@@ -71,7 +71,7 @@ export class GamificationService {
   ): Promise<LeaderboardEntry[]> {
     try {
       const timeFilter = this.getTimeframeFilter(timeframe);
-      
+
       let scoreColumn = 'overall_score';
       if (category === 'referrals') scoreColumn = 'referral_score';
       else if (category === 'revenue') scoreColumn = 'revenue_score';
@@ -101,7 +101,7 @@ export class GamificationService {
       const leaderboard: LeaderboardEntry[] = await Promise.all(
         result.rows.map(async (row) => {
           const achievements = await this.getRecentAchievements(row.id, 3);
-          
+
           return {
             rank: row.rank,
             userId: row.id,
@@ -111,7 +111,7 @@ export class GamificationService {
             tier: row.tier,
             badges: JSON.parse(row.badges || '[]'),
             streak: row.streak,
-            recentAchievements: achievements.map(a => a.name),
+            recentAchievements: achievements.map((a) => a.name),
           };
         })
       );
@@ -126,7 +126,11 @@ export class GamificationService {
   /**
    * Track and award achievement
    */
-  async checkAndAwardAchievements(userId: number, action: string, metadata: any): Promise<Achievement[]> {
+  async checkAndAwardAchievements(
+    userId: number,
+    action: string,
+    metadata: any
+  ): Promise<Achievement[]> {
     try {
       const newAchievements: Achievement[] = [];
       const allAchievements = this.getAllAchievementDefinitions();
@@ -206,7 +210,8 @@ export class GamificationService {
       // Calculate next level progress
       const currentLevelXP = this.getXPForLevel(stats.level);
       const nextLevelXP = this.getXPForLevel(stats.level + 1);
-      const nextLevelProgress = ((stats.experience_points - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100;
+      const nextLevelProgress =
+        ((stats.experience_points - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100;
 
       // Get achievements
       const achievements = await this.getUserAchievements(userId);
@@ -238,10 +243,9 @@ export class GamificationService {
    */
   async awardMilestone(userId: number, milestoneId: string): Promise<MilestoneReward> {
     try {
-      const milestone = await this.pool.query(
-        'SELECT * FROM milestone_definitions WHERE id = $1',
-        [milestoneId]
-      );
+      const milestone = await this.pool.query('SELECT * FROM milestone_definitions WHERE id = $1', [
+        milestoneId,
+      ]);
 
       if (milestone.rows.length === 0) {
         throw new Error('Milestone not found');
@@ -260,7 +264,7 @@ export class GamificationService {
       }
 
       // Check if requirements are met
-      if (!await this.checkMilestoneRequirements(userId, milestoneData)) {
+      if (!(await this.checkMilestoneRequirements(userId, milestoneData))) {
         throw new Error('Milestone requirements not met');
       }
 
@@ -366,14 +370,17 @@ export class GamificationService {
       );
 
       const data = performance.rows[0] || {};
-      
+
       // Get current commission structure
       const current = await this.pool.query(
         'SELECT commission_structure FROM affiliates WHERE user_id = $1',
         [affiliateId]
       );
 
-      const currentStructure = current.rows[0]?.commission_structure || { rate: 0.1, type: 'percentage' };
+      const currentStructure = current.rows[0]?.commission_structure || {
+        rate: 0.1,
+        type: 'percentage',
+      };
 
       // AI-driven suggestions based on performance
       const reasoning = [];
@@ -445,7 +452,7 @@ export class GamificationService {
       [userId, limit]
     );
 
-    return result.rows.map(row => ({
+    return result.rows.map((row) => ({
       id: row.id,
       name: row.name,
       description: row.description,
@@ -594,10 +601,9 @@ export class GamificationService {
     const requiredXP = this.getXPForLevel(level + 1);
 
     if (experience_points >= requiredXP) {
-      await this.pool.query(
-        'UPDATE gamification_stats SET level = level + 1 WHERE user_id = $1',
-        [userId]
-      );
+      await this.pool.query('UPDATE gamification_stats SET level = level + 1 WHERE user_id = $1', [
+        userId,
+      ]);
 
       // Award level-up bonus
       await this.emitLevelUpEvent(userId, level + 1);
@@ -627,7 +633,12 @@ export class GamificationService {
     await this.pool.query(
       `INSERT INTO notification_events (user_id, type, title, message, metadata, created_at)
        VALUES ($1, 'level_up', $2, $3, $4, NOW())`,
-      [userId, 'Level Up!', `Congratulations! You've reached level ${newLevel}!`, JSON.stringify({ level: newLevel })]
+      [
+        userId,
+        'Level Up!',
+        `Congratulations! You've reached level ${newLevel}!`,
+        JSON.stringify({ level: newLevel }),
+      ]
     );
   }
 
@@ -641,7 +652,7 @@ export class GamificationService {
       [userId]
     );
 
-    return result.rows.map(row => ({
+    return result.rows.map((row) => ({
       id: row.id,
       name: row.name,
       description: row.description,
@@ -663,7 +674,7 @@ export class GamificationService {
       [userId]
     );
 
-    return result.rows.map(row => ({
+    return result.rows.map((row) => ({
       id: row.id,
       milestone: row.name,
       type: row.reward_type,
@@ -676,7 +687,7 @@ export class GamificationService {
   private async checkMilestoneRequirements(userId: number, milestone: any): Promise<boolean> {
     // Check if user meets milestone requirements
     const stats = await this.getAffiliateStats(userId);
-    
+
     switch (milestone.metric) {
       case 'referrals':
         return stats.totalReferrals >= milestone.required_value;

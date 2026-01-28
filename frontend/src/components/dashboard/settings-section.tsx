@@ -36,13 +36,20 @@ export function SettingsSection() {
 
   const paymentMethods = [
     { id: 1, type: 'card', brand: 'Visa', last4: '4242', expiresAt: '12/2025', isDefault: true },
-    { id: 2, type: 'card', brand: 'Mastercard', last4: '8888', expiresAt: '06/2026', isDefault: false },
+    {
+      id: 2,
+      type: 'card',
+      brand: 'Mastercard',
+      last4: '8888',
+      expiresAt: '06/2026',
+      isDefault: false,
+    },
   ];
 
   const invoices = [
     { id: 1, number: 'INV-2024-001', amount: 45.67, status: 'paid', date: '2024-03-01' },
     { id: 2, number: 'INV-2024-002', amount: 52.34, status: 'paid', date: '2024-02-01' },
-    { id: 3, number: 'INV-2024-003', amount: 38.90, status: 'open', date: '2024-01-01' },
+    { id: 3, number: 'INV-2024-003', amount: 38.9, status: 'open', date: '2024-01-01' },
   ];
 
   const sshKeys = [
@@ -138,7 +145,10 @@ export function SettingsSection() {
           <CardContent>
             <div className="space-y-4">
               {organizations.map((org) => (
-                <div key={org.id} className="flex items-center justify-between p-4 rounded-lg border">
+                <div
+                  key={org.id}
+                  className="flex items-center justify-between p-4 rounded-lg border"
+                >
                   <div className="flex items-center gap-3">
                     <Building2 className="h-8 w-8 text-primary" />
                     <div>
@@ -176,7 +186,10 @@ export function SettingsSection() {
           <CardContent>
             <div className="space-y-3">
               {paymentMethods.map((method) => (
-                <div key={method.id} className="flex items-center justify-between p-4 rounded-lg border">
+                <div
+                  key={method.id}
+                  className="flex items-center justify-between p-4 rounded-lg border"
+                >
                   <div className="flex items-center gap-3">
                     <CreditCard className="h-5 w-5 text-primary" />
                     <div>
@@ -213,7 +226,10 @@ export function SettingsSection() {
           <CardContent>
             <div className="space-y-2">
               {invoices.map((invoice) => (
-                <div key={invoice.id} className="flex items-center justify-between p-3 rounded-lg border">
+                <div
+                  key={invoice.id}
+                  className="flex items-center justify-between p-3 rounded-lg border"
+                >
                   <div className="flex items-center gap-3">
                     <FileText className="h-4 w-4 text-muted-foreground" />
                     <div>
@@ -223,7 +239,9 @@ export function SettingsSection() {
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="font-medium">${invoice.amount}</span>
-                    <Badge variant={invoice.status === 'paid' ? 'success' : 'outline'}>{invoice.status}</Badge>
+                    <Badge variant={invoice.status === 'paid' ? 'success' : 'outline'}>
+                      {invoice.status}
+                    </Badge>
                     <Button variant="ghost" size="sm">
                       Download
                     </Button>
@@ -249,14 +267,18 @@ export function SettingsSection() {
                 <label className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">Deployment Success</p>
-                    <p className="text-xs text-muted-foreground">Get notified when deployments succeed</p>
+                    <p className="text-xs text-muted-foreground">
+                      Get notified when deployments succeed
+                    </p>
                   </div>
                   <input type="checkbox" defaultChecked className="h-4 w-4" />
                 </label>
                 <label className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">Deployment Failure</p>
-                    <p className="text-xs text-muted-foreground">Get notified when deployments fail</p>
+                    <p className="text-xs text-muted-foreground">
+                      Get notified when deployments fail
+                    </p>
                   </div>
                   <input type="checkbox" defaultChecked className="h-4 w-4" />
                 </label>
@@ -270,7 +292,9 @@ export function SettingsSection() {
                 <label className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">Billing Updates</p>
-                    <p className="text-xs text-muted-foreground">Monthly billing and payment notifications</p>
+                    <p className="text-xs text-muted-foreground">
+                      Monthly billing and payment notifications
+                    </p>
                   </div>
                   <input type="checkbox" defaultChecked className="h-4 w-4" />
                 </label>
@@ -303,11 +327,11 @@ export function SettingsSection() {
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Shield className={`h-5 w-5 ${twoFactorEnabled ? 'text-green-600' : 'text-muted-foreground'}`} />
+                <Shield
+                  className={`h-5 w-5 ${twoFactorEnabled ? 'text-green-600' : 'text-muted-foreground'}`}
+                />
                 <div>
-                  <p className="font-medium">
-                    2FA is {twoFactorEnabled ? 'enabled' : 'disabled'}
-                  </p>
+                  <p className="font-medium">2FA is {twoFactorEnabled ? 'enabled' : 'disabled'}</p>
                   <p className="text-sm text-muted-foreground">
                     {twoFactorEnabled
                       ? 'Your account is protected with 2FA'
@@ -341,13 +365,18 @@ export function SettingsSection() {
           <CardContent>
             <div className="space-y-3">
               {sshKeys.map((key) => (
-                <div key={key.id} className="flex items-center justify-between p-4 rounded-lg border">
+                <div
+                  key={key.id}
+                  className="flex items-center justify-between p-4 rounded-lg border"
+                >
                   <div className="flex items-center gap-3">
                     <KeyIcon className="h-5 w-5 text-primary" />
                     <div>
                       <p className="font-medium">{key.name}</p>
                       <p className="text-xs text-muted-foreground font-mono">{key.fingerprint}</p>
-                      <p className="text-xs text-muted-foreground mt-1">Last used: {key.lastUsed}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Last used: {key.lastUsed}
+                      </p>
                     </div>
                   </div>
                   <Button variant="ghost" size="icon">
@@ -378,7 +407,10 @@ export function SettingsSection() {
           <CardContent>
             <div className="space-y-4">
               {tokens.map((token) => (
-                <div key={token.id} className="flex items-center justify-between p-4 rounded-lg border">
+                <div
+                  key={token.id}
+                  className="flex items-center justify-between p-4 rounded-lg border"
+                >
                   <div className="flex items-start gap-3 flex-1">
                     <KeyIcon className="h-5 w-5 text-primary mt-0.5" />
                     <div className="flex-1">
@@ -391,7 +423,9 @@ export function SettingsSection() {
                           </Badge>
                         ))}
                       </div>
-                      <p className="text-xs text-muted-foreground mt-2">Last used: {token.lastUsed}</p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Last used: {token.lastUsed}
+                      </p>
                     </div>
                   </div>
                   <div className="flex gap-2">

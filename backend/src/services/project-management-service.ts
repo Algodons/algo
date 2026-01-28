@@ -4,11 +4,14 @@ import { ProjectWithStats, ProjectTemplate, ProjectCollaborator } from '../types
 export class ProjectManagementService {
   constructor(private pool: Pool) {}
 
-  async getProjectsWithStats(userId: number, filters?: {
-    search?: string;
-    language?: string;
-    isFavorite?: boolean;
-  }): Promise<ProjectWithStats[]> {
+  async getProjectsWithStats(
+    userId: number,
+    filters?: {
+      search?: string;
+      language?: string;
+      isFavorite?: boolean;
+    }
+  ): Promise<ProjectWithStats[]> {
     let query = `
       SELECT 
         p.*,
@@ -122,10 +125,10 @@ export class ProjectManagementService {
       return false;
     } else {
       // Add favorite
-      await this.pool.query(
-        'INSERT INTO project_favorites (user_id, project_id) VALUES ($1, $2)',
-        [userId, projectId]
-      );
+      await this.pool.query('INSERT INTO project_favorites (user_id, project_id) VALUES ($1, $2)', [
+        userId,
+        projectId,
+      ]);
       return true;
     }
   }
@@ -147,10 +150,7 @@ export class ProjectManagementService {
     }
 
     // Find invitee user
-    const invitee = await this.pool.query(
-      'SELECT id FROM users WHERE email = $1',
-      [inviteeEmail]
-    );
+    const invitee = await this.pool.query('SELECT id FROM users WHERE email = $1', [inviteeEmail]);
 
     if (invitee.rows.length === 0) {
       throw new Error('User not found');
@@ -188,10 +188,7 @@ export class ProjectManagementService {
     return result.rows;
   }
 
-  async acceptCollaborationInvite(
-    userId: number,
-    projectId: number
-  ): Promise<void> {
+  async acceptCollaborationInvite(userId: number, projectId: number): Promise<void> {
     await this.pool.query(
       `UPDATE project_collaborators
        SET status = 'accepted', accepted_at = CURRENT_TIMESTAMP
@@ -206,10 +203,9 @@ export class ProjectManagementService {
     newOwnerEmail: string
   ): Promise<void> {
     // Find new owner
-    const newOwner = await this.pool.query(
-      'SELECT id FROM users WHERE email = $1',
-      [newOwnerEmail]
-    );
+    const newOwner = await this.pool.query('SELECT id FROM users WHERE email = $1', [
+      newOwnerEmail,
+    ]);
 
     if (newOwner.rows.length === 0) {
       throw new Error('New owner not found');

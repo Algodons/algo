@@ -72,11 +72,11 @@ export class FrameworkDetector {
    */
   private async detectNodeFrameworks(projectPath: string): Promise<FrameworkInfo[]> {
     const frameworks: FrameworkInfo[] = [];
-    
+
     try {
       const packageJson = await this.fileScanner.readJsonFile(projectPath, 'package.json');
       const parsed = this.configParser.parsePackageJson(packageJson);
-      
+
       const allDeps = { ...parsed.dependencies, ...parsed.devDependencies };
       const depKeys = Object.keys(allDeps);
 
@@ -234,16 +234,16 @@ export class FrameworkDetector {
    */
   private async detectPythonFrameworks(projectPath: string): Promise<FrameworkInfo[]> {
     const frameworks: FrameworkInfo[] = [];
-    
+
     try {
       const requirementsTxt = await this.fileScanner.readTextFile(projectPath, 'requirements.txt');
       const dependencies = this.configParser.parseRequirementsTxt(requirementsTxt);
 
-      const packageManager = await this.fileScanner.fileExists(projectPath, 'Pipfile') 
-        ? 'pipenv' 
-        : await this.fileScanner.fileExists(projectPath, 'poetry.lock')
-        ? 'poetry'
-        : 'pip';
+      const packageManager = (await this.fileScanner.fileExists(projectPath, 'Pipfile'))
+        ? 'pipenv'
+        : (await this.fileScanner.fileExists(projectPath, 'poetry.lock'))
+          ? 'poetry'
+          : 'pip';
 
       if (dependencies.includes('django') || dependencies.includes('Django')) {
         frameworks.push({
@@ -286,7 +286,7 @@ export class FrameworkDetector {
    */
   private async detectRustFrameworks(projectPath: string): Promise<FrameworkInfo[]> {
     const frameworks: FrameworkInfo[] = [];
-    
+
     try {
       const cargoToml = await this.fileScanner.readTextFile(projectPath, 'Cargo.toml');
       const parsed = this.configParser.parseCargoToml(cargoToml);
@@ -332,11 +332,11 @@ export class FrameworkDetector {
    */
   private async detectJavaFrameworks(projectPath: string): Promise<FrameworkInfo[]> {
     const frameworks: FrameworkInfo[] = [];
-    
+
     try {
       const pomXml = await this.fileScanner.readTextFile(projectPath, 'pom.xml');
 
-      const packageManager = await this.fileScanner.fileExists(projectPath, 'build.gradle')
+      const packageManager = (await this.fileScanner.fileExists(projectPath, 'build.gradle'))
         ? 'gradle'
         : 'maven';
 
@@ -361,12 +361,12 @@ export class FrameworkDetector {
    */
   private async detectGoFrameworks(projectPath: string): Promise<FrameworkInfo[]> {
     const frameworks: FrameworkInfo[] = [];
-    
+
     try {
       const goMod = await this.fileScanner.readTextFile(projectPath, 'go.mod');
       const parsed = this.configParser.parseGoMod(goMod);
 
-      if (parsed.dependencies.some(dep => dep.includes('gin-gonic/gin'))) {
+      if (parsed.dependencies.some((dep) => dep.includes('gin-gonic/gin'))) {
         frameworks.push({
           type: 'backend',
           name: 'Gin',
@@ -376,7 +376,7 @@ export class FrameworkDetector {
         });
       }
 
-      if (parsed.dependencies.some(dep => dep.includes('gofiber/fiber'))) {
+      if (parsed.dependencies.some((dep) => dep.includes('gofiber/fiber'))) {
         frameworks.push({
           type: 'backend',
           name: 'Fiber',
@@ -386,7 +386,7 @@ export class FrameworkDetector {
         });
       }
 
-      if (parsed.dependencies.some(dep => dep.includes('gorilla/mux'))) {
+      if (parsed.dependencies.some((dep) => dep.includes('gorilla/mux'))) {
         frameworks.push({
           type: 'backend',
           name: 'Gorilla Mux',
@@ -407,14 +407,14 @@ export class FrameworkDetector {
    */
   private async detectPhpFrameworks(projectPath: string): Promise<FrameworkInfo[]> {
     const frameworks: FrameworkInfo[] = [];
-    
+
     try {
       const composerJson = await this.fileScanner.readJsonFile(projectPath, 'composer.json');
       const parsed = this.configParser.parseComposerJson(composerJson);
 
       const requireKeys = Object.keys(parsed.require);
 
-      if (requireKeys.some(key => key.includes('laravel/framework'))) {
+      if (requireKeys.some((key) => key.includes('laravel/framework'))) {
         frameworks.push({
           type: 'fullstack',
           name: 'Laravel',
@@ -424,7 +424,7 @@ export class FrameworkDetector {
         });
       }
 
-      if (requireKeys.some(key => key.includes('symfony/framework-bundle'))) {
+      if (requireKeys.some((key) => key.includes('symfony/framework-bundle'))) {
         frameworks.push({
           type: 'fullstack',
           name: 'Symfony',

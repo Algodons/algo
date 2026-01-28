@@ -1,8 +1,10 @@
 # Team Collaboration API Documentation
 
-Complete API documentation for team productivity, collaboration, and version control features.
+Complete API documentation for team productivity, collaboration, and version
+control features.
 
 ## Table of Contents
+
 - [Authentication](#authentication)
 - [Team Management](#team-management)
 - [Collaboration](#collaboration)
@@ -15,6 +17,7 @@ Complete API documentation for team productivity, collaboration, and version con
 ## Authentication
 
 All API endpoints require JWT authentication via the `Authorization` header:
+
 ```
 Authorization: Bearer <jwt_token>
 ```
@@ -26,6 +29,7 @@ Authorization: Bearer <jwt_token>
 ### Organizations
 
 #### Create Organization
+
 ```http
 POST /api/teams
 Content-Type: application/json
@@ -38,6 +42,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "organization": {
@@ -53,11 +58,13 @@ Content-Type: application/json
 ```
 
 #### Get User's Organizations
+
 ```http
 GET /api/teams
 ```
 
 **Response:**
+
 ```json
 {
   "organizations": [
@@ -75,11 +82,13 @@ GET /api/teams
 ```
 
 #### Get Organization by ID
+
 ```http
 GET /api/teams/:organizationId
 ```
 
 **Response:**
+
 ```json
 {
   "organization": {
@@ -97,6 +106,7 @@ GET /api/teams/:organizationId
 ### Members
 
 #### Invite Member
+
 ```http
 POST /api/teams/:organizationId/members
 Content-Type: application/json
@@ -110,6 +120,7 @@ Content-Type: application/json
 Roles: `owner`, `admin`, `developer`, `viewer`
 
 **Response:**
+
 ```json
 {
   "member": {
@@ -125,11 +136,13 @@ Roles: `owner`, `admin`, `developer`, `viewer`
 ```
 
 #### Accept Invitation
+
 ```http
 POST /api/teams/:organizationId/accept
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Invitation accepted"
@@ -137,11 +150,13 @@ POST /api/teams/:organizationId/accept
 ```
 
 #### Get Organization Members
+
 ```http
 GET /api/teams/:organizationId/members
 ```
 
 **Response:**
+
 ```json
 {
   "members": [
@@ -160,6 +175,7 @@ GET /api/teams/:organizationId/members
 ```
 
 #### Update Member Role
+
 ```http
 PATCH /api/teams/:organizationId/members/:userId
 Content-Type: application/json
@@ -170,6 +186,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Member role updated"
@@ -177,11 +194,13 @@ Content-Type: application/json
 ```
 
 #### Remove Member
+
 ```http
 DELETE /api/teams/:organizationId/members/:userId
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Member removed"
@@ -191,6 +210,7 @@ DELETE /api/teams/:organizationId/members/:userId
 ### Project Permissions
 
 #### Set Project Permissions
+
 ```http
 POST /api/teams/projects/:projectId/permissions
 Content-Type: application/json
@@ -207,6 +227,7 @@ Content-Type: application/json
 ```
 
 Or for organization-wide permissions:
+
 ```json
 {
   "organizationId": 1,
@@ -220,6 +241,7 @@ Or for organization-wide permissions:
 ```
 
 **Response:**
+
 ```json
 {
   "permissions": {
@@ -239,11 +261,13 @@ Or for organization-wide permissions:
 ```
 
 #### Check Project Permission
+
 ```http
 GET /api/teams/projects/:projectId/permissions/check?permission=write
 ```
 
 **Response:**
+
 ```json
 {
   "hasPermission": true
@@ -253,11 +277,13 @@ GET /api/teams/projects/:projectId/permissions/check?permission=write
 ### Activity Feed
 
 #### Get Activity Feed
+
 ```http
 GET /api/teams/:organizationId/activity?limit=50&offset=0
 ```
 
 **Response:**
+
 ```json
 {
   "activities": [
@@ -281,6 +307,7 @@ GET /api/teams/:organizationId/activity?limit=50&offset=0
 ### Shared Environment Variables
 
 #### Set Environment Variable
+
 ```http
 POST /api/teams/:organizationId/env-variables
 Content-Type: application/json
@@ -293,6 +320,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "variable": {
@@ -308,11 +336,13 @@ Content-Type: application/json
 ```
 
 #### Get Environment Variables
+
 ```http
 GET /api/teams/:organizationId/env-variables?decrypt=true
 ```
 
 **Response:**
+
 ```json
 {
   "variables": [
@@ -330,11 +360,13 @@ GET /api/teams/:organizationId/env-variables?decrypt=true
 ```
 
 #### Delete Environment Variable
+
 ```http
 DELETE /api/teams/:organizationId/env-variables/:variableId
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Environment variable deleted"
@@ -348,6 +380,7 @@ DELETE /api/teams/:organizationId/env-variables/:variableId
 ### Sessions
 
 #### Create Collaboration Session
+
 ```http
 POST /api/collaboration/sessions
 Content-Type: application/json
@@ -362,6 +395,7 @@ Content-Type: application/json
 Session types: `editing`, `terminal`, `debugging`, `voice`, `video`
 
 **Response:**
+
 ```json
 {
   "session": {
@@ -378,11 +412,13 @@ Session types: `editing`, `terminal`, `debugging`, `voice`, `video`
 ```
 
 #### End Session
+
 ```http
 POST /api/collaboration/sessions/:sessionId/end
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Session ended"
@@ -390,11 +426,13 @@ POST /api/collaboration/sessions/:sessionId/end
 ```
 
 #### Get Active Sessions
+
 ```http
 GET /api/collaboration/projects/:projectId/sessions
 ```
 
 **Response:**
+
 ```json
 {
   "sessions": [
@@ -414,6 +452,7 @@ GET /api/collaboration/projects/:projectId/sessions
 ### Presence
 
 #### Update User Presence
+
 ```http
 POST /api/collaboration/presence
 Content-Type: application/json
@@ -431,6 +470,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "presence": {
@@ -450,11 +490,13 @@ Content-Type: application/json
 ```
 
 #### Get Active Users
+
 ```http
 GET /api/collaboration/projects/:projectId/users
 ```
 
 **Response:**
+
 ```json
 {
   "users": [
@@ -474,6 +516,7 @@ GET /api/collaboration/projects/:projectId/users
 ```
 
 #### Remove Presence
+
 ```http
 DELETE /api/collaboration/presence/:sessionId
 ```
@@ -481,6 +524,7 @@ DELETE /api/collaboration/presence/:sessionId
 ### Code Comments
 
 #### Create Comment
+
 ```http
 POST /api/collaboration/comments
 Content-Type: application/json
@@ -496,6 +540,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "comment": {
@@ -513,6 +558,7 @@ Content-Type: application/json
 ```
 
 #### Reply to Comment
+
 ```http
 POST /api/collaboration/comments/:commentId/replies
 Content-Type: application/json
@@ -524,6 +570,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "reply": {
@@ -537,11 +584,13 @@ Content-Type: application/json
 ```
 
 #### Resolve Comment
+
 ```http
 POST /api/collaboration/comments/:commentId/resolve
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Comment resolved"
@@ -549,11 +598,13 @@ POST /api/collaboration/comments/:commentId/resolve
 ```
 
 #### Get File Comments
+
 ```http
 GET /api/collaboration/projects/:projectId/files/:filePath/comments
 ```
 
 **Response:**
+
 ```json
 {
   "comments": [
@@ -571,11 +622,13 @@ GET /api/collaboration/projects/:projectId/files/:filePath/comments
 ```
 
 #### Get Project Comments
+
 ```http
 GET /api/collaboration/projects/:projectId/comments?resolved=false
 ```
 
 **Response:**
+
 ```json
 {
   "comments": [
@@ -593,11 +646,13 @@ GET /api/collaboration/projects/:projectId/comments?resolved=false
 ```
 
 #### Get Comment Thread
+
 ```http
 GET /api/collaboration/comments/:commentId/thread
 ```
 
 **Response:**
+
 ```json
 {
   "thread": [
@@ -625,6 +680,7 @@ GET /api/collaboration/comments/:commentId/thread
 ### Pull Requests
 
 #### Create Pull Request
+
 ```http
 POST /api/version-control/projects/:projectId/pull-requests
 Content-Type: application/json
@@ -640,6 +696,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "pullRequest": {
@@ -657,11 +714,13 @@ Content-Type: application/json
 ```
 
 #### Get Pull Request
+
 ```http
 GET /api/version-control/projects/:projectId/pull-requests/:prNumber
 ```
 
 **Response:**
+
 ```json
 {
   "pullRequest": {
@@ -681,11 +740,13 @@ GET /api/version-control/projects/:projectId/pull-requests/:prNumber
 ```
 
 #### Get Pull Requests
+
 ```http
 GET /api/version-control/projects/:projectId/pull-requests?status=open
 ```
 
 **Response:**
+
 ```json
 {
   "pullRequests": [
@@ -702,6 +763,7 @@ GET /api/version-control/projects/:projectId/pull-requests?status=open
 ```
 
 #### Submit Review
+
 ```http
 POST /api/version-control/pull-requests/:pullRequestId/reviews
 Content-Type: application/json
@@ -723,6 +785,7 @@ Content-Type: application/json
 Review statuses: `pending`, `approved`, `changes_requested`, `commented`
 
 **Response:**
+
 ```json
 {
   "review": {
@@ -737,11 +800,13 @@ Review statuses: `pending`, `approved`, `changes_requested`, `commented`
 ```
 
 #### Get Reviews
+
 ```http
 GET /api/version-control/pull-requests/:pullRequestId/reviews
 ```
 
 **Response:**
+
 ```json
 {
   "reviews": [
@@ -758,22 +823,22 @@ GET /api/version-control/pull-requests/:pullRequestId/reviews
 ```
 
 #### Check If PR Can Be Merged
+
 ```http
 GET /api/version-control/pull-requests/:pullRequestId/can-merge
 ```
 
 **Response:**
+
 ```json
 {
   "canMerge": false,
-  "reasons": [
-    "Requires 2 approvals, has 1",
-    "Changes requested by reviewers"
-  ]
+  "reasons": ["Requires 2 approvals, has 1", "Changes requested by reviewers"]
 }
 ```
 
 #### Merge Pull Request
+
 ```http
 POST /api/version-control/pull-requests/:pullRequestId/merge
 Content-Type: application/json
@@ -786,6 +851,7 @@ Content-Type: application/json
 Strategies: `merge`, `squash`, `rebase`
 
 **Response:**
+
 ```json
 {
   "message": "Pull request merged successfully"
@@ -793,11 +859,13 @@ Strategies: `merge`, `squash`, `rebase`
 ```
 
 #### Close Pull Request
+
 ```http
 POST /api/version-control/pull-requests/:pullRequestId/close
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Pull request closed"
@@ -807,6 +875,7 @@ POST /api/version-control/pull-requests/:pullRequestId/close
 ### Branch Protection
 
 #### Create Branch Protection Rule
+
 ```http
 POST /api/version-control/projects/:projectId/branch-protection
 Content-Type: application/json
@@ -825,6 +894,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "rule": {
@@ -839,11 +909,13 @@ Content-Type: application/json
 ```
 
 #### Get Branch Protection Rules
+
 ```http
 GET /api/version-control/projects/:projectId/branch-protection
 ```
 
 **Response:**
+
 ```json
 {
   "rules": [
@@ -858,11 +930,13 @@ GET /api/version-control/projects/:projectId/branch-protection
 ```
 
 #### Delete Branch Protection Rule
+
 ```http
 DELETE /api/version-control/branch-protection/:ruleId
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Branch protection rule deleted"
@@ -872,6 +946,7 @@ DELETE /api/version-control/branch-protection/:ruleId
 ### Deployment Protection
 
 #### Create Deployment Protection
+
 ```http
 POST /api/version-control/projects/:projectId/deployment-protection
 Content-Type: application/json
@@ -886,6 +961,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "protection": {
@@ -900,6 +976,7 @@ Content-Type: application/json
 ```
 
 #### Request Deployment Approval
+
 ```http
 POST /api/version-control/projects/:projectId/deployment-approvals
 Content-Type: application/json
@@ -911,6 +988,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "approval": {
@@ -924,11 +1002,13 @@ Content-Type: application/json
 ```
 
 #### Approve Deployment
+
 ```http
 POST /api/version-control/deployment-approvals/:approvalId/approve
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Deployment approved"
@@ -936,6 +1016,7 @@ POST /api/version-control/deployment-approvals/:approvalId/approve
 ```
 
 #### Reject Deployment
+
 ```http
 POST /api/version-control/deployment-approvals/:approvalId/reject
 Content-Type: application/json
@@ -946,6 +1027,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Deployment rejected"
@@ -953,11 +1035,13 @@ Content-Type: application/json
 ```
 
 #### Get Pending Approvals
+
 ```http
 GET /api/version-control/projects/:projectId/deployment-approvals/pending
 ```
 
 **Response:**
+
 ```json
 {
   "approvals": [
@@ -976,6 +1060,7 @@ GET /api/version-control/projects/:projectId/deployment-approvals/pending
 ### Merge Conflicts
 
 #### Detect Merge Conflicts
+
 ```http
 POST /api/version-control/projects/:projectId/merge-conflicts/detect
 Content-Type: application/json
@@ -987,17 +1072,16 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "hasConflicts": true,
-  "conflictingFiles": [
-    "/src/index.ts",
-    "/src/utils.ts"
-  ]
+  "conflictingFiles": ["/src/index.ts", "/src/utils.ts"]
 }
 ```
 
 #### Get Merge Conflict Content
+
 ```http
 POST /api/version-control/projects/:projectId/merge-conflicts/content
 Content-Type: application/json
@@ -1010,6 +1094,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "base": "// Base version content",
@@ -1026,6 +1111,7 @@ Content-Type: application/json
 ### Usage Tracking
 
 #### Track Usage
+
 ```http
 POST /api/team-billing/usage
 Content-Type: application/json
@@ -1041,6 +1127,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Usage tracked successfully"
@@ -1048,11 +1135,13 @@ Content-Type: application/json
 ```
 
 #### Get Member Usage
+
 ```http
 GET /api/team-billing/:organizationId/usage?userId=1&startDate=2024-01-01&endDate=2024-01-31
 ```
 
 **Response:**
+
 ```json
 {
   "usage": [
@@ -1070,11 +1159,13 @@ GET /api/team-billing/:organizationId/usage?userId=1&startDate=2024-01-01&endDat
 ```
 
 #### Get Aggregated Usage by Member
+
 ```http
 GET /api/team-billing/:organizationId/usage/by-member?startDate=2024-01-01&endDate=2024-01-31
 ```
 
 **Response:**
+
 ```json
 {
   "usage": [
@@ -1084,18 +1175,20 @@ GET /api/team-billing/:organizationId/usage/by-member?startDate=2024-01-01&endDa
       "totalComputeHours": 50.0,
       "totalStorageGb": 100.0,
       "totalBandwidthGb": 25.0,
-      "estimatedCost": 10.50
+      "estimatedCost": 10.5
     }
   ]
 }
 ```
 
 #### Get Aggregated Usage by Project
+
 ```http
 GET /api/team-billing/:organizationId/usage/by-project?startDate=2024-01-01&endDate=2024-01-31
 ```
 
 **Response:**
+
 ```json
 {
   "usage": [
@@ -1105,7 +1198,7 @@ GET /api/team-billing/:organizationId/usage/by-project?startDate=2024-01-01&endD
       "totalComputeHours": 100.0,
       "totalStorageGb": 200.0,
       "totalBandwidthGb": 50.0,
-      "estimatedCost": 21.00
+      "estimatedCost": 21.0
     }
   ]
 }
@@ -1114,6 +1207,7 @@ GET /api/team-billing/:organizationId/usage/by-project?startDate=2024-01-01&endD
 ### Billing Records
 
 #### Create Billing Record
+
 ```http
 POST /api/team-billing/:organizationId/billing
 Content-Type: application/json
@@ -1125,6 +1219,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "billing": {
@@ -1135,7 +1230,7 @@ Content-Type: application/json
     "total_compute_hours": 100.0,
     "total_storage_gb": 200.0,
     "total_bandwidth_gb": 50.0,
-    "total_cost": 21.00,
+    "total_cost": 21.0,
     "currency": "USD",
     "status": "pending"
   }
@@ -1143,11 +1238,13 @@ Content-Type: application/json
 ```
 
 #### Get Billing Records
+
 ```http
 GET /api/team-billing/:organizationId/billing?limit=12
 ```
 
 **Response:**
+
 ```json
 {
   "billing": [
@@ -1155,7 +1252,7 @@ GET /api/team-billing/:organizationId/billing?limit=12
       "id": 1,
       "billing_period_start": "2024-01-01",
       "billing_period_end": "2024-01-31",
-      "total_cost": 21.00,
+      "total_cost": 21.0,
       "status": "paid",
       "paid_at": "2024-02-01T00:00:00Z"
     }
@@ -1164,11 +1261,13 @@ GET /api/team-billing/:organizationId/billing?limit=12
 ```
 
 #### Mark Billing as Paid
+
 ```http
 POST /api/team-billing/:organizationId/billing/:billingId/paid
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Billing marked as paid"
@@ -1176,28 +1275,32 @@ POST /api/team-billing/:organizationId/billing/:billingId/paid
 ```
 
 #### Get Current Billing Cycle
+
 ```http
 GET /api/team-billing/:organizationId/billing/current
 ```
 
 **Response:**
+
 ```json
 {
   "computeHours": 25.0,
   "storageGb": 50.0,
   "bandwidthGb": 10.0,
-  "estimatedCost": 5.50,
+  "estimatedCost": 5.5,
   "periodStart": "2024-01-01T00:00:00Z",
   "periodEnd": "2024-01-31T23:59:59Z"
 }
 ```
 
 #### Get Usage Trend
+
 ```http
 GET /api/team-billing/:organizationId/usage/trend?days=30
 ```
 
 **Response:**
+
 ```json
 {
   "trend": [
@@ -1224,24 +1327,26 @@ GET /api/team-billing/:organizationId/usage/trend?days=30
 ### Connection
 
 Connect to the Socket.IO server:
+
 ```javascript
 import io from 'socket.io-client';
 
 const socket = io('http://localhost:4000', {
   auth: {
-    token: '<jwt_token>'
-  }
+    token: '<jwt_token>',
+  },
 });
 ```
 
 ### Collaboration Events
 
 #### Join Project
+
 ```javascript
 socket.emit('collaboration:join-project', {
   projectId: 1,
   userId: 1,
-  userName: 'John Doe'
+  userName: 'John Doe',
 });
 
 socket.on('collaboration:user-joined', (data) => {
@@ -1254,10 +1359,11 @@ socket.on('collaboration:active-users', (data) => {
 ```
 
 #### Leave Project
+
 ```javascript
 socket.emit('collaboration:leave-project', {
   projectId: 1,
-  userId: 1
+  userId: 1,
 });
 
 socket.on('collaboration:user-left', (data) => {
@@ -1266,13 +1372,14 @@ socket.on('collaboration:user-left', (data) => {
 ```
 
 #### Cursor Updates
+
 ```javascript
 // Send cursor position
 socket.emit('collaboration:cursor-update', {
   projectId: 1,
   userId: 1,
   filePath: '/src/index.ts',
-  cursorPosition: { line: 10, column: 5 }
+  cursorPosition: { line: 10, column: 5 },
 });
 
 // Receive cursor updates from others
@@ -1282,12 +1389,13 @@ socket.on('collaboration:cursor-update', (data) => {
 ```
 
 #### File Events
+
 ```javascript
 // Notify when opening a file
 socket.emit('collaboration:file-opened', {
   projectId: 1,
   userId: 1,
-  filePath: '/src/index.ts'
+  filePath: '/src/index.ts',
 });
 
 socket.on('collaboration:file-opened', (data) => {
@@ -1296,11 +1404,14 @@ socket.on('collaboration:file-opened', (data) => {
 ```
 
 #### Comments
+
 ```javascript
 // Notify about new comment
 socket.emit('collaboration:comment-added', {
   projectId: 1,
-  comment: { /* comment object */ }
+  comment: {
+    /* comment object */
+  },
 });
 
 socket.on('collaboration:comment-added', (data) => {
@@ -1310,7 +1421,7 @@ socket.on('collaboration:comment-added', (data) => {
 // Notify about resolved comment
 socket.emit('collaboration:comment-resolved', {
   projectId: 1,
-  commentId: 1
+  commentId: 1,
 });
 
 socket.on('collaboration:comment-resolved', (data) => {
@@ -1319,13 +1430,14 @@ socket.on('collaboration:comment-resolved', (data) => {
 ```
 
 #### Terminal Sharing
+
 ```javascript
 // Start terminal sharing
 socket.emit('terminal:share-start', {
   sessionId: 'terminal-123',
   projectId: 1,
   userId: 1,
-  accessControl: 'view-only' // or 'interactive'
+  accessControl: 'view-only', // or 'interactive'
 });
 
 socket.on('terminal:share-started', (data) => {
@@ -1335,7 +1447,7 @@ socket.on('terminal:share-started', (data) => {
 // Join terminal session
 socket.emit('terminal:share-join', {
   sessionId: 'terminal-123',
-  userId: 2
+  userId: 2,
 });
 
 socket.on('terminal:participant-joined', (data) => {
@@ -1345,7 +1457,7 @@ socket.on('terminal:participant-joined', (data) => {
 // Send terminal data
 socket.emit('terminal:share-data', {
   sessionId: 'terminal-123',
-  data: 'ls -la\n'
+  data: 'ls -la\n',
 });
 
 socket.on('terminal:share-data', (data) => {
@@ -1355,7 +1467,7 @@ socket.on('terminal:share-data', (data) => {
 // End terminal sharing
 socket.emit('terminal:share-end', {
   sessionId: 'terminal-123',
-  userId: 1
+  userId: 1,
 });
 
 socket.on('terminal:share-ended', (data) => {
@@ -1364,12 +1476,13 @@ socket.on('terminal:share-ended', (data) => {
 ```
 
 #### Debug Sessions
+
 ```javascript
 // Start debug session
 socket.emit('debug:session-start', {
   sessionId: 'debug-123',
   projectId: 1,
-  userId: 1
+  userId: 1,
 });
 
 socket.on('debug:session-started', (data) => {
@@ -1379,9 +1492,7 @@ socket.on('debug:session-started', (data) => {
 // Update breakpoints
 socket.emit('debug:breakpoint-update', {
   sessionId: 'debug-123',
-  breakpoints: [
-    { file: '/src/index.ts', line: 10, condition: 'x > 5' }
-  ]
+  breakpoints: [{ file: '/src/index.ts', line: 10, condition: 'x > 5' }],
 });
 
 socket.on('debug:breakpoint-update', (data) => {
@@ -1391,7 +1502,9 @@ socket.on('debug:breakpoint-update', (data) => {
 // Update debug state
 socket.emit('debug:state-update', {
   sessionId: 'debug-123',
-  state: { /* current debug state */ }
+  state: {
+    /* current debug state */
+  },
 });
 
 socket.on('debug:state-update', (data) => {
@@ -1400,12 +1513,13 @@ socket.on('debug:state-update', (data) => {
 ```
 
 #### Voice/Video Chat
+
 ```javascript
 // Start voice session
 socket.emit('voice:session-start', {
   sessionId: 'voice-123',
   projectId: 1,
-  userId: 1
+  userId: 1,
 });
 
 socket.on('voice:session-started', (data) => {
@@ -1419,8 +1533,8 @@ socket.emit('voice:media-update', {
   media: {
     isAudioEnabled: true,
     isVideoEnabled: false,
-    isScreenSharing: false
-  }
+    isScreenSharing: false,
+  },
 });
 
 socket.on('voice:media-update', (data) => {
@@ -1431,7 +1545,9 @@ socket.on('voice:media-update', (data) => {
 socket.emit('voice:signal', {
   sessionId: 'voice-123',
   targetUserId: 2,
-  signal: { /* WebRTC signal data */ }
+  signal: {
+    /* WebRTC signal data */
+  },
 });
 
 socket.on('voice:signal', (data) => {
@@ -1441,12 +1557,13 @@ socket.on('voice:signal', (data) => {
 ```
 
 #### Heartbeat
+
 ```javascript
 // Send heartbeat to keep presence alive
 setInterval(() => {
   socket.emit('collaboration:heartbeat', {
     projectId: 1,
-    userId: 1
+    userId: 1,
   });
 }, 30000); // Every 30 seconds
 ```
@@ -1465,6 +1582,7 @@ All API endpoints return error responses in the following format:
 ```
 
 Common HTTP status codes:
+
 - `200` - Success
 - `201` - Created
 - `400` - Bad Request
@@ -1477,9 +1595,11 @@ Common HTTP status codes:
 
 ## Rate Limiting
 
-API endpoints are rate-limited to prevent abuse. WebSocket connections are also monitored for excessive message rates.
+API endpoints are rate-limited to prevent abuse. WebSocket connections are also
+monitored for excessive message rates.
 
 Default limits:
+
 - API: 100 requests per minute per user
 - WebSocket: 1000 messages per minute per connection
 
@@ -1489,7 +1609,8 @@ Default limits:
 
 1. **Authentication**: All API endpoints require valid JWT tokens
 2. **Authorization**: Role-based access control (RBAC) is enforced
-3. **Encryption**: Sensitive data (environment variables) are encrypted at rest using AES-256-CBC
+3. **Encryption**: Sensitive data (environment variables) are encrypted at rest
+   using AES-256-CBC
 4. **Input Validation**: All inputs are validated and sanitized
 5. **SQL Injection**: All queries use parameterized statements
 6. **XSS Protection**: Content is properly escaped
@@ -1501,6 +1622,7 @@ Default limits:
 ## Pricing
 
 Example pricing (configurable):
+
 - Compute: $0.10 per hour
 - Storage: $0.02 per GB
 - Bandwidth: $0.05 per GB
@@ -1509,4 +1631,5 @@ Example pricing (configurable):
 
 ## Support
 
-For API support or questions, contact the development team or file an issue in the repository.
+For API support or questions, contact the development team or file an issue in
+the repository.

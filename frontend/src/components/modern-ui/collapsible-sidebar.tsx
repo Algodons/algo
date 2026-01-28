@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft,
   ChevronRight,
@@ -13,15 +13,15 @@ import {
   Folder,
   Home,
   Clock,
-} from 'lucide-react'
+} from 'lucide-react';
 
 interface SidebarProps {
-  children?: React.ReactNode
-  defaultCollapsed?: boolean
+  children?: React.ReactNode;
+  defaultCollapsed?: boolean;
 }
 
 export function CollapsibleSidebar({ children, defaultCollapsed = false }: SidebarProps) {
-  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed)
+  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
 
   const menuItems = [
     { icon: Home, label: 'Home', shortcut: 'Ctrl+H' },
@@ -31,7 +31,7 @@ export function CollapsibleSidebar({ children, defaultCollapsed = false }: Sideb
     { icon: Database, label: 'Database', shortcut: 'Ctrl+Shift+D' },
     { icon: Clock, label: 'Recent', shortcut: 'Ctrl+R' },
     { icon: Settings, label: 'Settings', shortcut: 'Ctrl+,' },
-  ]
+  ];
 
   return (
     <motion.aside
@@ -76,7 +76,7 @@ export function CollapsibleSidebar({ children, defaultCollapsed = false }: Sideb
       {/* Menu Items */}
       <nav className="flex-1 overflow-y-auto p-2 space-y-1">
         {menuItems.map((item, index) => {
-          const Icon = item.icon
+          const Icon = item.icon;
           return (
             <motion.button
               key={item.label}
@@ -120,7 +120,7 @@ export function CollapsibleSidebar({ children, defaultCollapsed = false }: Sideb
                 </div>
               )}
             </motion.button>
-          )
+          );
         })}
       </nav>
 
@@ -147,11 +147,7 @@ export function CollapsibleSidebar({ children, defaultCollapsed = false }: Sideb
       )}
 
       {/* Custom Content */}
-      {children && (
-        <div className="border-t border-white/10">
-          {children}
-        </div>
-      )}
+      {children && <div className="border-t border-white/10">{children}</div>}
     </motion.aside>
-  )
+  );
 }

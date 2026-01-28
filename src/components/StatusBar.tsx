@@ -1,12 +1,12 @@
-import './StatusBar.css'
+import './StatusBar.css';
 
 interface StatusBarProps {
-  activeFile?: string
+  activeFile?: string;
   cursorPosition?: {
-    lineNumber: number
-    column: number
-  }
-  language?: string
+    lineNumber: number;
+    column: number;
+  };
+  language?: string;
 }
 
 const StatusBar = ({ activeFile, cursorPosition, language }: StatusBarProps) => {
@@ -15,17 +15,13 @@ const StatusBar = ({ activeFile, cursorPosition, language }: StatusBarProps) => 
       <div className="status-section">
         {activeFile && (
           <>
-            <span className="status-item">
-              📁 {activeFile}
-            </span>
+            <span className="status-item">📁 {activeFile}</span>
             <span className="status-separator">|</span>
           </>
         )}
         {language && (
           <>
-            <span className="status-item">
-              {language}
-            </span>
+            <span className="status-item">{language}</span>
             <span className="status-separator">|</span>
           </>
         )}
@@ -35,14 +31,12 @@ const StatusBar = ({ activeFile, cursorPosition, language }: StatusBarProps) => 
           </span>
         )}
       </div>
-      
+
       <div className="status-section right">
-        <span className="status-item">
-          ⚡ Algo Code Editor
-        </span>
+        <span className="status-item">⚡ Algo Code Editor</span>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default StatusBar
+export default StatusBar;

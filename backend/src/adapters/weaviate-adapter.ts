@@ -27,9 +27,7 @@ export class WeaviateAdapter extends BaseAdapter {
       this.client = weaviate.client({
         scheme,
         host,
-        apiKey: this.credentials.apiKey
-          ? new weaviate.ApiKey(this.credentials.apiKey)
-          : undefined,
+        apiKey: this.credentials.apiKey ? new weaviate.ApiKey(this.credentials.apiKey) : undefined,
       });
 
       // Test connection

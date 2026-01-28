@@ -29,7 +29,13 @@ export function createAdminAffiliateRoutes(pool: Pool) {
         `INSERT INTO affiliates (user_id, affiliate_code, commission_type, commission_value, tier_config)
          VALUES ($1, $2, $3, $4, $5)
          RETURNING *`,
-        [userId, affiliateCode, commissionType, commissionValue, tierConfig ? JSON.stringify(tierConfig) : null]
+        [
+          userId,
+          affiliateCode,
+          commissionType,
+          commissionValue,
+          tierConfig ? JSON.stringify(tierConfig) : null,
+        ]
       );
 
       res.json({ affiliate: result.rows[0] });
@@ -45,7 +51,13 @@ export function createAdminAffiliateRoutes(pool: Pool) {
    */
   router.get('/', async (req: Request, res: Response) => {
     try {
-      const { status, page = '1', limit = '20', sortBy = 'created_at', sortOrder = 'DESC' } = req.query;
+      const {
+        status,
+        page = '1',
+        limit = '20',
+        sortBy = 'created_at',
+        sortOrder = 'DESC',
+      } = req.query;
 
       const offset = (parseInt(page as string) - 1) * parseInt(limit as string);
 
@@ -207,7 +219,16 @@ export function createAdminAffiliateRoutes(pool: Pool) {
    */
   router.post('/discount-codes', async (req: Request, res: Response) => {
     try {
-      const { code, type, value, affiliateId, usageLimit, minPurchaseAmount, applicableTiers, expiresAt } = req.body;
+      const {
+        code,
+        type,
+        value,
+        affiliateId,
+        usageLimit,
+        minPurchaseAmount,
+        applicableTiers,
+        expiresAt,
+      } = req.body;
 
       if (!code || !type || value === undefined) {
         return res.status(400).json({ error: 'Code, type, and value are required' });

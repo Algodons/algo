@@ -29,9 +29,7 @@ export function CodeComments({ projectId, filePath }: CodeCommentsProps) {
     try {
       setLoading(true);
       const allComments = await commentsApi.list(projectId, filePath);
-      const filtered = showResolved
-        ? allComments
-        : allComments.filter((c) => !c.resolved);
+      const filtered = showResolved ? allComments : allComments.filter((c) => !c.resolved);
       setComments(filtered);
     } catch (err) {
       console.error('Failed to load comments:', err);
@@ -66,14 +64,17 @@ export function CodeComments({ projectId, filePath }: CodeCommentsProps) {
     }
   };
 
-  const groupedComments = comments.reduce((acc, comment) => {
-    const key = `${comment.file_path}:${comment.line_number}`;
-    if (!acc[key]) {
-      acc[key] = [];
-    }
-    acc[key].push(comment);
-    return acc;
-  }, {} as Record<string, CodeComment[]>);
+  const groupedComments = comments.reduce(
+    (acc, comment) => {
+      const key = `${comment.file_path}:${comment.line_number}`;
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(comment);
+      return acc;
+    },
+    {} as Record<string, CodeComment[]>
+  );
 
   if (loading) {
     return (
@@ -90,11 +91,7 @@ export function CodeComments({ projectId, filePath }: CodeCommentsProps) {
           <MessageSquare className="w-5 h-5" />
           Code Comments
         </h3>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowResolved(!showResolved)}
-        >
+        <Button variant="outline" size="sm" onClick={() => setShowResolved(!showResolved)}>
           {showResolved ? 'Hide' : 'Show'} Resolved
         </Button>
       </div>
@@ -143,10 +140,7 @@ export function CodeComments({ projectId, filePath }: CodeCommentsProps) {
             const isResolved = locationComments.every((c) => c.resolved);
 
             return (
-              <Card
-                key={location}
-                className={`p-4 ${isResolved ? 'opacity-60' : ''}`}
-              >
+              <Card key={location} className={`p-4 ${isResolved ? 'opacity-60' : ''}`}>
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">

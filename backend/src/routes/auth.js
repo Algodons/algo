@@ -32,11 +32,9 @@ router.post('/register', validate(registerValidation), async (req, res) => {
     const user = result.rows[0];
 
     // Generate token
-    const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
-      JWT_SECRET,
-      { expiresIn: JWT_EXPIRATION }
-    );
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRATION,
+    });
 
     logger.info(`User registered: ${email}`);
 
@@ -71,11 +69,9 @@ router.post('/login', validate(loginValidation), async (req, res) => {
     }
 
     // Generate token
-    const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
-      JWT_SECRET,
-      { expiresIn: JWT_EXPIRATION }
-    );
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRATION,
+    });
 
     logger.info(`User logged in: ${email}`);
 

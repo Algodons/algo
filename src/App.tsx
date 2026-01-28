@@ -24,34 +24,28 @@ const App: React.FC = () => {
           <button className="btn">Database</button>
         </div>
       </header>
-      
+
       <div className="app-body">
         <aside className="sidebar">
-          <FileExplorer 
-            workspaceId={workspaceId} 
-            onFileSelect={setActiveFile}
-          />
+          <FileExplorer workspaceId={workspaceId} onFileSelect={setActiveFile} />
           <GitPanel workspaceId={workspaceId} />
           <PackageManager workspaceId={workspaceId} />
         </aside>
-        
+
         <main className="main-content">
           <div className="editor-section">
-            <Editor 
-              workspaceId={workspaceId}
-              filePath={activeFile}
-            />
+            <Editor workspaceId={workspaceId} filePath={activeFile} />
           </div>
-          
+
           <div className="preview-section">
             <PreviewPanel workspaceId={workspaceId} />
           </div>
-          
+
           <div className="terminal-section">
             <Terminal />
           </div>
         </main>
-        
+
         <aside className="right-sidebar">
           <DatabasePanel />
         </aside>

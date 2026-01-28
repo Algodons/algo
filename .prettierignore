@@ -37,3 +37,12 @@ Thumbs.db
 public/
 *.min.js
 *.min.css
+
+# MongoDB shell scripts (not standard JavaScript)
+backend/database/mongodb-init.js
+
+# Generated or vendor files
+backend/src/database/init.js
+
+# Workspace sample files
+workspace/

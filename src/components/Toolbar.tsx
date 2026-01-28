@@ -1,15 +1,15 @@
-import './Toolbar.css'
-import { EditorConfig } from '../types'
+import './Toolbar.css';
+import { EditorConfig } from '../types';
 
 interface ToolbarProps {
-  onNewFile: () => void
-  onSave: () => void
-  onSearch: () => void
-  onToggleTerminal: () => void
-  onSplitView: (mode: 'single' | 'horizontal' | 'vertical' | 'grid') => void
-  splitView: string
-  editorConfig: EditorConfig
-  onConfigChange: (config: EditorConfig) => void
+  onNewFile: () => void;
+  onSave: () => void;
+  onSearch: () => void;
+  onToggleTerminal: () => void;
+  onSplitView: (mode: 'single' | 'horizontal' | 'vertical' | 'grid') => void;
+  splitView: string;
+  editorConfig: EditorConfig;
+  onConfigChange: (config: EditorConfig) => void;
 }
 
 const Toolbar = ({
@@ -20,7 +20,7 @@ const Toolbar = ({
   onSplitView,
   splitView,
   editorConfig,
-  onConfigChange
+  onConfigChange,
 }: ToolbarProps) => {
   return (
     <div className="toolbar">
@@ -40,8 +40,8 @@ const Toolbar = ({
       </div>
 
       <div className="toolbar-section">
-        <select 
-          value={splitView} 
+        <select
+          value={splitView}
           onChange={(e) => onSplitView(e.target.value as any)}
           title="Split View"
         >
@@ -86,7 +86,9 @@ const Toolbar = ({
             min="8"
             max="24"
             value={editorConfig.fontSize}
-            onChange={(e) => onConfigChange({ ...editorConfig, fontSize: parseInt(e.target.value) })}
+            onChange={(e) =>
+              onConfigChange({ ...editorConfig, fontSize: parseInt(e.target.value) })
+            }
           />
         </label>
 
@@ -109,7 +111,7 @@ const Toolbar = ({
         </label>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Toolbar
+export default Toolbar;

@@ -1,6 +1,6 @@
 /**
  * Oracle Database Connector Service
- * 
+ *
  * Provides connection pooling and query execution for Oracle databases.
  * Supports stored procedures, transactions, and connection management.
  */
@@ -40,7 +40,7 @@ export class OracleConnector {
 
   /**
    * Initialize connection pool
-   * 
+   *
    * Note: This is a stub implementation. To use Oracle Database:
    * 1. Install oracledb: npm install oracledb
    * 2. Uncomment the implementation code below
@@ -59,7 +59,7 @@ export class OracleConnector {
       //   poolMax: this.config.poolMax,
       //   poolIncrement: this.config.poolIncrement,
       // });
-      
+
       console.log('Oracle connection pool initialized (stub mode)');
       console.log('To enable Oracle, install oracledb package and uncomment implementation');
     } catch (error) {
@@ -73,11 +73,11 @@ export class OracleConnector {
    */
   async query(sql: string, params: any[] = []): Promise<QueryResult> {
     let connection;
-    
+
     try {
       // Get connection from pool
       // connection = await this.connectionPool.getConnection();
-      
+
       // Execute query
       // const result = await connection.execute(sql, params, {
       //   outFormat: oracledb.OUT_FORMAT_OBJECT,
@@ -111,15 +111,12 @@ export class OracleConnector {
   /**
    * Execute a stored procedure
    */
-  async executeProcedure(
-    procedureName: string,
-    params: { [key: string]: any }
-  ): Promise<any> {
+  async executeProcedure(procedureName: string, params: { [key: string]: any }): Promise<any> {
     let connection;
-    
+
     try {
       // connection = await this.connectionPool.getConnection();
-      
+
       // Build bind parameters
       // const bindParams = {};
       // for (const [key, value] of Object.entries(params)) {
@@ -154,10 +151,10 @@ export class OracleConnector {
    */
   async transaction(queries: Array<{ sql: string; params: any[] }>): Promise<void> {
     let connection;
-    
+
     try {
       // connection = await this.connectionPool.getConnection();
-      
+
       // Execute all queries
       // for (const query of queries) {
       //   await connection.execute(query.sql, query.params, {
@@ -167,7 +164,7 @@ export class OracleConnector {
 
       // Commit transaction
       // await connection.commit();
-      
+
       console.log('Transaction completed successfully');
     } catch (error) {
       // Rollback on error
@@ -203,7 +200,7 @@ export class OracleConnector {
         connectionsOpen: 0,
         connectionsInUse: 0,
       };
-      
+
       return stats;
     } catch (error) {
       console.error('Failed to get pool stats:', error);

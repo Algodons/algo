@@ -3,11 +3,13 @@
 All notable changes to Algo Cloud IDE will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+and this project adheres to
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.0.0] - 2024-12-12
 
 ### Added
+
 - Initial release of Algo Cloud IDE
 - Multi-language code editor with Monaco Editor
 - Real-time collaborative editing with Yjs/CRDT
@@ -34,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Contributing guidelines
 
 ### Security
+
 - JWT-based authentication
 - Bcrypt password hashing
 - Container resource quotas (512MB RAM, 0.5 CPU)
@@ -42,6 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Secure credential management
 
 ### Infrastructure
+
 - Next.js 14 frontend with TypeScript
 - Node.js/Express backend
 - PostgreSQL for user data
@@ -54,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
+
 - Two-factor authentication
 - Advanced code intelligence features
 - Enhanced collaboration tools
@@ -67,4 +72,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-For detailed information about each release, visit the [releases page](https://github.com/Algodons/algo/releases).
+For detailed information about each release, visit the
+[releases page](https://github.com/Algodons/algo/releases).

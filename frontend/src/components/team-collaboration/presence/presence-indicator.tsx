@@ -65,7 +65,7 @@ export function PresenceIndicator({ projectId }: PresenceIndicatorProps) {
   return (
     <div className="flex items-center space-x-3 px-3 py-2 bg-gray-50 rounded-lg">
       <span className="text-sm font-medium text-gray-700">Active:</span>
-      
+
       <div className="flex items-center -space-x-2">
         {activeUsers.slice(0, 5).map((user) => (
           <div
@@ -73,22 +73,19 @@ export function PresenceIndicator({ projectId }: PresenceIndicatorProps) {
             className="relative group"
             title={`${user.user_name} - ${user.current_file || 'Browsing'}`}
           >
-            <Avatar
-              className="w-8 h-8 border-2 border-white"
-              style={{ borderColor: user.color }}
-            >
+            <Avatar className="w-8 h-8 border-2 border-white" style={{ borderColor: user.color }}>
               <AvatarFallback style={{ backgroundColor: user.color + '20', color: user.color }}>
                 {user.user_name.substring(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <div className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white ${STATUS_COLORS[user.status]}`}></div>
-            
+            <div
+              className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white ${STATUS_COLORS[user.status]}`}
+            ></div>
+
             {/* Tooltip */}
             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
               <div className="font-medium">{user.user_name}</div>
-              {user.current_file && (
-                <div className="text-gray-300">{user.current_file}</div>
-              )}
+              {user.current_file && <div className="text-gray-300">{user.current_file}</div>}
               {user.cursor_position && (
                 <div className="text-gray-400">
                   Line {user.cursor_position.line}, Col {user.cursor_position.column}
@@ -103,14 +100,10 @@ export function PresenceIndicator({ projectId }: PresenceIndicatorProps) {
       </div>
 
       {activeUsers.length > 5 && (
-        <div className="text-xs text-gray-500 font-medium">
-          +{activeUsers.length - 5} more
-        </div>
+        <div className="text-xs text-gray-500 font-medium">+{activeUsers.length - 5} more</div>
       )}
 
-      {activeUsers.length === 0 && (
-        <span className="text-sm text-gray-500">No active users</span>
-      )}
+      {activeUsers.length === 0 && <span className="text-sm text-gray-500">No active users</span>}
     </div>
   );
 }

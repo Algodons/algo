@@ -3,7 +3,7 @@ import './QueryBuilder.css';
 
 /**
  * Visual Query Builder Component
- * 
+ *
  * Security Note: This component generates SQL for preview and execution. While it implements
  * basic escaping for string values, the backend API should use parameterized queries when
  * executing SQL to prevent SQL injection attacks. The generated SQL should be treated as
@@ -53,8 +53,8 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({ connectionId, onExecute }) 
   const [selectColumns, setSelectColumns] = useState<SelectColumn[]>([]);
   const [joins, setJoins] = useState<JoinClause[]>([]);
   const [whereConditions, setWhereConditions] = useState<WhereCondition[]>([]);
-  const [groupBy, setGroupBy] = useState<string[]>([]);
-  const [orderBy, setOrderBy] = useState<{ column: string; direction: 'ASC' | 'DESC' }[]>([]);
+  const [groupBy, _setGroupBy] = useState<string[]>([]);
+  const [orderBy, _setOrderBy] = useState<{ column: string; direction: 'ASC' | 'DESC' }[]>([]);
   const [limit, setLimit] = useState<number>(100);
   const [generatedSQL, setGeneratedSQL] = useState<string>('');
 
@@ -70,9 +70,11 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({ connectionId, onExecute }) 
 
   const fetchTables = async () => {
     try {
-      const response = await fetch(`http://localhost:4000/api/databases/connections/${connectionId}/tables`);
+      const response = await fetch(
+        `http://localhost:4000/api/databases/connections/${connectionId}/tables`
+      );
       const data = await response.json();
-      
+
       if (data.tables) {
         const tablesWithColumns = await Promise.all(
           data.tables.map(async (tableName: string) => {
@@ -150,7 +152,7 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({ connectionId, onExecute }) 
               formattedValue = `'${cond.value.replace(/'/g, "''")}'`;
             }
           }
-          
+
           let condStr = `${cond.column} ${cond.operator} ${formattedValue}`;
           if (idx > 0) {
             condStr = `${cond.conjunction} ${condStr}`;
@@ -180,7 +182,10 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({ connectionId, onExecute }) 
   };
 
   const addSelectColumn = () => {
-    setSelectColumns([...selectColumns, { table: selectedTable, column: '', alias: '', aggregate: '' }]);
+    setSelectColumns([
+      ...selectColumns,
+      { table: selectedTable, column: '', alias: '', aggregate: '' },
+    ]);
   };
 
   const updateSelectColumn = (index: number, field: keyof SelectColumn, value: string) => {
@@ -233,7 +238,7 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({ connectionId, onExecute }) 
     <div className="query-builder">
       <div className="qb-section">
         <h3>Visual Query Builder</h3>
-        
+
         {/* Table Selection */}
         <div className="qb-field">
           <label>Base Table:</label>

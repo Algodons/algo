@@ -49,15 +49,15 @@ export function createAlertsRoutes(pool: Pool) {
       }
 
       if (!thresholdPercentage || thresholdPercentage < 1 || thresholdPercentage > 100) {
-        return res.status(400).json({ 
-          error: 'Threshold percentage must be between 1 and 100' 
+        return res.status(400).json({
+          error: 'Threshold percentage must be between 1 and 100',
         });
       }
 
       const validMetricTypes = ['storage', 'deployment_hours', 'bandwidth'];
       if (!validMetricTypes.includes(metricType)) {
-        return res.status(400).json({ 
-          error: `Invalid metric type. Must be one of: ${validMetricTypes.join(', ')}` 
+        return res.status(400).json({
+          error: `Invalid metric type. Must be one of: ${validMetricTypes.join(', ')}`,
         });
       }
 
@@ -82,8 +82,9 @@ export function createAlertsRoutes(pool: Pool) {
       );
 
       // Add unique constraint if it doesn't exist
-      await pool.query(
-        `DO $$ 
+      await pool
+        .query(
+          `DO $$ 
         BEGIN
           IF NOT EXISTS (
             SELECT 1 FROM pg_constraint 
@@ -94,14 +95,15 @@ export function createAlertsRoutes(pool: Pool) {
             UNIQUE (user_id, metric_type);
           END IF;
         END $$;`
-      ).catch(() => {
-        // Ignore if constraint already exists
-      });
+        )
+        .catch(() => {
+          // Ignore if constraint already exists
+        });
 
-      res.json({ 
+      res.json({
         success: true,
         alert: result.rows[0],
-        message: 'Alert configured successfully' 
+        message: 'Alert configured successfully',
       });
     } catch (error: any) {
       console.error('Error configuring alert:', error);
@@ -132,9 +134,9 @@ export function createAlertsRoutes(pool: Pool) {
         return res.status(404).json({ error: 'Alert not found' });
       }
 
-      res.json({ 
+      res.json({
         success: true,
-        message: 'Alert deleted successfully' 
+        message: 'Alert deleted successfully',
       });
     } catch (error) {
       console.error('Error deleting alert:', error);
@@ -206,10 +208,10 @@ export function createAlertsRoutes(pool: Pool) {
         return res.status(404).json({ error: 'Alert not found' });
       }
 
-      res.json({ 
+      res.json({
         success: true,
         alert: result.rows[0],
-        message: isActive ? 'Alert enabled' : 'Alert disabled' 
+        message: isActive ? 'Alert enabled' : 'Alert disabled',
       });
     } catch (error) {
       console.error('Error toggling alert:', error);

@@ -91,10 +91,9 @@ export function createAIRoutes(pool: Pool): Router {
 
       try {
         // Get agent details
-        const agent = await pool.query(
-          'SELECT * FROM ai_agents WHERE id = $1 AND active = true',
-          [agentId]
-        );
+        const agent = await pool.query('SELECT * FROM ai_agents WHERE id = $1 AND active = true', [
+          agentId,
+        ]);
 
         if (agent.rows.length === 0) {
           return res.status(404).json({
@@ -108,7 +107,13 @@ export function createAIRoutes(pool: Pool): Router {
           `INSERT INTO ai_agent_invocations (agent_id, user_id, input, context, parameters, status, created_at)
            VALUES ($1, $2, $3, $4, $5, 'pending', NOW())
            RETURNING *`,
-          [agentId, userId, JSON.stringify(input), JSON.stringify(context || {}), JSON.stringify(parameters || {})]
+          [
+            agentId,
+            userId,
+            JSON.stringify(input),
+            JSON.stringify(context || {}),
+            JSON.stringify(parameters || {}),
+          ]
         );
 
         // Simulate AI agent processing (in real implementation, this would call the actual agent)
@@ -123,7 +128,12 @@ export function createAIRoutes(pool: Pool): Router {
           `UPDATE ai_agent_invocations
            SET status = 'completed', output = $1, tokens_used = $2, execution_time_ms = $3, completed_at = NOW()
            WHERE id = $4`,
-          [JSON.stringify(result.output), result.tokens_used, result.execution_time_ms, invocation.rows[0].id]
+          [
+            JSON.stringify(result.output),
+            result.tokens_used,
+            result.execution_time_ms,
+            invocation.rows[0].id,
+          ]
         );
 
         res.json({
@@ -161,7 +171,7 @@ export function createAIRoutes(pool: Pool): Router {
         return res.status(400).json({ success: false, errors: errors.array() });
       }
 
-      const type = req.query.type as string || 'all';
+      const type = (req.query.type as string) || 'all';
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 20;
       const offset = (page - 1) * limit;
@@ -230,10 +240,9 @@ export function createAIRoutes(pool: Pool): Router {
 
       try {
         // Get model details
-        const model = await pool.query(
-          'SELECT * FROM ml_models WHERE id = $1 AND active = true',
-          [modelId]
-        );
+        const model = await pool.query('SELECT * FROM ml_models WHERE id = $1 AND active = true', [
+          modelId,
+        ]);
 
         if (model.rows.length === 0) {
           return res.status(404).json({
@@ -262,7 +271,12 @@ export function createAIRoutes(pool: Pool): Router {
           `UPDATE ml_predictions
            SET status = 'completed', output = $1, confidence = $2, execution_time_ms = $3, completed_at = NOW()
            WHERE id = $4`,
-          [JSON.stringify(result.prediction), result.confidence, result.execution_time_ms, prediction.rows[0].id]
+          [
+            JSON.stringify(result.prediction),
+            result.confidence,
+            result.execution_time_ms,
+            prediction.rows[0].id,
+          ]
         );
 
         res.json({

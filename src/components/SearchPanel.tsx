@@ -1,23 +1,23 @@
-import { useState } from 'react'
-import './SearchPanel.css'
-import { SearchResult } from '../types'
+import { useState } from 'react';
+import './SearchPanel.css';
+import { SearchResult } from '../types';
 
 interface SearchPanelProps {
-  onClose: () => void
-  onResultClick: (path: string) => void
+  onClose: () => void;
+  onResultClick: (path: string) => void;
 }
 
 const SearchPanel = ({ onClose, onResultClick }: SearchPanelProps) => {
-  const [query, setQuery] = useState('')
-  const [results, setResults] = useState<SearchResult[]>([])
-  const [searching, setSearching] = useState(false)
-  const [useRegex, setUseRegex] = useState(false)
-  const [caseSensitive, setCaseSensitive] = useState(false)
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [useRegex, setUseRegex] = useState(false);
+  const [caseSensitive, setCaseSensitive] = useState(false);
 
   const handleSearch = async () => {
-    if (!query) return
+    if (!query) return;
 
-    setSearching(true)
+    setSearching(true);
     try {
       const response = await fetch('/api/search', {
         method: 'POST',
@@ -25,24 +25,26 @@ const SearchPanel = ({ onClose, onResultClick }: SearchPanelProps) => {
         body: JSON.stringify({
           query,
           regex: useRegex,
-          caseSensitive
-        })
-      })
-      const data = await response.json()
-      setResults(data.results || [])
+          caseSensitive,
+        }),
+      });
+      const data = await response.json();
+      setResults(data.results || []);
     } catch (error) {
-      console.error('Search failed:', error)
-      setResults([])
+      console.error('Search failed:', error);
+      setResults([]);
     } finally {
-      setSearching(false)
+      setSearching(false);
     }
-  }
+  };
 
   return (
     <div className="search-panel">
       <div className="search-header">
         <h3>Search in Files</h3>
-        <button onClick={onClose} className="close-button">×</button>
+        <button onClick={onClose} className="close-button">
+          ×
+        </button>
       </div>
 
       <div className="search-input-container">
@@ -97,7 +99,7 @@ const SearchPanel = ({ onClose, onResultClick }: SearchPanelProps) => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SearchPanel
+export default SearchPanel;

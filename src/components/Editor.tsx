@@ -41,12 +41,8 @@ const Editor: React.FC<EditorProps> = ({ workspaceId, filePath }) => {
     const wsHost = window.location.hostname;
     const wsPort = window.location.port ? `:${window.location.port}` : '';
     const wsUrl = `${wsProtocol}//${wsHost}${wsPort}/yjs`;
-    
-    const provider = new WebsocketProvider(
-      wsUrl,
-      `${workspaceId}:${filePath}`,
-      doc
-    );
+
+    const provider = new WebsocketProvider(wsUrl, `${workspaceId}:${filePath}`, doc);
     providerRef.current = provider;
 
     provider.on('status', (event: { status: string }) => {
@@ -54,11 +50,11 @@ const Editor: React.FC<EditorProps> = ({ workspaceId, filePath }) => {
     });
 
     const yText = doc.getText('codemirror');
-    
+
     // Determine language based on file extension
     const extension = filePath.split('.').pop()?.toLowerCase();
     let languageSupport = javascript();
-    
+
     switch (extension) {
       case 'py':
         languageSupport = python();
@@ -91,16 +87,16 @@ const Editor: React.FC<EditorProps> = ({ workspaceId, filePath }) => {
           '&': {
             height: '100%',
             backgroundColor: '#1e1e1e',
-            color: '#d4d4d4'
-          }
-        })
-      ]
+            color: '#d4d4d4',
+          },
+        }),
+      ],
     });
 
     // Create editor view
     const view = new EditorView({
       state,
-      parent: editorRef.current
+      parent: editorRef.current,
     });
     viewRef.current = view;
 

@@ -14,13 +14,13 @@ const PackageManager: React.FC<PackageManagerProps> = ({ workspaceId }) => {
 
   const install = async () => {
     if (!packageName.trim()) return;
-    
+
     setLoading(true);
     try {
       const response = await fetch(`/api/package/${packageManager}/install`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ workspaceId, packages: packageName })
+        body: JSON.stringify({ workspaceId, packages: packageName }),
       });
       const data = await response.json();
       setMessage(data.success ? 'Package installed' : data.error);
@@ -38,7 +38,7 @@ const PackageManager: React.FC<PackageManagerProps> = ({ workspaceId }) => {
       const response = await fetch(`/api/package/${packageManager}/uninstall`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ workspaceId, packages: pkg })
+        body: JSON.stringify({ workspaceId, packages: pkg }),
       });
       const data = await response.json();
       setMessage(data.success ? 'Package uninstalled' : data.error);
@@ -51,7 +51,9 @@ const PackageManager: React.FC<PackageManagerProps> = ({ workspaceId }) => {
 
   const listPackages = async () => {
     try {
-      const response = await fetch(`/api/package/${packageManager}/list?workspaceId=${workspaceId}`);
+      const response = await fetch(
+        `/api/package/${packageManager}/list?workspaceId=${workspaceId}`
+      );
       const data = await response.json();
       if (data.success) {
         setPackages(Array.isArray(data.packages) ? data.packages : []);
@@ -68,12 +70,9 @@ const PackageManager: React.FC<PackageManagerProps> = ({ workspaceId }) => {
   return (
     <div className="package-manager panel">
       <div className="panel-title">Package Manager</div>
-      
+
       <div className="pm-section">
-        <select 
-          value={packageManager} 
-          onChange={(e) => setPackageManager(e.target.value as any)}
-        >
+        <select value={packageManager} onChange={(e) => setPackageManager(e.target.value as any)}>
           <option value="npm">npm</option>
           <option value="pip">pip</option>
           <option value="cargo">cargo</option>
@@ -93,11 +92,7 @@ const PackageManager: React.FC<PackageManagerProps> = ({ workspaceId }) => {
         </button>
       </div>
 
-      {message && (
-        <div className={message.includes('Failed') ? 'error' : 'success'}>
-          {message}
-        </div>
-      )}
+      {message && <div className={message.includes('Failed') ? 'error' : 'success'}>{message}</div>}
 
       <div className="package-list">
         <div className="package-list-header">
@@ -111,10 +106,7 @@ const PackageManager: React.FC<PackageManagerProps> = ({ workspaceId }) => {
             {packages.slice(0, 10).map((pkg: any, idx) => (
               <li key={idx}>
                 <span>{pkg.name || pkg}</span>
-                <button 
-                  className="btn-remove"
-                  onClick={() => uninstall(pkg.name || pkg)}
-                >
+                <button className="btn-remove" onClick={() => uninstall(pkg.name || pkg)}>
                   ×
                 </button>
               </li>

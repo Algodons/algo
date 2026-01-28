@@ -1,6 +1,13 @@
 import { Pool } from 'pg';
 import crypto from 'crypto';
-import { ApiKey, ApiKeyCreate, Webhook, ApiUsage, ApiUsageAnalytics, WebhookDelivery } from '../types/dashboard';
+import {
+  ApiKey,
+  ApiKeyCreate,
+  Webhook,
+  ApiUsage,
+  ApiUsageAnalytics,
+  WebhookDelivery,
+} from '../types/dashboard';
 
 // HTTP status code constants
 const HTTP_STATUS_SUCCESS_MIN = 200;
@@ -9,7 +16,10 @@ const HTTP_STATUS_SUCCESS_MAX = 300;
 export class ApiManagementService {
   constructor(private pool: Pool) {}
 
-  async generateApiKey(userId: number, keyData: ApiKeyCreate): Promise<{ apiKey: ApiKey; plainKey: string }> {
+  async generateApiKey(
+    userId: number,
+    keyData: ApiKeyCreate
+  ): Promise<{ apiKey: ApiKey; plainKey: string }> {
     // Generate a random API key
     const plainKey = `algo_${crypto.randomBytes(32).toString('hex')}`;
     const keyPrefix = plainKey.substring(0, 12);
@@ -46,10 +56,9 @@ export class ApiManagementService {
     const apiKey = result.rows[0];
 
     // Update last used timestamp
-    await this.pool.query(
-      'UPDATE api_keys SET last_used_at = CURRENT_TIMESTAMP WHERE id = $1',
-      [apiKey.id]
-    );
+    await this.pool.query('UPDATE api_keys SET last_used_at = CURRENT_TIMESTAMP WHERE id = $1', [
+      apiKey.id,
+    ]);
 
     return apiKey;
   }
@@ -75,15 +84,15 @@ export class ApiManagementService {
   }
 
   async deleteApiKey(userId: number, keyId: number): Promise<void> {
-    await this.pool.query(
-      'DELETE FROM api_keys WHERE id = $1 AND user_id = $2',
-      [keyId, userId]
-    );
+    await this.pool.query('DELETE FROM api_keys WHERE id = $1 AND user_id = $2', [keyId, userId]);
   }
 
   async createWebhook(
     userId: number,
-    webhookData: Omit<Webhook, 'id' | 'createdAt' | 'updatedAt' | 'lastTriggeredAt' | 'failureCount'>
+    webhookData: Omit<
+      Webhook,
+      'id' | 'createdAt' | 'updatedAt' | 'lastTriggeredAt' | 'failureCount'
+    >
   ): Promise<Webhook> {
     const secret = crypto.randomBytes(32).toString('hex');
 
@@ -160,17 +169,13 @@ export class ApiManagementService {
   }
 
   async deleteWebhook(userId: number, webhookId: number): Promise<void> {
-    await this.pool.query(
-      'DELETE FROM webhooks WHERE id = $1 AND user_id = $2',
-      [webhookId, userId]
-    );
+    await this.pool.query('DELETE FROM webhooks WHERE id = $1 AND user_id = $2', [
+      webhookId,
+      userId,
+    ]);
   }
 
-  async triggerWebhook(
-    webhookId: number,
-    eventType: string,
-    payload: any
-  ): Promise<void> {
+  async triggerWebhook(webhookId: number, eventType: string, payload: any): Promise<void> {
     const webhook = await this.pool.query(
       'SELECT * FROM webhooks WHERE id = $1 AND is_active = true',
       [webhookId]

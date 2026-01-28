@@ -134,13 +134,14 @@ export class PostgresAdapter extends BaseAdapter {
     `;
 
     try {
-      const [columnsResult, primaryKeyResult, indexesResult, foreignKeysResult] =
-        await Promise.all([
+      const [columnsResult, primaryKeyResult, indexesResult, foreignKeysResult] = await Promise.all(
+        [
           this.executeQuery(columnsQuery, [tableName]),
           this.executeQuery(primaryKeyQuery, [tableName]),
           this.executeQuery(indexesQuery, [tableName]),
           this.executeQuery(foreignKeysQuery, [tableName]),
-        ]);
+        ]
+      );
 
       const columns: SchemaColumn[] = (columnsResult.rows || []).map((row: any) => ({
         name: row.column_name,

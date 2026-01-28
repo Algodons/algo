@@ -15,7 +15,8 @@ Operational procedures for managing the scalability infrastructure.
 
 ### Clear All Caches
 
-**When to use**: After critical data updates, cache corruption, or system issues.
+**When to use**: After critical data updates, cache corruption, or system
+issues.
 
 ```bash
 # Using API
@@ -58,6 +59,7 @@ redis-cli -h redis.example.com -a $REDIS_PASSWORD INFO stats
 ```
 
 **Key metrics to monitor**:
+
 - Hit rate (should be > 80%)
 - Memory usage (should be < 90%)
 - Evicted keys (should be low)
@@ -101,7 +103,9 @@ redis-cli -h redis.example.com -a $REDIS_PASSWORD --scan --pattern "sess:*" | wc
 ```
 
 **Action if memory > 90%**:
-1. Clear old sessions: `redis-cli --scan --pattern "sess:*" | xargs redis-cli DEL`
+
+1. Clear old sessions:
+   `redis-cli --scan --pattern "sess:*" | xargs redis-cli DEL`
 2. Increase max memory: Update redis deployment
 3. Review cache TTLs
 
@@ -151,6 +155,7 @@ kubectl describe service backend -n algo-ide
 **Automatic**: Health checks remove unhealthy backends automatically.
 
 **Manual removal**:
+
 ```bash
 # Identify unhealthy pod
 kubectl get pods -n algo-ide -l app=backend
@@ -305,6 +310,7 @@ kubectl logs backend-pod -n algo-ide --previous
 ```
 
 **Resolution**:
+
 1. Identify memory usage pattern
 2. Increase memory limits in deployment
 3. Investigate memory leaks if persistent
@@ -364,6 +370,7 @@ kubectl get events -n algo-ide | grep -i "spot\|interrupt"
 **Automatic**: System handles gracefully with 2-minute warning.
 
 **Manual intervention**:
+
 ```bash
 # Check pods being evicted
 kubectl get pods -n algo-ide | grep Evicted
@@ -406,7 +413,7 @@ curl -X POST https://api.example.com/api/admin/projects/:projectId/suspend \
 
 # Via database
 psql -h db.example.com -U algo_user -d algo_ide -c \
-  "UPDATE projects SET status = 'suspended', suspended_at = NOW() 
+  "UPDATE projects SET status = 'suspended', suspended_at = NOW()
    WHERE id = 'project-id';"
 ```
 
@@ -457,6 +464,7 @@ psql -h db.example.com -U algo_user -d algo_ide -c \
 **Symptoms**: Cache hit rate < 70%, slow API responses.
 
 **Investigation**:
+
 ```bash
 # Check cache stats
 curl https://api.example.com/api/cache/stats
@@ -469,6 +477,7 @@ redis-cli -h redis.example.com -a $REDIS_PASSWORD KEYS "api:*" | head -20
 ```
 
 **Resolution**:
+
 1. Check if cache was recently cleared
 2. Review TTL settings (may be too short)
 3. Check for cache key generation issues
@@ -479,6 +488,7 @@ redis-cli -h redis.example.com -a $REDIS_PASSWORD KEYS "api:*" | head -20
 **Symptoms**: High CPU/memory, slow responses, timeouts.
 
 **Investigation**:
+
 ```bash
 # Check pod resource usage
 kubectl top pods -n algo-ide -l app=backend
@@ -491,7 +501,9 @@ kubectl logs -n algo-ide -l app=backend --tail=100
 ```
 
 **Resolution**:
-1. Manually scale up: `kubectl scale deployment backend --replicas=10 -n algo-ide`
+
+1. Manually scale up:
+   `kubectl scale deployment backend --replicas=10 -n algo-ide`
 2. Check for long-running queries
 3. Review application code for issues
 4. Clear cache if needed
@@ -501,6 +513,7 @@ kubectl logs -n algo-ide -l app=backend --tail=100
 **Symptoms**: Frequent scale up/down events, unstable pod count.
 
 **Investigation**:
+
 ```bash
 # View scaling events
 kubectl describe hpa backend-hpa -n algo-ide | grep -A 20 "Events:"
@@ -510,6 +523,7 @@ kubectl get hpa backend-hpa -n algo-ide -o yaml
 ```
 
 **Resolution**:
+
 1. Increase cooldown periods
 2. Adjust threshold values
 3. Increase stabilization window
@@ -520,6 +534,7 @@ kubectl get hpa backend-hpa -n algo-ide -o yaml
 **Symptoms**: Connection errors, "too many clients" errors.
 
 **Investigation**:
+
 ```bash
 # Check active connections
 psql -h db.example.com -U postgres -c \
@@ -531,12 +546,14 @@ psql -h db.example.com -U postgres -c \
 
 # Check by application
 psql -h db.example.com -U postgres -c \
-  "SELECT application_name, count(*) FROM pg_stat_activity 
+  "SELECT application_name, count(*) FROM pg_stat_activity
    GROUP BY application_name;"
 ```
 
 **Resolution**:
-1. Kill idle connections: `SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE state = 'idle';`
+
+1. Kill idle connections:
+   `SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE state = 'idle';`
 2. Increase connection pool size
 3. Implement connection pooling (PgBouncer)
 4. Scale database if needed
@@ -546,6 +563,7 @@ psql -h db.example.com -U postgres -c \
 **Symptoms**: OOM errors, evictions, connection timeouts.
 
 **Investigation**:
+
 ```bash
 # Check memory usage
 redis-cli -h redis.example.com -a $REDIS_PASSWORD INFO memory
@@ -558,7 +576,9 @@ redis-cli -h redis.example.com -a $REDIS_PASSWORD --bigkeys
 ```
 
 **Resolution**:
-1. Clear old sessions: `redis-cli --scan --pattern "sess:*" | xargs redis-cli DEL`
+
+1. Clear old sessions:
+   `redis-cli --scan --pattern "sess:*" | xargs redis-cli DEL`
 2. Reduce TTLs if too long
 3. Increase Redis memory limits
 4. Enable LRU eviction policy
@@ -568,18 +588,20 @@ redis-cli -h redis.example.com -a $REDIS_PASSWORD --bigkeys
 **Symptoms**: Many projects suspended unexpectedly.
 
 **Investigation**:
+
 ```bash
 # Check suspension service logs
 kubectl logs -n algo-ide -l app=suspension-service
 
 # Check suspended projects
 psql -h db.example.com -U algo_user -d algo_ide -c \
-  "SELECT count(*), suspended_at::date 
-   FROM projects WHERE status = 'suspended' 
+  "SELECT count(*), suspended_at::date
+   FROM projects WHERE status = 'suspended'
    GROUP BY suspended_at::date;"
 ```
 
 **Resolution**:
+
 1. Check if threshold was changed
 2. Verify activity tracking is working
 3. Bulk wake projects if needed
@@ -666,11 +688,11 @@ alerts:
   - name: CacheHitRateLow
     condition: hit_rate < 0.7
     severity: warning
-    
+
   - name: BackendCPUHigh
     condition: cpu_usage > 0.8
     severity: critical
-    
+
   - name: HighErrorRate
     condition: error_rate > 0.05
     severity: critical

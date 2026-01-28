@@ -287,7 +287,7 @@ export class BillingService {
         );
 
         await client.query('COMMIT');
-        
+
         // Send payment confirmation email
         await this.notificationService.sendPaymentConfirmation(
           invoice.user_id,
@@ -295,7 +295,7 @@ export class BillingService {
           invoice.amount,
           invoice.currency
         );
-        
+
         return { success: true, transactionId: paymentResult.transactionId };
       } else {
         // Record payment failure
@@ -317,7 +317,7 @@ export class BillingService {
         );
 
         await client.query('COMMIT');
-        
+
         // Send payment failure notification
         await this.notificationService.sendPaymentFailure(
           invoice.user_id,
@@ -326,7 +326,7 @@ export class BillingService {
           invoice.currency,
           paymentResult.error || 'Payment processing failed'
         );
-        
+
         return { success: false, error: paymentResult.error };
       }
     } catch (error) {
@@ -643,7 +643,11 @@ export class BillingService {
   /**
    * Process webhook event
    */
-  private async processWebhookEvent(provider: string, eventType: string, payload: any): Promise<void> {
+  private async processWebhookEvent(
+    provider: string,
+    eventType: string,
+    payload: any
+  ): Promise<void> {
     // Handle different event types
     switch (eventType) {
       case 'payment_intent.succeeded':

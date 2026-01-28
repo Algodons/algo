@@ -60,7 +60,10 @@ export const organizationApi = {
 
 // Member APIs
 export const memberApi = {
-  invite: async (organizationId: number, data: InviteMemberRequest): Promise<OrganizationMember> => {
+  invite: async (
+    organizationId: number,
+    data: InviteMemberRequest
+  ): Promise<OrganizationMember> => {
     const client = createAuthClient();
     const response = await client.post(`/api/teams/${organizationId}/members`, data);
     return response.data.member;
@@ -105,11 +108,14 @@ export const presenceApi = {
 
 // Comments APIs
 export const commentsApi = {
-  create: async (projectId: number, data: {
-    filePath: string;
-    lineNumber: number;
-    content: string;
-  }): Promise<CodeComment> => {
+  create: async (
+    projectId: number,
+    data: {
+      filePath: string;
+      lineNumber: number;
+      content: string;
+    }
+  ): Promise<CodeComment> => {
     const client = createAuthClient();
     const response = await client.post(`/api/collaboration/projects/${projectId}/comments`, data);
     return response.data.comment;
@@ -133,7 +139,10 @@ export const commentsApi = {
 export const pullRequestApi = {
   create: async (projectId: number, data: CreatePullRequestRequest): Promise<PullRequest> => {
     const client = createAuthClient();
-    const response = await client.post(`/api/version-control/projects/${projectId}/pull-requests`, data);
+    const response = await client.post(
+      `/api/version-control/projects/${projectId}/pull-requests`,
+      data
+    );
     return response.data.pullRequest;
   },
 
@@ -147,7 +156,9 @@ export const pullRequestApi = {
 
   get: async (projectId: number, prNumber: number): Promise<PullRequest> => {
     const client = createAuthClient();
-    const response = await client.get(`/api/version-control/projects/${projectId}/pull-requests/${prNumber}`);
+    const response = await client.get(
+      `/api/version-control/projects/${projectId}/pull-requests/${prNumber}`
+    );
     return response.data.pullRequest;
   },
 
@@ -164,18 +175,26 @@ export const pullRequestApi = {
 
 // Review APIs
 export const reviewApi = {
-  submit: async (pullRequestId: number, data: {
-    status: string;
-    comment?: string;
-  }): Promise<PullRequestReview> => {
+  submit: async (
+    pullRequestId: number,
+    data: {
+      status: string;
+      comment?: string;
+    }
+  ): Promise<PullRequestReview> => {
     const client = createAuthClient();
-    const response = await client.post(`/api/version-control/pull-requests/${pullRequestId}/reviews`, data);
+    const response = await client.post(
+      `/api/version-control/pull-requests/${pullRequestId}/reviews`,
+      data
+    );
     return response.data.review;
   },
 
   list: async (pullRequestId: number): Promise<PullRequestReview[]> => {
     const client = createAuthClient();
-    const response = await client.get(`/api/version-control/pull-requests/${pullRequestId}/reviews`);
+    const response = await client.get(
+      `/api/version-control/pull-requests/${pullRequestId}/reviews`
+    );
     return response.data.reviews;
   },
 };
@@ -203,16 +222,19 @@ export const billingApi = {
 
 // Permissions APIs
 export const permissionsApi = {
-  set: async (projectId: number, data: {
-    userId?: number;
-    organizationId?: number;
-    permissions: {
-      read: boolean;
-      write: boolean;
-      deploy: boolean;
-      admin: boolean;
-    };
-  }): Promise<ProjectPermissions> => {
+  set: async (
+    projectId: number,
+    data: {
+      userId?: number;
+      organizationId?: number;
+      permissions: {
+        read: boolean;
+        write: boolean;
+        deploy: boolean;
+        admin: boolean;
+      };
+    }
+  ): Promise<ProjectPermissions> => {
     const client = createAuthClient();
     const response = await client.post(`/api/teams/projects/${projectId}/permissions`, data);
     return response.data.permissions;

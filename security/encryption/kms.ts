@@ -57,13 +57,13 @@ export class KeyManagementService {
    */
   private async initializeLocalKMS(): Promise<void> {
     const keyPath = this.config.keyStorePath || path.join(process.cwd(), '.keys');
-    
+
     if (!fs.existsSync(keyPath)) {
       fs.mkdirSync(keyPath, { recursive: true, mode: 0o700 });
     }
 
     const masterKeyPath = path.join(keyPath, 'master.key');
-    
+
     if (fs.existsSync(masterKeyPath)) {
       // Load existing master key
       this.masterKey = fs.readFileSync(masterKeyPath);
@@ -80,7 +80,9 @@ export class KeyManagementService {
   private async initializeAWSKMS(): Promise<void> {
     // Placeholder for AWS KMS integration
     // In production, use AWS SDK to interact with KMS
-    throw new Error('AWS KMS integration not yet implemented. Use local provider or implement AWS SDK integration.');
+    throw new Error(
+      'AWS KMS integration not yet implemented. Use local provider or implement AWS SDK integration.'
+    );
   }
 
   /**
@@ -89,7 +91,9 @@ export class KeyManagementService {
   private async initializeVaultKMS(): Promise<void> {
     // Placeholder for Vault integration
     // In production, use vault client to manage keys
-    throw new Error('Vault KMS integration not yet implemented. Use local provider or implement Vault client integration.');
+    throw new Error(
+      'Vault KMS integration not yet implemented. Use local provider or implement Vault client integration.'
+    );
   }
 
   /**
@@ -107,12 +111,9 @@ export class KeyManagementService {
     // Encrypt the DEK with the master key
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv('aes-256-gcm', this.masterKey, iv);
-    
-    const encrypted = Buffer.concat([
-      cipher.update(plaintext),
-      cipher.final(),
-    ]);
-    
+
+    const encrypted = Buffer.concat([cipher.update(plaintext), cipher.final()]);
+
     const authTag = cipher.getAuthTag();
 
     // Store metadata
@@ -155,10 +156,7 @@ export class KeyManagementService {
     const decipher = crypto.createDecipheriv('aes-256-gcm', this.masterKey, iv);
     decipher.setAuthTag(authTag);
 
-    const plaintext = Buffer.concat([
-      decipher.update(encrypted),
-      decipher.final(),
-    ]);
+    const plaintext = Buffer.concat([decipher.update(encrypted), decipher.final()]);
 
     return plaintext;
   }
@@ -198,7 +196,7 @@ export class KeyManagementService {
    * List all keys
    */
   listKeys(): KeyMetadata[] {
-    return Array.from(this.keys.values()).map(k => k.metadata);
+    return Array.from(this.keys.values()).map((k) => k.metadata);
   }
 
   /**

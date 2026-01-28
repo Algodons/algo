@@ -32,7 +32,9 @@ export function MergeConflictResolver({
   onCancel,
 }: MergeConflictResolverProps) {
   const [files, setFiles] = useState<ConflictFile[]>(initialFiles);
-  const [expandedFiles, setExpandedFiles] = useState<Set<string>>(new Set(initialFiles.map(f => f.path)));
+  const [expandedFiles, setExpandedFiles] = useState<Set<string>>(
+    new Set(initialFiles.map((f) => f.path))
+  );
   const [expandedConflicts, setExpandedConflicts] = useState<Set<string>>(new Set());
 
   const toggleFile = (path: string) => {
@@ -78,10 +80,7 @@ export function MergeConflictResolver({
   };
 
   const getResolvedConflicts = () => {
-    return files.reduce(
-      (sum, file) => sum + file.conflicts.filter((c) => c.resolution).length,
-      0
-    );
+    return files.reduce((sum, file) => sum + file.conflicts.filter((c) => c.resolution).length, 0);
   };
 
   const allResolved = getTotalConflicts() === getResolvedConflicts();
@@ -137,7 +136,10 @@ export function MergeConflictResolver({
             const fileResolved = file.conflicts.every((c) => c.resolution);
 
             return (
-              <Card key={file.path} className={`overflow-hidden ${fileResolved ? 'border-green-200' : ''}`}>
+              <Card
+                key={file.path}
+                className={`overflow-hidden ${fileResolved ? 'border-green-200' : ''}`}
+              >
                 <div
                   className="p-4 cursor-pointer hover:bg-gray-50 flex items-center justify-between"
                   onClick={() => toggleFile(file.path)}
@@ -183,8 +185,8 @@ export function MergeConflictResolver({
                                 {conflict.resolution === 'manual'
                                   ? 'Manual'
                                   : conflict.resolution === 'source'
-                                  ? 'Source'
-                                  : 'Target'}
+                                    ? 'Source'
+                                    : 'Target'}
                               </Badge>
                             )}
                           </div>
@@ -209,8 +211,12 @@ export function MergeConflictResolver({
                                   </span>
                                   <Button
                                     size="sm"
-                                    variant={conflict.resolution === 'source' ? 'default' : 'outline'}
-                                    onClick={() => resolveConflict(fileIndex, conflictIndex, 'source')}
+                                    variant={
+                                      conflict.resolution === 'source' ? 'default' : 'outline'
+                                    }
+                                    onClick={() =>
+                                      resolveConflict(fileIndex, conflictIndex, 'source')
+                                    }
                                   >
                                     {conflict.resolution === 'source' ? (
                                       <Check className="w-4 h-4 mr-1" />
@@ -231,8 +237,12 @@ export function MergeConflictResolver({
                                   </span>
                                   <Button
                                     size="sm"
-                                    variant={conflict.resolution === 'target' ? 'default' : 'outline'}
-                                    onClick={() => resolveConflict(fileIndex, conflictIndex, 'target')}
+                                    variant={
+                                      conflict.resolution === 'target' ? 'default' : 'outline'
+                                    }
+                                    onClick={() =>
+                                      resolveConflict(fileIndex, conflictIndex, 'target')
+                                    }
                                   >
                                     {conflict.resolution === 'target' ? (
                                       <Check className="w-4 h-4 mr-1" />

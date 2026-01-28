@@ -1,10 +1,12 @@
 # Vercel Deployment Guide
 
-This guide will help you deploy the Algo Cloud IDE platform to Vercel for testing, staging, and production environments.
+This guide will help you deploy the Algo Cloud IDE platform to Vercel for
+testing, staging, and production environments.
 
 ## 🏗️ Architecture Overview
 
 This is a **monorepo** with two main components:
+
 1. **Frontend** (Next.js 15) - Located in `/frontend` directory
 2. **Backend** (Express.js) - Located in `/backend` directory
 
@@ -13,14 +15,20 @@ This is a **monorepo** with two main components:
 For Vercel deployment, we have two options:
 
 **Option A: Frontend Only on Vercel (Recommended)**
+
 - Deploy the Next.js frontend to Vercel
-- Deploy the backend separately to a service that supports WebSockets and persistent connections (Railway, Render, Fly.io, AWS, etc.)
-- This is recommended because the backend requires WebSocket support, terminal sessions (node-pty), and persistent connections which are not ideal for serverless
+- Deploy the backend separately to a service that supports WebSockets and
+  persistent connections (Railway, Render, Fly.io, AWS, etc.)
+- This is recommended because the backend requires WebSocket support, terminal
+  sessions (node-pty), and persistent connections which are not ideal for
+  serverless
 
 **Option B: Both on Vercel (Limited Features)**
+
 - Deploy frontend to Vercel
 - Deploy backend API routes as serverless functions
-- ⚠️ Note: Some features like terminal sessions, WebSockets, and long-running processes won't work in serverless
+- ⚠️ Note: Some features like terminal sessions, WebSockets, and long-running
+  processes won't work in serverless
 
 This guide focuses on **Option A** as it provides the best user experience.
 
@@ -30,13 +38,15 @@ This guide focuses on **Option A** as it provides the best user experience.
 
 1. **Vercel Account** - Sign up at [vercel.com](https://vercel.com)
 2. **GitHub Repository** - Your code should be in a Git repository
-3. **Backend Deployment** - Have your backend deployed elsewhere (see Backend Deployment section)
+3. **Backend Deployment** - Have your backend deployed elsewhere (see Backend
+   Deployment section)
 
 ---
 
 ## 🚀 Step 1: Backend Deployment
 
 Deploy the backend to a platform that supports:
+
 - WebSocket connections
 - Long-running processes
 - Terminal sessions (node-pty)
@@ -44,6 +54,7 @@ Deploy the backend to a platform that supports:
 ### Recommended Platforms:
 
 #### Railway (Easiest)
+
 ```bash
 # Install Railway CLI
 npm install -g @railway/cli
@@ -60,6 +71,7 @@ railway up
 Get your backend URL: `https://your-app.railway.app`
 
 #### Render
+
 1. Go to [render.com](https://render.com)
 2. Create a new Web Service
 3. Connect your repository
@@ -68,6 +80,7 @@ Get your backend URL: `https://your-app.railway.app`
 6. Start command: `npm start`
 
 #### Fly.io
+
 ```bash
 # Install Fly CLI
 curl -L https://fly.io/install.sh | sh
@@ -118,18 +131,18 @@ MONGODB_URI=mongodb+srv://...
 3. **Configure Project Settings**
 
    **Framework Preset:** Next.js
-   
+
    **Root Directory:** `frontend` (⚠️ Important!)
-   
+
    **Build & Development Settings:**
    - Build Command: `npm run build`
    - Output Directory: `.next` (default)
    - Install Command: `npm install`
-   
+
    **Node Version:** 18.x or higher
 
 4. **Environment Variables**
-   
+
    Add these environment variables (click "Environment Variables" tab):
 
    ```
@@ -144,6 +157,7 @@ MONGODB_URI=mongodb+srv://...
    ```
 
    **Generate secure secrets:**
+
    ```bash
    # Use this command to generate random secrets
    openssl rand -base64 32
@@ -174,11 +188,13 @@ vercel --prod
 ```
 
 When prompted:
+
 - Set up and deploy: `Y`
 - Which scope: Choose your team/account
 - Link to existing project: `N` (first time)
 - What's your project's name: `algo-cloud-ide`
-- In which directory is your code located: `./` (since you're already in frontend)
+- In which directory is your code located: `./` (since you're already in
+  frontend)
 - Want to override settings: `N`
 
 ---
@@ -187,20 +203,21 @@ When prompted:
 
 ### Required Variables
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `NEXTAUTH_URL` | Your Vercel app URL | `https://algo.vercel.app` |
-| `NEXTAUTH_SECRET` | Random 32-char string | Generate with `openssl rand -base64 32` |
-| `JWT_SECRET` | Random 32-char string | Generate with `openssl rand -base64 32` |
-| `API_URL` | Backend API endpoint | `https://api.railway.app` |
-| `WEBSOCKET_URL` | Backend WebSocket URL | `wss://api.railway.app` |
-| `FRONTEND_URL` | Your Vercel app URL | `https://algo.vercel.app` |
-| `NEXT_PUBLIC_API_URL` | Public API URL (client) | `https://api.railway.app` |
-| `NEXT_PUBLIC_WEBSOCKET_URL` | Public WS URL (client) | `wss://api.railway.app` |
+| Variable                    | Description             | Example                                 |
+| --------------------------- | ----------------------- | --------------------------------------- |
+| `NEXTAUTH_URL`              | Your Vercel app URL     | `https://algo.vercel.app`               |
+| `NEXTAUTH_SECRET`           | Random 32-char string   | Generate with `openssl rand -base64 32` |
+| `JWT_SECRET`                | Random 32-char string   | Generate with `openssl rand -base64 32` |
+| `API_URL`                   | Backend API endpoint    | `https://api.railway.app`               |
+| `WEBSOCKET_URL`             | Backend WebSocket URL   | `wss://api.railway.app`                 |
+| `FRONTEND_URL`              | Your Vercel app URL     | `https://algo.vercel.app`               |
+| `NEXT_PUBLIC_API_URL`       | Public API URL (client) | `https://api.railway.app`               |
+| `NEXT_PUBLIC_WEBSOCKET_URL` | Public WS URL (client)  | `wss://api.railway.app`                 |
 
 ### Adding Variables in Vercel Dashboard
 
-1. Go to your project settings: `https://vercel.com/[team]/[project]/settings/environment-variables`
+1. Go to your project settings:
+   `https://vercel.com/[team]/[project]/settings/environment-variables`
 2. Add each variable with:
    - **Key**: Variable name (e.g., `NEXTAUTH_SECRET`)
    - **Value**: Your value
@@ -220,6 +237,7 @@ When prompted:
 ### 1. Check Build Logs
 
 In Vercel dashboard:
+
 - Go to your project
 - Click on the deployment
 - View the build logs for any errors
@@ -229,6 +247,7 @@ In Vercel dashboard:
 Visit your Vercel URL (e.g., `https://algo-xyz.vercel.app`)
 
 **Test Checklist:**
+
 - [ ] Homepage loads correctly
 - [ ] UI renders properly
 - [ ] Can connect to backend API
@@ -238,13 +257,15 @@ Visit your Vercel URL (e.g., `https://algo-xyz.vercel.app`)
 ### 3. Test API Connectivity
 
 Open browser console and test:
+
 ```javascript
 fetch(process.env.NEXT_PUBLIC_API_URL + '/api/health')
-  .then(r => r.json())
-  .then(console.log)
+  .then((r) => r.json())
+  .then(console.log);
 ```
 
 Expected response:
+
 ```json
 {
   "status": "ok",
@@ -274,6 +295,7 @@ Vercel automatically deploys when you push to your repository:
 ### Build Fails with "Module not found"
 
 **Solution:** Ensure all dependencies are in `frontend/package.json`
+
 ```bash
 cd frontend
 npm install
@@ -285,46 +307,56 @@ git push
 ### "NEXTAUTH_SECRET" environment variable not set
 
 **Solution:** Add the `NEXTAUTH_SECRET` environment variable in Vercel settings
+
 ```bash
 openssl rand -base64 32
 ```
+
 Copy the output and add it as an environment variable.
 
 ### Cannot connect to backend API
 
 **Solutions:**
+
 1. Verify `API_URL` environment variable is correct
 2. Check backend is deployed and running
 3. Ensure CORS is configured on backend:
    ```javascript
-   app.use(cors({
-     origin: process.env.FRONTEND_URL,
-     credentials: true
-   }));
+   app.use(
+     cors({
+       origin: process.env.FRONTEND_URL,
+       credentials: true,
+     })
+   );
    ```
 4. Check backend logs for errors
 
 ### WebSocket connection fails
 
 **Solutions:**
+
 1. Verify `WEBSOCKET_URL` uses `wss://` (not `ws://`)
 2. Ensure backend platform supports WebSockets
 3. Check firewall/security group settings on backend
 
 ### Build warnings about monorepo
 
-This is normal and handled by the `outputFileTracingRoot` setting in `next.config.js`.
+This is normal and handled by the `outputFileTracingRoot` setting in
+`next.config.js`.
 
 ### "Module not found: Can't resolve 'fs'"
 
-This is expected for Next.js and handled by webpack config in `next.config.js`. If you see this, it's already configured correctly.
+This is expected for Next.js and handled by webpack config in `next.config.js`.
+If you see this, it's already configured correctly.
 
 ### Environment variables not working
 
 **Solutions:**
+
 1. Make sure client-side variables start with `NEXT_PUBLIC_`
 2. Redeploy after adding new environment variables
-3. Check the Environment Variables are assigned to the correct environment (Production/Preview/Development)
+3. Check the Environment Variables are assigned to the correct environment
+   (Production/Preview/Development)
 
 ---
 
@@ -333,6 +365,7 @@ This is expected for Next.js and handled by webpack config in `next.config.js`. 
 ### Vercel Analytics (Built-in)
 
 Vercel automatically provides:
+
 - Page views
 - Performance metrics
 - Core Web Vitals
@@ -346,8 +379,9 @@ npm install @vercel/speed-insights
 ```
 
 Add to `app/layout.tsx`:
+
 ```tsx
-import { SpeedInsights } from '@vercel/speed-insights/next'
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export default function RootLayout({ children }) {
   return (
@@ -357,7 +391,7 @@ export default function RootLayout({ children }) {
         <SpeedInsights />
       </body>
     </html>
-  )
+  );
 }
 ```
 
@@ -418,10 +452,11 @@ export default function RootLayout({ children }) {
    - Select regions close to your users
 
 2. **Use Vercel Image Optimization**
+
    ```tsx
-   import Image from 'next/image'
-   
-   <Image src="/logo.png" width={200} height={50} alt="Logo" />
+   import Image from 'next/image';
+
+   <Image src="/logo.png" width={200} height={50} alt="Logo" />;
    ```
 
 3. **Implement ISR (Incremental Static Regeneration)**

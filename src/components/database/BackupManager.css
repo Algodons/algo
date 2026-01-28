@@ -98,7 +98,7 @@
   gap: 8px;
 }
 
-.checkbox input[type="checkbox"] {
+.checkbox input[type='checkbox'] {
   width: auto;
   margin: 0;
 }

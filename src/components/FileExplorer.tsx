@@ -58,9 +58,7 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ workspaceId, onFileSelect }
           }}
         >
           <span className="file-icon">
-            {node.type === 'directory' 
-              ? (expandedDirs.has(node.path) ? '📂' : '📁') 
-              : '📄'}
+            {node.type === 'directory' ? (expandedDirs.has(node.path) ? '📂' : '📁') : '📄'}
           </span>
           <span className="file-name">{node.name}</span>
         </div>
@@ -75,7 +73,9 @@ const FileExplorer: React.FC<FileExplorerProps> = ({ workspaceId, onFileSelect }
     <div className="file-explorer">
       <div className="panel-title">Files</div>
       <div className="file-tree">
-        {files.length > 0 ? renderFileTree(files) : (
+        {files.length > 0 ? (
+          renderFileTree(files)
+        ) : (
           <div className="empty-state">No files in workspace</div>
         )}
       </div>

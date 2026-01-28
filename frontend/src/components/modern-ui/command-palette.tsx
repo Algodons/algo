@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import { Command } from 'cmdk'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useEffect, useState } from 'react';
+import { Command } from 'cmdk';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
   File,
@@ -15,33 +15,33 @@ import {
   Moon,
   Sun,
   Monitor,
-} from 'lucide-react'
+} from 'lucide-react';
 
 interface CommandPaletteProps {
-  isOpen: boolean
-  onClose: () => void
-  onThemeChange?: (theme: 'dark' | 'light' | 'system') => void
+  isOpen: boolean;
+  onClose: () => void;
+  onThemeChange?: (theme: 'dark' | 'light' | 'system') => void;
 }
 
 export function CommandPalette({ isOpen, onClose, onThemeChange }: CommandPaletteProps) {
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault()
-        onClose()
+        e.preventDefault();
+        onClose();
       }
       if (e.key === 'Escape') {
-        onClose()
+        onClose();
       }
-    }
+    };
 
-    document.addEventListener('keydown', down)
-    return () => document.removeEventListener('keydown', down)
-  }, [onClose])
+    document.addEventListener('keydown', down);
+    return () => document.removeEventListener('keydown', down);
+  }, [onClose]);
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <AnimatePresence>
@@ -125,8 +125,8 @@ export function CommandPalette({ isOpen, onClose, onThemeChange }: CommandPalett
                 <CommandItem
                   icon={<Moon />}
                   onSelect={() => {
-                    onThemeChange?.('dark')
-                    onClose()
+                    onThemeChange?.('dark');
+                    onClose();
                   }}
                 >
                   Dark Mode
@@ -134,8 +134,8 @@ export function CommandPalette({ isOpen, onClose, onThemeChange }: CommandPalett
                 <CommandItem
                   icon={<Sun />}
                   onSelect={() => {
-                    onThemeChange?.('light')
-                    onClose()
+                    onThemeChange?.('light');
+                    onClose();
                   }}
                 >
                   Light Mode
@@ -143,8 +143,8 @@ export function CommandPalette({ isOpen, onClose, onThemeChange }: CommandPalett
                 <CommandItem
                   icon={<Monitor />}
                   onSelect={() => {
-                    onThemeChange?.('system')
-                    onClose()
+                    onThemeChange?.('system');
+                    onClose();
                   }}
                 >
                   System Theme
@@ -155,13 +155,13 @@ export function CommandPalette({ isOpen, onClose, onThemeChange }: CommandPalett
         </motion.div>
       </motion.div>
     </AnimatePresence>
-  )
+  );
 }
 
 interface CommandItemProps {
-  icon: React.ReactNode
-  children: React.ReactNode
-  onSelect: () => void
+  icon: React.ReactNode;
+  children: React.ReactNode;
+  onSelect: () => void;
 }
 
 function CommandItem({ icon, children, onSelect }: CommandItemProps) {
@@ -173,5 +173,5 @@ function CommandItem({ icon, children, onSelect }: CommandItemProps) {
       <span className="opacity-70">{icon}</span>
       {children}
     </Command.Item>
-  )
+  );
 }

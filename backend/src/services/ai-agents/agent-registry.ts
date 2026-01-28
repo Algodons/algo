@@ -1,6 +1,6 @@
 /**
  * AI Agent Registry Service
- * 
+ *
  * Manages AI agent lifecycle, registration, and invocation.
  */
 
@@ -46,10 +46,8 @@ export class AgentRegistry {
    */
   async initialize(): Promise<void> {
     try {
-      const result = await this.pool.query(
-        'SELECT * FROM ai_agents WHERE active = true'
-      );
-      
+      const result = await this.pool.query('SELECT * FROM ai_agents WHERE active = true');
+
       result.rows.forEach((agent: AIAgent) => {
         this.agents.set(agent.id, agent);
       });
@@ -83,7 +81,7 @@ export class AgentRegistry {
 
       const newAgent = result.rows[0];
       this.agents.set(newAgent.id, newAgent);
-      
+
       return newAgent;
     } catch (error) {
       console.error('Failed to register agent:', error);
@@ -103,11 +101,11 @@ export class AgentRegistry {
    */
   listAgents(category?: string): AIAgent[] {
     const agents = Array.from(this.agents.values());
-    
+
     if (category) {
-      return agents.filter(agent => agent.category === category);
+      return agents.filter((agent) => agent.category === category);
     }
-    
+
     return agents;
   }
 
@@ -116,7 +114,7 @@ export class AgentRegistry {
    */
   async invokeAgent(invocation: AgentInvocation): Promise<AgentResponse> {
     const agent = this.agents.get(invocation.agentId);
-    
+
     if (!agent) {
       throw new Error(`Agent not found: ${invocation.agentId}`);
     }
@@ -165,24 +163,21 @@ export class AgentRegistry {
 
   /**
    * Execute agent-specific logic
-   * 
+   *
    * STUB: This is a mock implementation. In production, this would:
    * - Route to the appropriate agent implementation
    * - Call external AI services (OpenAI, Anthropic, etc.)
    * - Execute custom agent logic
    * - Handle context and parameters appropriately
-   * 
+   *
    * Current implementation returns mock data for testing and development.
    */
-  private async executeAgent(
-    agent: AIAgent,
-    invocation: AgentInvocation
-  ): Promise<AgentResponse> {
+  private async executeAgent(agent: AIAgent, invocation: AgentInvocation): Promise<AgentResponse> {
     // STUB: Mock implementation - replace with actual agent logic
     // This serves as a template for the agent execution interface
-    
+
     const executionTime = Math.floor(Math.random() * 1000) + 100;
-    
+
     return {
       output: {
         message: `Agent ${agent.name} processed your request`,
@@ -206,7 +201,7 @@ export class AgentRegistry {
         'UPDATE ai_agents SET active = false, updated_at = NOW() WHERE id = $1',
         [agentId]
       );
-      
+
       this.agents.delete(agentId);
     } catch (error) {
       console.error('Failed to deactivate agent:', error);
