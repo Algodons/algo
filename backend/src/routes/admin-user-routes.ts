@@ -368,7 +368,7 @@ export function createAdminUserRoutes(pool: Pool) {
     require2FA(pool),
     async (req: Request, res: Response) => {
       try {
-        const { subject, body, template, filters } = req.body;
+        const { subject, body, filters } = req.body;
 
         if (!subject || !body) {
           return res.status(400).json({ error: 'Subject and body are required' });
