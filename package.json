@@ -57,7 +57,7 @@
     "xterm-addon-web-links": "^0.9.0",
     "y-codemirror.next": "^0.3.5",
     "y-websocket": "^1.5.0",
-    "yjs": "^13.6.8",
+    "yjs": "^13.6.28",
     "zustand": "^4.4.7"
   },
   "devDependencies": {
