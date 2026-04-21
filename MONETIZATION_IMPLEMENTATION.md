@@ -2,7 +2,10 @@
 
 ## Overview
 
-This document provides a comprehensive summary of the monetization system implementation for the Algo Cloud IDE platform. The system includes subscription management, usage-based billing, payment processing, prepaid credits, and usage alerts.
+This document provides a comprehensive summary of the monetization system
+implementation for the Algo Cloud IDE platform. The system includes subscription
+management, usage-based billing, payment processing, prepaid credits, and usage
+alerts.
 
 ## What Has Been Implemented
 
@@ -10,9 +13,12 @@ This document provides a comprehensive summary of the monetization system implem
 
 **File:** `backend/database/monetization-schema.sql`
 
-Created comprehensive database schema with 15+ tables including subscription_plans, usage_metrics, billing_history, stored_payment_methods, usage_alerts, prepaid_credits, and more.
+Created comprehensive database schema with 15+ tables including
+subscription_plans, usage_metrics, billing_history, stored_payment_methods,
+usage_alerts, prepaid_credits, and more.
 
 **Default Plans:**
+
 - Free Tier: $0/month (500MB storage, 500 compute hours, 10GB bandwidth)
 - Pro Tier: $15/month (5GB storage, 2000 compute hours, 50GB bandwidth)
 - Team Tier: $49/month (20GB storage, 5000 compute hours, 200GB bandwidth)
@@ -21,14 +27,18 @@ Created comprehensive database schema with 15+ tables including subscription_pla
 ### 2. Backend Services ✅
 
 Four comprehensive TypeScript services:
-- **SubscriptionService**: Plan management, upgrades, downgrades, cancellations with proration
-- **UsageTrackingService**: Real-time usage tracking, cost calculation, alert triggering
+
+- **SubscriptionService**: Plan management, upgrades, downgrades, cancellations
+  with proration
+- **UsageTrackingService**: Real-time usage tracking, cost calculation, alert
+  triggering
 - **BillingService**: Invoice generation, payment processing, webhook handling
 - **CreditsService**: Prepaid credits, auto-reload, transaction management
 
 ### 3. API Routes ✅
 
 30+ RESTful API endpoints across 5 route modules:
+
 - Subscription routes: plans, subscribe, upgrade, downgrade, cancel
 - Usage routes: current usage, history, project summaries
 - Billing routes: invoices, payments, payment methods, webhooks
@@ -38,6 +48,7 @@ Four comprehensive TypeScript services:
 ### 4. Frontend Components ✅
 
 Four polished React components with responsive CSS:
+
 - **Pricing Page**: Tier comparison with monthly/yearly toggle
 - **Billing Dashboard**: Usage visualization, invoice history
 - **Credits Management**: Purchase, auto-reload, transaction history
@@ -96,11 +107,13 @@ src/components/
 ## Quick Start
 
 1. Apply database schema:
+
    ```bash
    psql -U algo_user -d algo_ide -f backend/database/monetization-schema.sql
    ```
 
 2. Install dependencies:
+
    ```bash
    cd backend && npm install
    ```
@@ -108,6 +121,7 @@ src/components/
 3. Configure environment variables in .env
 
 4. Start backend:
+
    ```bash
    npm run dev
    ```

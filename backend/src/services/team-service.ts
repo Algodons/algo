@@ -23,10 +23,7 @@ export class TeamService {
   /**
    * Create a new organization
    */
-  async createOrganization(
-    userId: number,
-    data: CreateOrganizationRequest
-  ): Promise<Organization> {
+  async createOrganization(userId: number, data: CreateOrganizationRequest): Promise<Organization> {
     const client = await this.pool.connect();
     try {
       await client.query('BEGIN');
@@ -70,10 +67,9 @@ export class TeamService {
    * Get organization by ID
    */
   async getOrganization(organizationId: number): Promise<Organization | null> {
-    const result = await this.pool.query(
-      'SELECT * FROM organizations WHERE id = $1',
-      [organizationId]
-    );
+    const result = await this.pool.query('SELECT * FROM organizations WHERE id = $1', [
+      organizationId,
+    ]);
     return result.rows[0] || null;
   }
 
@@ -104,9 +100,7 @@ export class TeamService {
       await client.query('BEGIN');
 
       // Get user by email
-      const userResult = await client.query('SELECT id FROM users WHERE email = $1', [
-        data.email,
-      ]);
+      const userResult = await client.query('SELECT id FROM users WHERE email = $1', [data.email]);
 
       if (userResult.rows.length === 0) {
         throw new Error('User not found');
@@ -219,11 +213,7 @@ export class TeamService {
   /**
    * Remove member from organization
    */
-  async removeMember(
-    organizationId: number,
-    userId: number,
-    removedBy: number
-  ): Promise<void> {
+  async removeMember(organizationId: number, userId: number, removedBy: number): Promise<void> {
     const client = await this.pool.connect();
     try {
       await client.query('BEGIN');
@@ -352,10 +342,9 @@ export class TeamService {
     }
 
     // Check if user is project owner
-    const projectResult = await this.pool.query(
-      'SELECT user_id FROM projects WHERE id = $1',
-      [projectId]
-    );
+    const projectResult = await this.pool.query('SELECT user_id FROM projects WHERE id = $1', [
+      projectId,
+    ]);
 
     if (projectResult.rows.length > 0 && projectResult.rows[0].user_id === userId) {
       return true;
@@ -466,10 +455,9 @@ export class TeamService {
     try {
       await client.query('BEGIN');
 
-      const varResult = await client.query(
-        'SELECT * FROM shared_env_variables WHERE id = $1',
-        [id]
-      );
+      const varResult = await client.query('SELECT * FROM shared_env_variables WHERE id = $1', [
+        id,
+      ]);
 
       if (varResult.rows.length === 0) {
         throw new Error('Environment variable not found');
@@ -548,10 +536,7 @@ export class TeamService {
   /**
    * Log team activity
    */
-  private async logActivity(
-    client: PoolClient,
-    data: Partial<TeamActivityLog>
-  ): Promise<void> {
+  private async logActivity(client: PoolClient, data: Partial<TeamActivityLog>): Promise<void> {
     await client.query(
       `INSERT INTO team_activity_logs (
         organization_id, project_id, user_id, activity_type, 

@@ -2,7 +2,10 @@
 
 ## Overview
 
-The Algo Cloud IDE monetization system provides comprehensive billing, subscriptions, usage tracking, and payment processing capabilities. This document covers the complete implementation including database schema, backend services, API endpoints, and frontend components.
+The Algo Cloud IDE monetization system provides comprehensive billing,
+subscriptions, usage tracking, and payment processing capabilities. This
+document covers the complete implementation including database schema, backend
+services, API endpoints, and frontend components.
 
 ## Table of Contents
 
@@ -21,6 +24,7 @@ The Algo Cloud IDE monetization system provides comprehensive billing, subscript
 ## Pricing Tiers
 
 ### Free Tier
+
 - **Price:** $0/month
 - **Storage:** 500 MB
 - **Compute Hours:** 500 hours/month
@@ -30,6 +34,7 @@ The Algo Cloud IDE monetization system provides comprehensive billing, subscript
 - **AI Features:** Bring-your-own API keys (unlimited usage)
 
 ### Pro Tier
+
 - **Price:** $15/month or $150/year (save 17%)
 - **Storage:** 5 GB
 - **Compute Hours:** 2,000 hours/month
@@ -40,6 +45,7 @@ The Algo Cloud IDE monetization system provides comprehensive billing, subscript
 - **AI Features:** Platform-managed keys available with cost + 20% markup
 
 ### Team Tier
+
 - **Price:** $49/month or $490/year (save 17%)
 - **Storage:** 20 GB
 - **Compute Hours:** 5,000 hours/month
@@ -50,6 +56,7 @@ The Algo Cloud IDE monetization system provides comprehensive billing, subscript
 - **AI Features:** Platform-managed keys available with cost + 20% markup
 
 ### Enterprise Tier
+
 - **Price:** Custom pricing
 - **Storage:** Unlimited
 - **Compute Hours:** Unlimited
@@ -78,6 +85,7 @@ Beyond the plan limits, users are charged for additional usage:
 ### Core Tables
 
 #### subscription_plans
+
 Defines available subscription tiers and their features.
 
 ```sql
@@ -102,6 +110,7 @@ CREATE TABLE subscription_plans (
 ```
 
 #### usage_metrics
+
 Tracks all resource usage for billing purposes.
 
 ```sql
@@ -120,6 +129,7 @@ CREATE TABLE usage_metrics (
 ```
 
 #### billing_history
+
 Records all billing transactions.
 
 ```sql
@@ -137,6 +147,7 @@ CREATE TABLE billing_history (
 ```
 
 #### prepaid_credits
+
 Manages prepaid credit balances.
 
 ```sql
@@ -151,6 +162,7 @@ CREATE TABLE prepaid_credits (
 ```
 
 #### usage_alerts
+
 Configuration for usage monitoring alerts.
 
 ```sql
@@ -171,9 +183,11 @@ See `backend/database/monetization-schema.sql` for complete schema.
 ## Backend Services
 
 ### SubscriptionService
+
 Handles subscription lifecycle management.
 
 **Key Methods:**
+
 - `getPlans()` - Retrieve all available plans
 - `getUserSubscription(userId)` - Get user's current subscription
 - `createSubscription(userId, planName, billingCycle)` - Create new subscription
@@ -185,40 +199,52 @@ Handles subscription lifecycle management.
 **Location:** `backend/src/services/subscription-service.ts`
 
 ### UsageTrackingService
+
 Tracks and calculates resource usage.
 
 **Key Methods:**
+
 - `recordUsage(userId, metricType, value, unit)` - Record usage event
 - `getCurrentUsage(userId)` - Get current billing period usage
 - `getUsageHistory(userId, startDate, endDate)` - Historical usage data
 - `trackDeploymentHours(userId, projectId, hours)` - Track deployment time
 - `trackStorageUsage(userId, projectId, megabytes)` - Track storage
 - `trackBandwidthUsage(userId, projectId, gigabytes)` - Track bandwidth
-- `trackAIUsage(userId, projectId, provider, model, tokens, cost)` - Track AI API usage
+- `trackAIUsage(userId, projectId, provider, model, tokens, cost)` - Track AI
+  API usage
 
 **Location:** `backend/src/services/usage-tracking-service.ts`
 
 ### BillingService
+
 Manages invoicing and payment processing.
 
 **Key Methods:**
-- `generateSubscriptionInvoice(userId, subscriptionId, amount, periodStart, periodEnd)` - Create subscription invoice
-- `generateUsageInvoice(userId, periodStart, periodEnd)` - Create usage-based invoice
+
+- `generateSubscriptionInvoice(userId, subscriptionId, amount, periodStart, periodEnd)` -
+  Create subscription invoice
+- `generateUsageInvoice(userId, periodStart, periodEnd)` - Create usage-based
+  invoice
 - `processPayment(invoiceId, paymentMethodId, provider)` - Process payment
 - `getUserInvoices(userId)` - Get user's invoice history
-- `addPaymentMethod(userId, type, provider, providerPaymentMethodId, details)` - Add payment method
-- `handleWebhook(provider, eventType, eventId, payload, signature)` - Process payment gateway webhooks
+- `addPaymentMethod(userId, type, provider, providerPaymentMethodId, details)` -
+  Add payment method
+- `handleWebhook(provider, eventType, eventId, payload, signature)` - Process
+  payment gateway webhooks
 
 **Location:** `backend/src/services/billing-service.ts`
 
 ### CreditsService
+
 Manages prepaid credit system.
 
 **Key Methods:**
+
 - `getBalance(userId)` - Get credit balance
 - `purchaseCredits(userId, amount)` - Purchase credits
 - `deductCredits(userId, amount, description)` - Deduct credits for usage
-- `configureAutoReload(userId, enabled, threshold, amount)` - Configure auto-reload
+- `configureAutoReload(userId, enabled, threshold, amount)` - Configure
+  auto-reload
 - `grantBonusCredits(userId, amount, reason)` - Award promotional credits
 - `refundCredits(userId, amount, reason)` - Refund credits
 
@@ -231,9 +257,11 @@ Manages prepaid credit system.
 ### Subscription Management
 
 #### `GET /api/subscriptions/plans`
+
 Get all available subscription plans.
 
 **Response:**
+
 ```json
 {
   "plans": [
@@ -251,9 +279,11 @@ Get all available subscription plans.
 ```
 
 #### `GET /api/subscriptions/current`
+
 Get user's current subscription.
 
 **Response:**
+
 ```json
 {
   "subscription": {
@@ -268,9 +298,11 @@ Get user's current subscription.
 ```
 
 #### `POST /api/subscriptions/subscribe`
+
 Subscribe to a plan.
 
 **Request:**
+
 ```json
 {
   "planName": "pro",
@@ -280,9 +312,11 @@ Subscribe to a plan.
 ```
 
 #### `POST /api/subscriptions/upgrade`
+
 Upgrade subscription.
 
 **Request:**
+
 ```json
 {
   "planName": "team",
@@ -291,9 +325,11 @@ Upgrade subscription.
 ```
 
 #### `DELETE /api/subscriptions/cancel`
+
 Cancel subscription.
 
 **Request:**
+
 ```json
 {
   "reason": "No longer needed"
@@ -303,9 +339,11 @@ Cancel subscription.
 ### Usage Tracking
 
 #### `GET /api/usage/current`
+
 Get current billing period usage.
 
 **Response:**
+
 ```json
 {
   "usage": {
@@ -321,7 +359,7 @@ Get current billing period usage.
       },
       "storage": {
         "value": 1024,
-        "cost": 0.10,
+        "cost": 0.1,
         "unit": "MB"
       }
     },
@@ -331,9 +369,11 @@ Get current billing period usage.
 ```
 
 #### `GET /api/usage/history`
+
 Get usage history.
 
 **Query Parameters:**
+
 - `startDate` (required)
 - `endDate` (required)
 - `metricType` (optional)
@@ -341,16 +381,18 @@ Get usage history.
 ### Billing
 
 #### `GET /api/billing/invoices`
+
 Get user's invoices.
 
 **Response:**
+
 ```json
 {
   "invoices": [
     {
       "id": 1,
       "invoiceNumber": "INV-2024-000001",
-      "amount": 15.00,
+      "amount": 15.0,
       "currency": "USD",
       "status": "paid",
       "issuedAt": "2024-01-01T00:00:00Z",
@@ -361,12 +403,15 @@ Get user's invoices.
 ```
 
 #### `GET /api/billing/invoices/:invoiceId`
+
 Get invoice details with line items.
 
 #### `POST /api/billing/invoices/:invoiceId/pay`
+
 Process payment for invoice.
 
 **Request:**
+
 ```json
 {
   "paymentMethodId": 1,
@@ -375,12 +420,15 @@ Process payment for invoice.
 ```
 
 #### `GET /api/billing/payment-methods`
+
 Get user's payment methods.
 
 #### `POST /api/billing/payment-methods`
+
 Add new payment method.
 
 **Request:**
+
 ```json
 {
   "type": "card",
@@ -397,54 +445,63 @@ Add new payment method.
 ### Credits
 
 #### `GET /api/credits/balance`
+
 Get credit balance.
 
 **Response:**
+
 ```json
 {
   "balance": {
     "userId": 1,
-    "balance": 50.00,
+    "balance": 50.0,
     "currency": "USD",
     "autoReloadEnabled": true,
-    "autoReloadThreshold": 10.00,
-    "autoReloadAmount": 25.00
+    "autoReloadThreshold": 10.0,
+    "autoReloadAmount": 25.0
   }
 }
 ```
 
 #### `POST /api/credits/purchase`
+
 Purchase credits.
 
 **Request:**
+
 ```json
 {
-  "amount": 50.00,
+  "amount": 50.0,
   "paymentMethodId": 1
 }
 ```
 
 #### `POST /api/credits/auto-reload`
+
 Configure auto-reload.
 
 **Request:**
+
 ```json
 {
   "enabled": true,
-  "threshold": 10.00,
-  "amount": 25.00
+  "threshold": 10.0,
+  "amount": 25.0
 }
 ```
 
 ### Alerts
 
 #### `GET /api/alerts`
+
 Get configured alerts.
 
 #### `POST /api/alerts/configure`
+
 Configure usage alert.
 
 **Request:**
+
 ```json
 {
   "metricType": "storage",
@@ -455,9 +512,11 @@ Configure usage alert.
 ```
 
 #### `DELETE /api/alerts/:alertId`
+
 Delete alert.
 
 #### `GET /api/alerts/history`
+
 Get alert trigger history.
 
 ---
@@ -465,36 +524,44 @@ Get alert trigger history.
 ## Frontend Components
 
 ### Pricing Page
+
 **Component:** `src/components/Pricing.tsx`
 
 Displays all subscription tiers with:
+
 - Monthly/yearly billing toggle
 - Feature comparison
 - Usage-based pricing details
 - Subscribe buttons
 
 ### Billing Dashboard
+
 **Component:** `src/components/BillingDashboard.tsx`
 
 Shows:
+
 - Current subscription details
 - Real-time usage metrics
 - Invoice history
 - Payment methods management
 
 ### Credits Management
+
 **Component:** `src/components/CreditsManagement.tsx`
 
 Provides:
+
 - Current credit balance display
 - Credit purchase interface
 - Auto-reload configuration
 - Transaction history
 
 ### Usage Alerts
+
 **Component:** `src/components/UsageAlerts.tsx`
 
 Allows users to:
+
 - Configure usage alerts
 - Set notification thresholds
 - View alert history
@@ -509,8 +576,10 @@ Allows users to:
 The system is designed to integrate with Stripe for card payments.
 
 **Setup:**
+
 1. Install Stripe SDK: `npm install stripe`
 2. Configure environment variables:
+
    ```
    STRIPE_SECRET_KEY=sk_test_...
    STRIPE_PUBLISHABLE_KEY=pk_test_...
@@ -526,6 +595,7 @@ The system is designed to integrate with Stripe for card payments.
 ### PayPal Integration (Placeholder)
 
 Configure PayPal credentials:
+
 ```
 PAYPAL_CLIENT_ID=your_client_id
 PAYPAL_SECRET=your_secret
@@ -535,6 +605,7 @@ PAYPAL_MODE=sandbox
 ### Cryptocurrency (Coinbase Commerce)
 
 Configure Coinbase Commerce:
+
 ```
 COINBASE_COMMERCE_API_KEY=your_api_key
 COINBASE_COMMERCE_WEBHOOK_SECRET=your_webhook_secret
@@ -547,6 +618,7 @@ COINBASE_COMMERCE_WEBHOOK_SECRET=your_webhook_secret
 ### Environment Variables
 
 Add to `.env`:
+
 ```bash
 # Payment Gateways
 STRIPE_SECRET_KEY=sk_test_your_key
@@ -569,11 +641,13 @@ USAGE_BILLING_DAY=1
 ### Database Initialization
 
 1. Run the monetization schema:
+
    ```bash
    psql -U algo_user -d algo_ide -f backend/database/monetization-schema.sql
    ```
 
 2. Verify tables are created:
+
    ```sql
    \dt subscription_plans
    \dt usage_metrics
@@ -585,6 +659,7 @@ USAGE_BILLING_DAY=1
 ### Backend Server
 
 The monetization routes are automatically loaded in `backend/src/index.ts`:
+
 ```typescript
 app.use('/api/subscriptions', createSubscriptionRoutes(dashboardPool));
 app.use('/api/usage', createUsageRoutes(dashboardPool));
@@ -600,11 +675,12 @@ app.use('/api/alerts', createAlertsRoutes(dashboardPool));
 ### Unit Tests
 
 Test billing calculations:
+
 ```typescript
 describe('BillingService', () => {
   test('calculates usage cost correctly', () => {
     const cost = calculateUsageCost('deployment_hours', 100);
-    expect(cost).toBe(1.00);
+    expect(cost).toBe(1.0);
   });
 });
 ```
@@ -612,6 +688,7 @@ describe('BillingService', () => {
 ### Integration Tests
 
 Test subscription lifecycle:
+
 ```typescript
 describe('Subscription Flow', () => {
   test('user can subscribe to pro plan', async () => {
@@ -628,12 +705,14 @@ describe('Subscription Flow', () => {
 ### Manual Testing
 
 1. Start the backend server:
+
    ```bash
    cd backend
    npm run dev
    ```
 
 2. Test API endpoints using cURL or Postman:
+
    ```bash
    curl http://localhost:4000/api/subscriptions/plans
    ```
@@ -648,7 +727,8 @@ describe('Subscription Flow', () => {
 
 ## Security Considerations
 
-1. **Payment Data:** Never store raw card numbers. Use tokenization via payment gateways.
+1. **Payment Data:** Never store raw card numbers. Use tokenization via payment
+   gateways.
 2. **Webhook Verification:** Always verify webhook signatures.
 3. **Rate Limiting:** Apply rate limits to payment endpoints.
 4. **Audit Logging:** Log all billing operations.
@@ -661,15 +741,18 @@ describe('Subscription Flow', () => {
 ### Common Issues
 
 **Issue:** Plans not loading
+
 - Check database connection
 - Verify schema is initialized
 - Check API endpoint logs
 
 **Issue:** Usage not tracked
+
 - Verify usage tracking is enabled in environment
 - Check that metrics are being recorded in the database
 
 **Issue:** Payment failures
+
 - Verify payment gateway credentials
 - Check webhook configuration
 - Review error logs for specific error codes
@@ -692,6 +775,7 @@ describe('Subscription Flow', () => {
 ## Support
 
 For questions or issues:
+
 - Email: support@algo-ide.com
 - Documentation: https://docs.algo-ide.com
 - GitHub Issues: https://github.com/Algodons/algo/issues

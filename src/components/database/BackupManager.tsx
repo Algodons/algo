@@ -32,7 +32,7 @@ const BackupManager: React.FC<BackupManagerProps> = ({ connectionId }) => {
   const [error, setError] = useState<string>('');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showScheduleForm, setShowScheduleForm] = useState(false);
-  
+
   const [backupOptions, setBackupOptions] = useState({
     format: 'sql',
     compress: true,
@@ -60,7 +60,7 @@ const BackupManager: React.FC<BackupManagerProps> = ({ connectionId }) => {
         `http://localhost:4000/api/databases/connections/${connectionId}/backups`
       );
       const data = await response.json();
-      
+
       if (data.error) {
         setError(data.error);
       } else {
@@ -80,7 +80,7 @@ const BackupManager: React.FC<BackupManagerProps> = ({ connectionId }) => {
         `http://localhost:4000/api/databases/connections/${connectionId}/backups/schedules`
       );
       const data = await response.json();
-      
+
       if (!data.error) {
         setSchedules(data.schedules || []);
       }
@@ -103,7 +103,7 @@ const BackupManager: React.FC<BackupManagerProps> = ({ connectionId }) => {
       );
 
       const data = await response.json();
-      
+
       if (data.error) {
         setError(data.error);
       } else {
@@ -119,7 +119,9 @@ const BackupManager: React.FC<BackupManagerProps> = ({ connectionId }) => {
   };
 
   const restoreBackup = async (backupId: string) => {
-    if (!confirm('Are you sure you want to restore this backup? This will overwrite current data.')) {
+    if (
+      !confirm('Are you sure you want to restore this backup? This will overwrite current data.')
+    ) {
       return;
     }
 
@@ -132,7 +134,7 @@ const BackupManager: React.FC<BackupManagerProps> = ({ connectionId }) => {
       );
 
       const data = await response.json();
-      
+
       if (data.error) {
         setError(data.error);
       } else {
@@ -160,7 +162,7 @@ const BackupManager: React.FC<BackupManagerProps> = ({ connectionId }) => {
       );
 
       const data = await response.json();
-      
+
       if (data.error) {
         setError(data.error);
       } else {
@@ -191,7 +193,7 @@ const BackupManager: React.FC<BackupManagerProps> = ({ connectionId }) => {
       );
 
       const data = await response.json();
-      
+
       if (data.error) {
         setError(data.error);
       } else {
@@ -220,7 +222,7 @@ const BackupManager: React.FC<BackupManagerProps> = ({ connectionId }) => {
       );
 
       const data = await response.json();
-      
+
       if (data.error) {
         setError(data.error);
       } else {
@@ -239,7 +241,7 @@ const BackupManager: React.FC<BackupManagerProps> = ({ connectionId }) => {
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
   };
 
   return (
@@ -249,20 +251,16 @@ const BackupManager: React.FC<BackupManagerProps> = ({ connectionId }) => {
           <h3>Backup Manager</h3>
           <div className="bm-stats">
             <span className="stat">Total Backups: {backups.length}</span>
-            <span className="stat">Active Schedules: {schedules.filter(s => s.enabled).length}</span>
+            <span className="stat">
+              Active Schedules: {schedules.filter((s) => s.enabled).length}
+            </span>
           </div>
         </div>
         <div className="bm-actions">
-          <button
-            className="btn-primary"
-            onClick={() => setShowCreateForm(!showCreateForm)}
-          >
+          <button className="btn-primary" onClick={() => setShowCreateForm(!showCreateForm)}>
             {showCreateForm ? 'Cancel' : '+ Create Backup'}
           </button>
-          <button
-            className="btn-small"
-            onClick={() => setShowScheduleForm(!showScheduleForm)}
-          >
+          <button className="btn-small" onClick={() => setShowScheduleForm(!showScheduleForm)}>
             {showScheduleForm ? 'Cancel' : 'Schedule Backup'}
           </button>
         </div>
@@ -299,7 +297,9 @@ const BackupManager: React.FC<BackupManagerProps> = ({ connectionId }) => {
               <input
                 type="checkbox"
                 checked={backupOptions.schemaOnly}
-                onChange={(e) => setBackupOptions({ ...backupOptions, schemaOnly: e.target.checked })}
+                onChange={(e) =>
+                  setBackupOptions({ ...backupOptions, schemaOnly: e.target.checked })
+                }
               />
               Schema Only
             </label>
@@ -336,7 +336,9 @@ const BackupManager: React.FC<BackupManagerProps> = ({ connectionId }) => {
             <input
               type="number"
               value={scheduleOptions.retention}
-              onChange={(e) => setScheduleOptions({ ...scheduleOptions, retention: parseInt(e.target.value) })}
+              onChange={(e) =>
+                setScheduleOptions({ ...scheduleOptions, retention: parseInt(e.target.value) })
+              }
               min="1"
               max="365"
             />

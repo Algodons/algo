@@ -46,6 +46,7 @@
 **Location**: `backend/src/middleware/admin-auth.ts` line 174-176
 
 **Required Implementation**:
+
 ```javascript
 // Install required package
 npm install speakeasy
@@ -64,11 +65,13 @@ if (!verified) {
 }
 ```
 
-**Impact**: Currently, any string is accepted as a valid 2FA token, completely bypassing this security control.
+**Impact**: Currently, any string is accepted as a valid 2FA token, completely
+bypassing this security control.
 
 **Risk Level**: CRITICAL
 
 **Affected Operations**:
+
 - User suspension/activation
 - Subscription overrides
 - Bulk operations (credits, emails)
@@ -88,6 +91,7 @@ if (!verified) {
 **Location**: `backend/src/middleware/admin-auth.ts` line 261-262
 
 **Required Implementation**:
+
 ```javascript
 // Install required package
 npm install bcrypt
@@ -113,7 +117,8 @@ if (!validPassword) {
 
 **Risk Level**: CRITICAL
 
-**Notes**: This middleware is currently not used but should be added to critical operations.
+**Notes**: This middleware is currently not used but should be added to critical
+operations.
 
 ---
 
@@ -124,6 +129,7 @@ if (!validPassword) {
 **Location**: Admin route files don't use `adminRateLimit` middleware
 
 **Required Implementation**:
+
 ```typescript
 // In each admin route file, add rate limiting:
 import { adminRateLimit } from '../middleware/admin-auth';
@@ -146,13 +152,15 @@ router.use(adminRateLimit(pool));
 
 **Location**: `src/components/AdminDashboard.tsx` line 56, 107
 
-**Issue**: Tokens stored in localStorage are accessible to JavaScript and persist across sessions.
+**Issue**: Tokens stored in localStorage are accessible to JavaScript and
+persist across sessions.
 
 **Recommended**: Use httpOnly cookies for token storage instead.
 
 **Risk Level**: MEDIUM
 
 **Remediation**:
+
 1. Configure backend to send tokens via httpOnly cookies
 2. Update frontend to rely on cookies instead of localStorage
 3. Implement CSRF protection for cookie-based auth

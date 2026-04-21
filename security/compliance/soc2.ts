@@ -57,18 +57,20 @@ export class SOC2ComplianceService {
       {
         id: 'CC6.1',
         name: 'Access Control',
-        description: 'The entity implements logical access security software, infrastructure, and architectures over protected information assets to protect them from security events.',
+        description:
+          'The entity implements logical access security software, infrastructure, and architectures over protected information assets to protect them from security events.',
         category: ControlCategory.ACCESS_CONTROL,
         criteria: [TrustServiceCriteria.SECURITY, TrustServiceCriteria.CONFIDENTIALITY],
         implemented: true,
         automatedMonitoring: true,
       },
-      
+
       // CC6.2 - Authentication
       {
         id: 'CC6.2',
         name: 'Authentication',
-        description: 'Prior to issuing system credentials and granting system access, the entity registers and authorizes new internal and external users.',
+        description:
+          'Prior to issuing system credentials and granting system access, the entity registers and authorizes new internal and external users.',
         category: ControlCategory.ACCESS_CONTROL,
         criteria: [TrustServiceCriteria.SECURITY],
         implemented: true,
@@ -79,7 +81,8 @@ export class SOC2ComplianceService {
       {
         id: 'CC6.3',
         name: 'Authorization',
-        description: 'The entity authorizes, modifies, or removes access to data, software, functions, and other protected information assets.',
+        description:
+          'The entity authorizes, modifies, or removes access to data, software, functions, and other protected information assets.',
         category: ControlCategory.ACCESS_CONTROL,
         criteria: [TrustServiceCriteria.SECURITY],
         implemented: true,
@@ -101,7 +104,8 @@ export class SOC2ComplianceService {
       {
         id: 'CC6.7',
         name: 'System Monitoring',
-        description: 'The entity restricts the transmission, movement, and removal of information to authorized internal and external users.',
+        description:
+          'The entity restricts the transmission, movement, and removal of information to authorized internal and external users.',
         category: ControlCategory.SYSTEM_OPERATIONS,
         criteria: [TrustServiceCriteria.SECURITY],
         implemented: true,
@@ -112,7 +116,8 @@ export class SOC2ComplianceService {
       {
         id: 'CC7.2',
         name: 'Security Incident Detection',
-        description: 'The entity monitors system components and the operation of those components for anomalies.',
+        description:
+          'The entity monitors system components and the operation of those components for anomalies.',
         category: ControlCategory.RISK_MITIGATION,
         criteria: [TrustServiceCriteria.SECURITY],
         implemented: true,
@@ -123,7 +128,8 @@ export class SOC2ComplianceService {
       {
         id: 'CC7.3',
         name: 'Security Incident Response',
-        description: 'The entity evaluates security events to determine whether they could or have resulted in a failure of the entity to meet its objectives.',
+        description:
+          'The entity evaluates security events to determine whether they could or have resulted in a failure of the entity to meet its objectives.',
         category: ControlCategory.RISK_MITIGATION,
         criteria: [TrustServiceCriteria.SECURITY],
         implemented: true,
@@ -134,7 +140,8 @@ export class SOC2ComplianceService {
       {
         id: 'CC7.4',
         name: 'Security Incident Mitigation',
-        description: 'The entity responds to identified security incidents by executing a defined incident response program.',
+        description:
+          'The entity responds to identified security incidents by executing a defined incident response program.',
         category: ControlCategory.RISK_MITIGATION,
         criteria: [TrustServiceCriteria.SECURITY],
         implemented: true,
@@ -145,7 +152,8 @@ export class SOC2ComplianceService {
       {
         id: 'CC8.1',
         name: 'Change Management',
-        description: 'The entity authorizes, designs, develops or acquires, configures, documents, tests, approves, and implements changes to infrastructure, data, software, and procedures.',
+        description:
+          'The entity authorizes, designs, develops or acquires, configures, documents, tests, approves, and implements changes to infrastructure, data, software, and procedures.',
         category: ControlCategory.CHANGE_MANAGEMENT,
         criteria: [TrustServiceCriteria.SECURITY],
         implemented: true,
@@ -156,7 +164,8 @@ export class SOC2ComplianceService {
       {
         id: 'A1.2',
         name: 'Availability Monitoring',
-        description: 'The entity monitors environmental protections to physical access and systems to detect and respond to identified incidents.',
+        description:
+          'The entity monitors environmental protections to physical access and systems to detect and respond to identified incidents.',
         category: ControlCategory.SYSTEM_OPERATIONS,
         criteria: [TrustServiceCriteria.AVAILABILITY],
         implemented: true,
@@ -167,7 +176,8 @@ export class SOC2ComplianceService {
       {
         id: 'PI1.4',
         name: 'Data Integrity',
-        description: 'The entity implements policies and procedures to make data available for use in a timely manner in accordance with commitments.',
+        description:
+          'The entity implements policies and procedures to make data available for use in a timely manner in accordance with commitments.',
         category: ControlCategory.SYSTEM_OPERATIONS,
         criteria: [TrustServiceCriteria.PROCESSING_INTEGRITY],
         implemented: true,
@@ -178,7 +188,8 @@ export class SOC2ComplianceService {
       {
         id: 'C1.1',
         name: 'Confidentiality',
-        description: 'The entity identifies and maintains confidential information to meet commitments and system requirements.',
+        description:
+          'The entity identifies and maintains confidential information to meet commitments and system requirements.',
         category: ControlCategory.LOGICAL_SECURITY,
         criteria: [TrustServiceCriteria.CONFIDENTIALITY],
         implemented: true,
@@ -189,7 +200,8 @@ export class SOC2ComplianceService {
       {
         id: 'P3.2',
         name: 'Data Retention',
-        description: 'The entity retains personal information consistent with commitments in the privacy notice.',
+        description:
+          'The entity retains personal information consistent with commitments in the privacy notice.',
         category: ControlCategory.SYSTEM_OPERATIONS,
         criteria: [TrustServiceCriteria.PRIVACY],
         implemented: true,
@@ -200,7 +212,8 @@ export class SOC2ComplianceService {
       {
         id: 'P4.3',
         name: 'Data Disposal',
-        description: 'The entity securely disposes of personal information to meet commitments in the privacy notice.',
+        description:
+          'The entity securely disposes of personal information to meet commitments in the privacy notice.',
         category: ControlCategory.SYSTEM_OPERATIONS,
         criteria: [TrustServiceCriteria.PRIVACY],
         implemented: true,
@@ -208,7 +221,7 @@ export class SOC2ComplianceService {
       },
     ];
 
-    controls.forEach(control => {
+    controls.forEach((control) => {
       this.controls.set(control.id, control);
     });
   }
@@ -261,11 +274,11 @@ export class SOC2ComplianceService {
    */
   getControls(criteria?: TrustServiceCriteria): SecurityControl[] {
     const allControls = Array.from(this.controls.values());
-    
+
     if (criteria) {
-      return allControls.filter(control => control.criteria.includes(criteria));
+      return allControls.filter((control) => control.criteria.includes(criteria));
     }
-    
+
     return allControls;
   }
 
@@ -318,7 +331,7 @@ export class SOC2ComplianceService {
 
     const result = await this.pool.query(query, params);
 
-    return result.rows.map(row => ({
+    return result.rows.map((row) => ({
       controlId: row.control_id,
       timestamp: row.check_timestamp,
       passed: row.passed,
@@ -428,9 +441,9 @@ export class SOC2ComplianceService {
     const controls = this.getControls();
     const checks = await this.getComplianceHistory(undefined, startDate, endDate);
 
-    const implementedControls = controls.filter(c => c.implemented).length;
-    const checksPassed = checks.filter(c => c.passed).length;
-    const checksFailed = checks.filter(c => !c.passed).length;
+    const implementedControls = controls.filter((c) => c.implemented).length;
+    const checksPassed = checks.filter((c) => c.passed).length;
+    const checksFailed = checks.filter((c) => !c.passed).length;
 
     return {
       period: { start: startDate, end: endDate },

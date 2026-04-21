@@ -1,6 +1,6 @@
 /**
  * Next-Level Infrastructure Service
- * 
+ *
  * Automated infrastructure recovery, predictive Kubernetes alerts,
  * AI-powered CDN optimization, and self-healing monitoring.
  */
@@ -126,11 +126,11 @@ export class InfrastructureService extends EventEmitter {
   async getInfrastructureHealth(): Promise<InfrastructureHealth> {
     try {
       const components = await this.checkAllComponents();
-      
+
       // Determine overall status
-      const hasDown = components.some(c => c.status === 'down');
-      const hasDegraded = components.some(c => c.status === 'degraded');
-      
+      const hasDown = components.some((c) => c.status === 'down');
+      const hasDegraded = components.some((c) => c.status === 'degraded');
+
       let status: 'healthy' | 'degraded' | 'critical';
       if (hasDown) status = 'critical';
       else if (hasDegraded) status = 'degraded';
@@ -157,7 +157,7 @@ export class InfrastructureService extends EventEmitter {
     try {
       // In production, integrate with Kubernetes API
       const metrics = await this.fetchK8sMetrics(clusterName);
-      
+
       // Analyze metrics and generate predictions
       const predictedIssues = await this.predictK8sIssues(metrics);
 
@@ -178,13 +178,16 @@ export class InfrastructureService extends EventEmitter {
   /**
    * Trigger automated infrastructure recovery
    */
-  async triggerAutoRecovery(incident: string, severity: 'low' | 'medium' | 'high' | 'critical'): Promise<RecoveryAction> {
+  async triggerAutoRecovery(
+    incident: string,
+    severity: 'low' | 'medium' | 'high' | 'critical'
+  ): Promise<RecoveryAction> {
     try {
       const recoveryId = `recovery_${Date.now()}`;
-      
+
       // Determine recovery actions based on incident type
       const actions = this.determineRecoveryActions(incident, severity);
-      
+
       // Check if automation is enabled for this severity
       const automated = severity === 'high' || severity === 'critical';
 
@@ -224,13 +227,13 @@ export class InfrastructureService extends EventEmitter {
     try {
       // Get current CDN configuration
       const currentConfig = await this.getCurrentCDNConfig(provider);
-      
+
       // Analyze traffic patterns
       const trafficAnalysis = await this.analyzeTrafficPatterns();
-      
+
       // Generate optimized configuration using AI
       const optimizedConfig = await this.generateOptimizedCDNConfig(trafficAnalysis, currentConfig);
-      
+
       // Calculate rate limiting optimization
       const rateLimiting = await this.optimizeRateLimiting(trafficAnalysis);
 
@@ -258,7 +261,7 @@ export class InfrastructureService extends EventEmitter {
   ): Promise<PredictiveAlert> {
     try {
       const alertId = `alert_${Date.now()}`;
-      
+
       // Determine severity based on time to impact and confidence
       let severity: 'low' | 'medium' | 'high' | 'critical';
       if (estimatedTimeToImpact < 15 && confidence > 0.8) severity = 'critical';
@@ -268,7 +271,7 @@ export class InfrastructureService extends EventEmitter {
 
       // Generate suggested actions
       const suggestedActions = this.generateAlertActions(type, severity);
-      
+
       // Determine if auto-remediation should be enabled
       const autoRemediation = severity === 'critical' && confidence > 0.85;
 
@@ -276,7 +279,16 @@ export class InfrastructureService extends EventEmitter {
       await this.pool.query(
         `INSERT INTO predictive_alerts (id, type, severity, prediction, confidence, estimated_time_to_impact, suggested_actions, auto_remediation, created_at)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
-        [alertId, type, severity, prediction, confidence, estimatedTimeToImpact, JSON.stringify(suggestedActions), autoRemediation]
+        [
+          alertId,
+          type,
+          severity,
+          prediction,
+          confidence,
+          estimatedTimeToImpact,
+          JSON.stringify(suggestedActions),
+          autoRemediation,
+        ]
       );
 
       const alert: PredictiveAlert = {
@@ -318,7 +330,7 @@ export class InfrastructureService extends EventEmitter {
         [limit]
       );
 
-      return result.rows.map(row => ({
+      return result.rows.map((row) => ({
         id: row.id,
         incident: row.incident,
         severity: row.severity,
@@ -349,22 +361,19 @@ export class InfrastructureService extends EventEmitter {
   private async monitorInfrastructure(): Promise<void> {
     try {
       const health = await this.getInfrastructureHealth();
-      
+
       if (health.status === 'critical') {
         // Trigger auto-recovery for critical issues
-        const criticalComponents = health.components.filter(c => c.status === 'down');
-        
+        const criticalComponents = health.components.filter((c) => c.status === 'down');
+
         for (const component of criticalComponents) {
-          await this.triggerAutoRecovery(
-            `${component.name} is down`,
-            'critical'
-          );
+          await this.triggerAutoRecovery(`${component.name} is down`, 'critical');
         }
       }
 
       // Check for predictive alerts
       const k8sHealth = await this.getK8sClusterHealth();
-      
+
       for (const issue of k8sHealth.predictedIssues) {
         if (issue.severity === 'critical' || issue.severity === 'high') {
           console.log(`Predictive alert: ${issue.prediction}`);
@@ -394,7 +403,7 @@ export class InfrastructureService extends EventEmitter {
     // In production, perform actual health checks
     // For now, return mock data
     const isHealthy = Math.random() > 0.1; // 90% uptime
-    
+
     return {
       name,
       status: isHealthy ? 'up' : 'down',
@@ -408,7 +417,9 @@ export class InfrastructureService extends EventEmitter {
     const recommendations = [];
 
     if (status === 'critical') {
-      recommendations.push('Immediate action required: Critical infrastructure components are down');
+      recommendations.push(
+        'Immediate action required: Critical infrastructure components are down'
+      );
       recommendations.push('Review recent deployments and rollback if necessary');
     }
 
@@ -417,9 +428,11 @@ export class InfrastructureService extends EventEmitter {
       recommendations.push('Consider scaling resources preventively');
     }
 
-    const slowComponents = components.filter(c => c.responseTime && c.responseTime > 200);
+    const slowComponents = components.filter((c) => c.responseTime && c.responseTime > 200);
     if (slowComponents.length > 0) {
-      recommendations.push(`Optimize performance for: ${slowComponents.map(c => c.name).join(', ')}`);
+      recommendations.push(
+        `Optimize performance for: ${slowComponents.map((c) => c.name).join(', ')}`
+      );
     }
 
     return recommendations;
@@ -469,10 +482,15 @@ export class InfrastructureService extends EventEmitter {
         id: `pred_${Date.now()}_pod`,
         type: 'pod_failure',
         severity: 'medium',
-        prediction: 'Pod failure pattern detected. May indicate image pull issues or resource constraints.',
+        prediction:
+          'Pod failure pattern detected. May indicate image pull issues or resource constraints.',
         confidence: 0.75,
         estimatedTimeToImpact: 30,
-        suggestedActions: ['Check pod logs', 'Verify image repository access', 'Review resource requests'],
+        suggestedActions: [
+          'Check pod logs',
+          'Verify image repository access',
+          'Review resource requests',
+        ],
         autoRemediation: false,
         createdAt: new Date(),
       });
@@ -512,10 +530,10 @@ export class InfrastructureService extends EventEmitter {
 
   private async executeRecoveryActions(recovery: RecoveryAction): Promise<void> {
     // Update status to in_progress
-    await this.pool.query(
-      'UPDATE infrastructure_recoveries SET status = $1 WHERE id = $2',
-      ['in_progress', recovery.id]
-    );
+    await this.pool.query('UPDATE infrastructure_recoveries SET status = $1 WHERE id = $2', [
+      'in_progress',
+      recovery.id,
+    ]);
 
     try {
       // Execute each recovery action
@@ -569,14 +587,14 @@ export class InfrastructureService extends EventEmitter {
         'us-east': 0.4,
         'us-west': 0.3,
         'eu-west': 0.2,
-        'asia': 0.1,
+        asia: 0.1,
       },
     };
   }
 
   private async generateOptimizedCDNConfig(traffic: any, current: any): Promise<any> {
     const reasoning = [];
-    
+
     // Optimize TTL based on traffic patterns
     let optimizedTTL = current.ttl;
     if (traffic.avgRequestsPerHour > 1000) {
@@ -590,7 +608,9 @@ export class InfrastructureService extends EventEmitter {
       .map(([region, _]) => region);
 
     if (optimizedRegions.length > current.regions.length) {
-      reasoning.push(`Added ${optimizedRegions.length - current.regions.length} regions to improve geographic coverage`);
+      reasoning.push(
+        `Added ${optimizedRegions.length - current.regions.length} regions to improve geographic coverage`
+      );
     }
 
     // Optimize cache policy
@@ -612,7 +632,7 @@ export class InfrastructureService extends EventEmitter {
 
   private async optimizeRateLimiting(traffic: any): Promise<any> {
     const baseRate = 100;
-    const optimizedRate = Math.ceil(traffic.avgRequestsPerHour / 600 * baseRate);
+    const optimizedRate = Math.ceil((traffic.avgRequestsPerHour / 600) * baseRate);
 
     return {
       current: {
@@ -662,7 +682,7 @@ export class InfrastructureService extends EventEmitter {
 
   private async executeAutoRemediation(alert: PredictiveAlert): Promise<void> {
     console.log(`Executing auto-remediation for alert: ${alert.id}`);
-    
+
     // In production, execute actual remediation actions
     for (const action of alert.suggestedActions) {
       console.log(`Auto-remediation: ${action}`);
@@ -678,7 +698,7 @@ export class InfrastructureService extends EventEmitter {
   }
 
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
 

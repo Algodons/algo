@@ -8,10 +8,7 @@ dotenv.config();
 
 const program = new Command();
 
-program
-  .name('algo')
-  .description('Official CLI tool for Algo Cloud IDE Platform')
-  .version('1.0.0');
+program.name('algo').description('Official CLI tool for Algo Cloud IDE Platform').version('1.0.0');
 
 // Initialize SDK
 const sdk = new AlgoSDK({
@@ -179,7 +176,7 @@ aiCmd
       const input = JSON.parse(options.input);
       const context = options.context ? JSON.parse(options.context) : undefined;
       const parameters = options.parameters ? JSON.parse(options.parameters) : undefined;
-      
+
       const result = await sdk.ai.agents.invoke(agentId, input, context, parameters);
       console.log('Agent invoked successfully!');
       console.log(JSON.stringify(result, null, 2));

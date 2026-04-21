@@ -107,7 +107,7 @@ const Pricing: React.FC = () => {
       <div className="pricing-header">
         <h1>Choose Your Plan</h1>
         <p>Select the perfect plan for your needs</p>
-        
+
         <div className="billing-toggle">
           <button
             className={billingCycle === 'monthly' ? 'active' : ''}
@@ -127,23 +127,16 @@ const Pricing: React.FC = () => {
 
       <div className="pricing-grid">
         {plans.map((plan) => (
-          <div
-            key={plan.id}
-            className={`pricing-card ${plan.name === 'pro' ? 'featured' : ''}`}
-          >
-            {plan.name === 'pro' && (
-              <div className="featured-badge">Most Popular</div>
-            )}
-            
+          <div key={plan.id} className={`pricing-card ${plan.name === 'pro' ? 'featured' : ''}`}>
+            {plan.name === 'pro' && <div className="featured-badge">Most Popular</div>}
+
             <div className="plan-header">
               <h2>{plan.displayName}</h2>
               <p className="plan-description">{plan.description}</p>
               <div className="plan-price">
                 <span className="price">{formatPrice(plan)}</span>
                 {plan.priceMonthly > 0 && (
-                  <span className="period">
-                    /{billingCycle === 'yearly' ? 'year' : 'month'}
-                  </span>
+                  <span className="period">/{billingCycle === 'yearly' ? 'year' : 'month'}</span>
                 )}
               </div>
             </div>
@@ -151,33 +144,47 @@ const Pricing: React.FC = () => {
             <div className="plan-features">
               <div className="feature">
                 <svg viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 <span>{formatStorage(plan.storageMb)} storage</span>
               </div>
 
               <div className="feature">
                 <svg viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 <span>{formatCompute(plan.computeHoursMonthly)}</span>
               </div>
 
               <div className="feature">
                 <svg viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 <span>{formatBandwidth(plan.bandwidthGbMonthly)} bandwidth</span>
               </div>
 
               <div className="feature">
                 <svg viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 <span>
-                  {plan.concurrentDeployments === -1
-                    ? 'Unlimited'
-                    : plan.concurrentDeployments}{' '}
+                  {plan.concurrentDeployments === -1 ? 'Unlimited' : plan.concurrentDeployments}{' '}
                   concurrent {plan.concurrentDeployments === 1 ? 'deployment' : 'deployments'}
                 </span>
               </div>
@@ -185,7 +192,11 @@ const Pricing: React.FC = () => {
               {plan.bringOwnApiKeys && (
                 <div className="feature">
                   <svg viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                   <span>Bring your own AI API keys</span>
                 </div>
@@ -194,7 +205,11 @@ const Pricing: React.FC = () => {
               {plan.hasPrioritySupport && (
                 <div className="feature">
                   <svg viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                   <span>Priority support</span>
                 </div>
@@ -203,7 +218,11 @@ const Pricing: React.FC = () => {
               {plan.hasAdvancedAnalytics && (
                 <div className="feature">
                   <svg viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                   <span>Advanced analytics</span>
                 </div>
@@ -212,7 +231,11 @@ const Pricing: React.FC = () => {
               {plan.hasSso && (
                 <div className="feature">
                   <svg viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                   <span>Single Sign-On (SSO)</span>
                 </div>
@@ -221,7 +244,11 @@ const Pricing: React.FC = () => {
               {plan.hasTeamManagement && (
                 <div className="feature">
                   <svg viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                   <span>Team management</span>
                 </div>
@@ -230,7 +257,11 @@ const Pricing: React.FC = () => {
               {!plan.hasPrioritySupport && (
                 <div className="feature">
                   <svg viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                   <span>Community forum support</span>
                 </div>

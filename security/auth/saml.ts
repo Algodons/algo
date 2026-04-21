@@ -100,14 +100,14 @@ export class SAMLAuth {
 
   /**
    * Parse SAML response XML
-   * 
+   *
    * WARNING: This is a simplified parser for demonstration purposes.
    * In production, you MUST use a proper XML parser with security features:
    * - Use xml2js, xmldom, or fast-xml-parser
    * - Disable external entities (XXE protection)
    * - Validate XML structure
    * - Use schema validation
-   * 
+   *
    * Example production implementation:
    * ```
    * import { parseStringPromise } from 'xml2js';
@@ -123,7 +123,7 @@ export class SAMLAuth {
   private parseSAMLResponse(xml: string): SAMLProfile {
     // TODO: Replace with proper XML parser (xml2js, xmldom, fast-xml-parser)
     // This implementation is vulnerable to XML injection and XXE attacks
-    
+
     // Extract NameID
     const nameIDMatch = xml.match(/<saml:NameID[^>]*>([^<]+)<\/saml:NameID>/);
     const nameID = nameIDMatch ? nameIDMatch[1] : '';
@@ -134,19 +134,28 @@ export class SAMLAuth {
 
     // Extract attributes
     const attributes: Record<string, any> = {};
-    const attributeRegex = /<saml:Attribute Name="([^"]+)"[^>]*>.*?<saml:AttributeValue[^>]*>([^<]+)<\/saml:AttributeValue>/gs;
+    const attributeRegex =
+      /<saml:Attribute Name="([^"]+)"[^>]*>.*?<saml:AttributeValue[^>]*>([^<]+)<\/saml:AttributeValue>/gs;
     let match;
-    
+
     while ((match = attributeRegex.exec(xml)) !== null) {
       const [, name, value] = match;
       attributes[name] = value;
     }
 
     // Map common attributes based on provider
-    let email = attributes.email || attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];
-    let firstName = attributes.firstName || attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'];
-    let lastName = attributes.lastName || attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'];
-    let displayName = attributes.displayName || attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
+    let email =
+      attributes.email ||
+      attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];
+    let firstName =
+      attributes.firstName ||
+      attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'];
+    let lastName =
+      attributes.lastName ||
+      attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'];
+    let displayName =
+      attributes.displayName ||
+      attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
 
     // Provider-specific attribute mapping
     if (this.config.provider === 'okta') {
@@ -154,9 +163,12 @@ export class SAMLAuth {
       firstName = firstName || attributes['firstName'];
       lastName = lastName || attributes['lastName'];
     } else if (this.config.provider === 'azure') {
-      email = email || attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];
-      firstName = firstName || attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'];
-      lastName = lastName || attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'];
+      email =
+        email || attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];
+      firstName =
+        firstName || attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'];
+      lastName =
+        lastName || attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'];
     }
 
     return {
@@ -172,30 +184,32 @@ export class SAMLAuth {
 
   /**
    * Validate SAML signature
-   * 
+   *
    * CRITICAL SECURITY WARNING: This is a placeholder implementation.
    * It DOES NOT provide real security and MUST be replaced in production.
-   * 
+   *
    * In production, you MUST:
    * 1. Use a battle-tested SAML library (passport-saml, @node-saml/node-saml)
    * 2. Cryptographically verify the XML signature using the IdP certificate
    * 3. Validate signature algorithm and digest method
    * 4. Check certificate validity and expiration
    * 5. Verify the signature covers the Assertion or Response
-   * 
+   *
    * Example production implementation:
    * ```
    * import { validateXmlSignature } from '@node-saml/node-saml';
    * const isValid = validateXmlSignature(xml, this.config.cert);
    * if (!isValid) throw new Error('Invalid SAML signature');
    * ```
-   * 
+   *
    * DO NOT USE THIS CODE IN PRODUCTION - It will accept forged SAML responses!
    */
   private validateSignature(xml: string): boolean {
     // TODO: Implement proper XML signature validation using @node-saml/node-saml or similar
     // This placeholder only checks for signature presence, NOT validity
-    console.warn('WARNING: Using placeholder SAML signature validation. Replace with proper validation in production!');
+    console.warn(
+      'WARNING: Using placeholder SAML signature validation. Replace with proper validation in production!'
+    );
     return xml.includes('<ds:Signature') || xml.includes('<Signature');
   }
 
@@ -232,9 +246,9 @@ export function samlAuth(config: SAMLConfig) {
      * Initiate SAML login
      */
     login: (req: Request, res: Response) => {
-      const relayState = req.query.returnTo as string || '/';
+      const relayState = (req.query.returnTo as string) || '/';
       const { url, requestId } = saml.generateAuthRequest(relayState);
-      
+
       // Store request ID in session for validation
       if (req.session) {
         (req.session as any).samlRequestId = requestId;
@@ -269,9 +283,9 @@ export function samlAuth(config: SAMLConfig) {
         }
       } catch (error) {
         console.error('SAML authentication error:', error);
-        res.status(401).json({ 
+        res.status(401).json({
           error: 'SAML authentication failed',
-          message: error instanceof Error ? error.message : 'Unknown error'
+          message: error instanceof Error ? error.message : 'Unknown error',
         });
       }
     },

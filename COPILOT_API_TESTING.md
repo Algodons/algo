@@ -1,6 +1,7 @@
 # Copilot SaaS API Testing Guide
 
-This guide provides instructions and examples for testing the Copilot SaaS integration endpoints in the development environment.
+This guide provides instructions and examples for testing the Copilot SaaS
+integration endpoints in the development environment.
 
 ## Table of Contents
 
@@ -15,6 +16,7 @@ This guide provides instructions and examples for testing the Copilot SaaS integ
 Before testing the Copilot API:
 
 1. **Development environment is running:**
+
    ```bash
    npm run dev:local
    # or
@@ -22,6 +24,7 @@ Before testing the Copilot API:
    ```
 
 2. **Copilot is enabled in your `.env.development`:**
+
    ```bash
    COPILOT_ENABLED=true
    COPILOT_API_URL=https://api-dev.copilot.example.com
@@ -53,6 +56,7 @@ curl -X POST http://localhost:4000/api/auth/login \
 ```
 
 Save the returned token for use in subsequent requests:
+
 ```bash
 export TOKEN="your_jwt_token_here"
 ```
@@ -68,11 +72,13 @@ Check if Copilot service is enabled and configured.
 **Authentication:** Not required
 
 **Example:**
+
 ```bash
 curl http://localhost:4000/api/copilot/status
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -93,11 +99,13 @@ Check if the Copilot service is healthy and reachable.
 **Authentication:** Not required
 
 **Example:**
+
 ```bash
 curl http://localhost:4000/api/copilot/health
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -114,6 +122,7 @@ Get code completion suggestions from Copilot.
 **Authentication:** Required
 
 **Request Body:**
+
 ```json
 {
   "prompt": "function calculateSum(a, b) {",
@@ -129,6 +138,7 @@ Get code completion suggestions from Copilot.
 ```
 
 **Example:**
+
 ```bash
 curl -X POST http://localhost:4000/api/copilot/complete \
   -H "Content-Type: application/json" \
@@ -142,6 +152,7 @@ curl -X POST http://localhost:4000/api/copilot/complete \
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -167,6 +178,7 @@ Generate complete code snippets from a description.
 **Authentication:** Required
 
 **Request Body:**
+
 ```json
 {
   "prompt": "Create a React component that displays a user profile with name, email, and avatar",
@@ -179,6 +191,7 @@ Generate complete code snippets from a description.
 ```
 
 **Example:**
+
 ```bash
 curl -X POST http://localhost:4000/api/copilot/generate \
   -H "Content-Type: application/json" \
@@ -193,6 +206,7 @@ curl -X POST http://localhost:4000/api/copilot/generate \
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -219,6 +233,7 @@ Get explanations for existing code.
 **Authentication:** Required
 
 **Request Body:**
+
 ```json
 {
   "code": "const memoize = fn => {\n  const cache = new Map();\n  return (...args) => {\n    const key = JSON.stringify(args);\n    if (cache.has(key)) return cache.get(key);\n    const result = fn(...args);\n    cache.set(key, result);\n    return result;\n  };\n};",
@@ -227,6 +242,7 @@ Get explanations for existing code.
 ```
 
 **Example:**
+
 ```bash
 curl -X POST http://localhost:4000/api/copilot/explain \
   -H "Content-Type: application/json" \
@@ -238,6 +254,7 @@ curl -X POST http://localhost:4000/api/copilot/explain \
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -258,6 +275,7 @@ Get inline code suggestions based on cursor position.
 **Authentication:** Required
 
 **Request Body:**
+
 ```json
 {
   "code": "function processData(data) {\n  if (!data) return null;\n  // cursor here\n}",
@@ -267,6 +285,7 @@ Get inline code suggestions based on cursor position.
 ```
 
 **Example:**
+
 ```bash
 curl -X POST http://localhost:4000/api/copilot/suggestions \
   -H "Content-Type: application/json" \
@@ -279,6 +298,7 @@ curl -X POST http://localhost:4000/api/copilot/suggestions \
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -381,7 +401,7 @@ let authToken = '';
 async function login() {
   const response = await axios.post(`${API_BASE}/api/auth/login`, {
     email: 'test@example.com',
-    password: 'password123'
+    password: 'password123',
   });
   authToken = response.data.token;
   console.log('✅ Logged in successfully');
@@ -397,10 +417,10 @@ async function testCodeCompletion() {
     `${API_BASE}/api/copilot/complete`,
     {
       prompt: 'function greet(name) {',
-      context: { language: 'javascript' }
+      context: { language: 'javascript' },
     },
     {
-      headers: { Authorization: `Bearer ${authToken}` }
+      headers: { Authorization: `Bearer ${authToken}` },
     }
   );
   console.log('Code Completion:', response.data);
@@ -427,6 +447,7 @@ runTests();
 **Cause:** Copilot is disabled in configuration
 
 **Solution:**
+
 1. Check `.env.development` has `COPILOT_ENABLED=true`
 2. Restart the backend server
 3. Verify with `/api/copilot/status`
@@ -436,6 +457,7 @@ runTests();
 **Cause:** Missing or invalid JWT token
 
 **Solution:**
+
 1. Ensure you're logged in and have a valid token
 2. Include the token in the Authorization header:
    ```
@@ -447,6 +469,7 @@ runTests();
 **Cause:** Copilot API endpoint is unreachable
 
 **Solution:**
+
 1. Check `COPILOT_API_URL` in configuration
 2. Verify network connectivity
 3. Check if the dev API endpoint is accessible
@@ -457,6 +480,7 @@ runTests();
 **Cause:** Missing or incorrect Copilot API key
 
 **Solution:**
+
 1. Set `COPILOT_API_KEY` in `.env.development`
 2. Ensure you're using the correct dev API key
 3. Restart the backend after updating
@@ -466,6 +490,7 @@ runTests();
 **Cause:** Routes not properly registered
 
 **Solution:**
+
 1. Check that Copilot routes are imported in `backend/src/index.ts`
 2. Verify the route path is `/api/copilot/*`
 3. Check backend startup logs for route registration
@@ -500,4 +525,5 @@ If you encounter issues not covered in this guide:
 
 ---
 
-**Note:** These are development/testing endpoints. Production endpoints will have different URLs and authentication requirements.
+**Note:** These are development/testing endpoints. Production endpoints will
+have different URLs and authentication requirements.

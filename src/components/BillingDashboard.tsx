@@ -15,11 +15,14 @@ interface Usage {
     start: string;
     end: string;
   };
-  metrics: Record<string, {
-    value: number;
-    cost: number;
-    unit: string;
-  }>;
+  metrics: Record<
+    string,
+    {
+      value: number;
+      cost: number;
+      unit: string;
+    }
+  >;
   totalCost: number;
 }
 
@@ -126,8 +129,8 @@ const BillingDashboard: React.FC = () => {
               <div className="detail-item">
                 <span className="label">Amount:</span>
                 <span className="value">
-                  {formatCurrency(subscription?.amount || 0)}
-                  /{subscription?.billingCycle === 'yearly' ? 'year' : 'month'}
+                  {formatCurrency(subscription?.amount || 0)}/
+                  {subscription?.billingCycle === 'yearly' ? 'year' : 'month'}
                 </span>
               </div>
               {subscription?.currentPeriodStart && (
@@ -152,23 +155,24 @@ const BillingDashboard: React.FC = () => {
       <div className="billing-section usage-section">
         <h2>Current Usage</h2>
         <div className="usage-grid">
-          {usage?.metrics && Object.entries(usage.metrics).map(([key, metric]) => (
-            <div key={key} className="usage-card">
-              <div className="usage-icon">
-                {key === 'deployment_hours' && '⚡'}
-                {key === 'storage' && '💾'}
-                {key === 'bandwidth' && '🌐'}
-                {key === 'ai_api_usage' && '🤖'}
+          {usage?.metrics &&
+            Object.entries(usage.metrics).map(([key, metric]) => (
+              <div key={key} className="usage-card">
+                <div className="usage-icon">
+                  {key === 'deployment_hours' && '⚡'}
+                  {key === 'storage' && '💾'}
+                  {key === 'bandwidth' && '🌐'}
+                  {key === 'ai_api_usage' && '🤖'}
+                </div>
+                <div className="usage-details">
+                  <h3>{key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}</h3>
+                  <p className="usage-value">
+                    {metric.value.toFixed(2)} {metric.unit}
+                  </p>
+                  <p className="usage-cost">{formatCurrency(metric.cost)}</p>
+                </div>
               </div>
-              <div className="usage-details">
-                <h3>{key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h3>
-                <p className="usage-value">
-                  {metric.value.toFixed(2)} {metric.unit}
-                </p>
-                <p className="usage-cost">{formatCurrency(metric.cost)}</p>
-              </div>
-            </div>
-          ))}
+            ))}
         </div>
         {usage && (
           <div className="usage-total">
@@ -222,9 +226,7 @@ const BillingDashboard: React.FC = () => {
                       >
                         View
                       </button>
-                      {invoice.status !== 'paid' && (
-                        <button className="btn-pay">Pay Now</button>
-                      )}
+                      {invoice.status !== 'paid' && <button className="btn-pay">Pay Now</button>}
                     </td>
                   </tr>
                 ))

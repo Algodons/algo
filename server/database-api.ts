@@ -11,21 +11,23 @@ export function setupDatabaseRoutes(app: Express) {
   app.post('/api/db/postgres/connect', async (req: Request, res: Response) => {
     try {
       const { connectionId, host, port, database, user, password } = req.body;
-      
+
       const client = new PgClient({
         host,
         port: port || 5432,
         database,
         user,
-        password
+        password,
       });
-      
+
       await client.connect();
       connections.set(connectionId, { type: 'postgres', client });
-      
+
       res.json({ success: true, message: 'Connected to PostgreSQL' });
     } catch (error) {
-      res.status(500).json({ error: 'PostgreSQL connection failed', details: (error as Error).message });
+      res
+        .status(500)
+        .json({ error: 'PostgreSQL connection failed', details: (error as Error).message });
     }
   });
 
@@ -33,15 +35,15 @@ export function setupDatabaseRoutes(app: Express) {
     try {
       const { connectionId, query, params } = req.body;
       const conn = connections.get(connectionId);
-      
+
       if (!conn || conn.type !== 'postgres') {
         return res.status(400).json({ error: 'Invalid connection' });
       }
-      
+
       // Ensure params is an array, or default to empty array
       const safeParams = Array.isArray(params) ? params : [];
       const result = await conn.client.query(query, safeParams);
-      
+
       res.json({ success: true, rows: result.rows, rowCount: result.rowCount });
     } catch (error) {
       res.status(500).json({ error: 'Query failed', details: (error as Error).message });
@@ -52,18 +54,18 @@ export function setupDatabaseRoutes(app: Express) {
     try {
       const { connectionId } = req.query;
       const conn = connections.get(connectionId as string);
-      
+
       if (!conn || conn.type !== 'postgres') {
         return res.status(400).json({ error: 'Invalid connection' });
       }
-      
+
       const result = await conn.client.query(`
         SELECT table_name 
         FROM information_schema.tables 
         WHERE table_schema = 'public'
         ORDER BY table_name
       `);
-      
+
       res.json({ success: true, tables: result.rows });
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch tables', details: (error as Error).message });
@@ -74,17 +76,17 @@ export function setupDatabaseRoutes(app: Express) {
   app.post('/api/db/mysql/connect', async (req: Request, res: Response) => {
     try {
       const { connectionId, host, port, database, user, password } = req.body;
-      
+
       const connection = await mysql.createConnection({
         host,
         port: port || 3306,
         database,
         user,
-        password
+        password,
       });
-      
+
       connections.set(connectionId, { type: 'mysql', client: connection });
-      
+
       res.json({ success: true, message: 'Connected to MySQL' });
     } catch (error) {
       res.status(500).json({ error: 'MySQL connection failed', details: (error as Error).message });
@@ -95,15 +97,15 @@ export function setupDatabaseRoutes(app: Express) {
     try {
       const { connectionId, query, params } = req.body;
       const conn = connections.get(connectionId);
-      
+
       if (!conn || conn.type !== 'mysql') {
         return res.status(400).json({ error: 'Invalid connection' });
       }
-      
+
       // Ensure params is an array, or default to empty array
       const safeParams = Array.isArray(params) ? params : [];
       const [rows] = await conn.client.execute(query, safeParams);
-      
+
       res.json({ success: true, rows });
     } catch (error) {
       res.status(500).json({ error: 'Query failed', details: (error as Error).message });
@@ -114,13 +116,13 @@ export function setupDatabaseRoutes(app: Express) {
     try {
       const { connectionId } = req.query;
       const conn = connections.get(connectionId as string);
-      
+
       if (!conn || conn.type !== 'mysql') {
         return res.status(400).json({ error: 'Invalid connection' });
       }
-      
+
       const [rows] = await conn.client.execute('SHOW TABLES');
-      
+
       res.json({ success: true, tables: rows });
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch tables', details: (error as Error).message });
@@ -131,16 +133,18 @@ export function setupDatabaseRoutes(app: Express) {
   app.post('/api/db/mongodb/connect', async (req: Request, res: Response) => {
     try {
       const { connectionId, uri, database } = req.body;
-      
+
       const client = new MongoClient(uri);
       await client.connect();
-      
+
       const db = client.db(database);
       connections.set(connectionId, { type: 'mongodb', client, db });
-      
+
       res.json({ success: true, message: 'Connected to MongoDB' });
     } catch (error) {
-      res.status(500).json({ error: 'MongoDB connection failed', details: (error as Error).message });
+      res
+        .status(500)
+        .json({ error: 'MongoDB connection failed', details: (error as Error).message });
     }
   });
 
@@ -148,14 +152,14 @@ export function setupDatabaseRoutes(app: Express) {
     try {
       const { connectionId, collection, query, operation = 'find' } = req.body;
       const conn = connections.get(connectionId);
-      
+
       if (!conn || conn.type !== 'mongodb') {
         return res.status(400).json({ error: 'Invalid connection' });
       }
-      
+
       const coll = conn.db.collection(collection);
       let result;
-      
+
       if (operation === 'find') {
         result = await coll.find(query).toArray();
       } else if (operation === 'insertOne') {
@@ -165,7 +169,7 @@ export function setupDatabaseRoutes(app: Express) {
       } else if (operation === 'deleteOne') {
         result = await coll.deleteOne(query);
       }
-      
+
       res.json({ success: true, result });
     } catch (error) {
       res.status(500).json({ error: 'Query failed', details: (error as Error).message });
@@ -176,16 +180,18 @@ export function setupDatabaseRoutes(app: Express) {
     try {
       const { connectionId } = req.query;
       const conn = connections.get(connectionId as string);
-      
+
       if (!conn || conn.type !== 'mongodb') {
         return res.status(400).json({ error: 'Invalid connection' });
       }
-      
+
       const collections = await conn.db.listCollections().toArray();
-      
+
       res.json({ success: true, collections: collections.map((c: any) => c.name) });
     } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch collections', details: (error as Error).message });
+      res
+        .status(500)
+        .json({ error: 'Failed to fetch collections', details: (error as Error).message });
     }
   });
 
@@ -194,19 +200,19 @@ export function setupDatabaseRoutes(app: Express) {
     try {
       const { connectionId } = req.body;
       const conn = connections.get(connectionId);
-      
+
       if (!conn) {
         return res.status(400).json({ error: 'Connection not found' });
       }
-      
+
       if (conn.type === 'postgres' || conn.type === 'mysql') {
         await conn.client.end();
       } else if (conn.type === 'mongodb') {
         await conn.client.close();
       }
-      
+
       connections.delete(connectionId);
-      
+
       res.json({ success: true, message: 'Disconnected' });
     } catch (error) {
       res.status(500).json({ error: 'Failed to disconnect', details: (error as Error).message });

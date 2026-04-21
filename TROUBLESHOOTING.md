@@ -3,6 +3,7 @@
 This guide helps you resolve common issues with Algo Cloud IDE.
 
 ## Table of Contents
+
 - [Installation Issues](#installation-issues)
 - [Docker Issues](#docker-issues)
 - [Database Connection Issues](#database-connection-issues)
@@ -19,6 +20,7 @@ This guide helps you resolve common issues with Algo Cloud IDE.
 **Problem:** Dependencies fail to install
 
 **Solution:**
+
 ```bash
 # Clear npm cache
 npm cache clean --force
@@ -39,6 +41,7 @@ cd ../backend && npm install
 **Problem:** Permission errors during installation
 
 **Solution:**
+
 ```bash
 # Fix permissions
 sudo chown -R $USER:$USER .
@@ -54,6 +57,7 @@ sudo npm install
 **Problem:** `docker-compose up` fails
 
 **Solution:**
+
 ```bash
 # Check Docker daemon
 sudo systemctl status docker
@@ -74,6 +78,7 @@ docker-compose up -d
 **Problem:** `Bind for 0.0.0.0:3000 failed: port is already allocated`
 
 **Solution:**
+
 ```bash
 # Find process using the port
 lsof -i :3000
@@ -89,6 +94,7 @@ kill -9 <PID>
 **Problem:** Docker runs out of disk space
 
 **Solution:**
+
 ```bash
 # Clean up Docker
 docker system prune -a
@@ -107,6 +113,7 @@ docker system df
 **Problem:** Cannot connect to PostgreSQL
 
 **Solution:**
+
 ```bash
 # Check if PostgreSQL container is running
 docker-compose ps postgres
@@ -126,6 +133,7 @@ docker-compose exec postgres psql -U algo_user -d algo_ide
 **Problem:** Cannot connect to Redis
 
 **Solution:**
+
 ```bash
 # Check Redis container
 docker-compose ps redis
@@ -142,6 +150,7 @@ docker-compose exec redis redis-cli -a your_password ping
 **Problem:** Cannot connect to MongoDB
 
 **Solution:**
+
 ```bash
 # Check MongoDB container
 docker-compose ps mongodb
@@ -160,6 +169,7 @@ docker-compose logs mongodb
 **Problem:** Frontend shows blank page or errors
 
 **Solution:**
+
 ```bash
 # Check browser console for errors
 # Check if backend is running
@@ -176,6 +186,7 @@ npm run dev
 **Problem:** Import errors in frontend
 
 **Solution:**
+
 ```bash
 cd frontend
 rm -rf node_modules .next
@@ -188,6 +199,7 @@ npm run dev
 **Problem:** Changes don't reflect immediately
 
 **Solution:**
+
 ```bash
 # Check file watching limits (Linux)
 echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf
@@ -203,6 +215,7 @@ sudo sysctl -p
 **Problem:** Backend API returns errors
 
 **Solution:**
+
 ```bash
 # Check backend logs
 cd backend
@@ -220,6 +233,7 @@ curl http://localhost:4000/health
 **Problem:** Terminal or collaboration doesn't work
 
 **Solution:**
+
 ```bash
 # Check WebSocket URL in frontend/.env
 # Ensure NEXT_PUBLIC_WS_URL is correct
@@ -235,6 +249,7 @@ curl http://localhost:4000/health
 **Problem:** Login fails with valid credentials
 
 **Solution:**
+
 ```bash
 # Check backend logs for errors
 docker-compose logs backend
@@ -252,6 +267,7 @@ echo $JWT_SECRET
 **Problem:** User gets logged out immediately
 
 **Solution:**
+
 ```bash
 # Check Redis is running
 docker-compose ps redis
@@ -267,6 +283,7 @@ docker-compose ps redis
 **Problem:** Running code in containers doesn't work
 
 **Solution:**
+
 ```bash
 # Check Docker socket is accessible
 ls -la /var/run/docker.sock
@@ -284,6 +301,7 @@ sudo systemctl status docker
 **Problem:** Containers are killed or slow
 
 **Solution:**
+
 ```bash
 # Check container resources
 docker stats
@@ -300,6 +318,7 @@ docker stats
 **Problem:** Application is slow
 
 **Solution:**
+
 ```bash
 # Check resource usage
 docker stats
@@ -316,6 +335,7 @@ docker stats
 **Problem:** System runs out of memory
 
 **Solution:**
+
 ```bash
 # Check memory usage
 free -h
@@ -331,6 +351,7 @@ docker stats
 **Problem:** Database queries are slow
 
 **Solution:**
+
 ```sql
 -- Check slow queries (PostgreSQL)
 SELECT * FROM pg_stat_statements
@@ -351,6 +372,7 @@ ANALYZE table_name;
 **Problem:** Can't access IDE from network
 
 **Solution:**
+
 ```bash
 # Bind to all interfaces
 # In docker-compose.yml, change:
@@ -367,6 +389,7 @@ sudo ufw allow 3000
 **Problem:** HTTPS certificate issues
 
 **Solution:**
+
 ```bash
 # Check certificate expiration
 openssl x509 -in cert.pem -noout -dates
@@ -429,25 +452,32 @@ If you can't resolve your issue:
 ## Common Error Messages
 
 ### "EADDRINUSE: address already in use"
+
 Port conflict - change port or kill process using it
 
 ### "ECONNREFUSED"
+
 Service not running - start the service
 
 ### "Cannot find module"
+
 Missing dependency - run `npm install`
 
 ### "Permission denied"
+
 Permissions issue - check file/directory permissions
 
 ### "Out of memory"
+
 Insufficient RAM - increase memory or optimize
 
 ### "Connection timeout"
+
 Network issue - check firewall and network settings
 
 ---
 
 Last updated: December 2024
 
-For more help, visit our [GitHub Issues](https://github.com/Algodons/algo/issues)
+For more help, visit our
+[GitHub Issues](https://github.com/Algodons/algo/issues)

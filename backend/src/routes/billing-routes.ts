@@ -40,9 +40,7 @@ export function createBillingRoutes(pool: Pool) {
       }
 
       const { invoiceId } = req.params;
-      const invoice = await billingService.getInvoiceDetails(
-        parseInt(invoiceId)
-      );
+      const invoice = await billingService.getInvoiceDetails(parseInt(invoiceId));
 
       // Verify ownership
       if (invoice.userId !== req.user.id) {
@@ -80,15 +78,15 @@ export function createBillingRoutes(pool: Pool) {
       );
 
       if (result.success) {
-        res.json({ 
+        res.json({
           success: true,
           transactionId: result.transactionId,
-          message: 'Payment processed successfully' 
+          message: 'Payment processed successfully',
         });
       } else {
-        res.status(400).json({ 
+        res.status(400).json({
           success: false,
-          error: result.error || 'Payment failed' 
+          error: result.error || 'Payment failed',
         });
       }
     } catch (error: any) {
@@ -129,8 +127,8 @@ export function createBillingRoutes(pool: Pool) {
       const { type, provider, providerPaymentMethodId, details } = req.body;
 
       if (!type || !provider || !providerPaymentMethodId) {
-        return res.status(400).json({ 
-          error: 'Type, provider, and provider payment method ID are required' 
+        return res.status(400).json({
+          error: 'Type, provider, and provider payment method ID are required',
         });
       }
 
@@ -142,10 +140,10 @@ export function createBillingRoutes(pool: Pool) {
         details || {}
       );
 
-      res.json({ 
+      res.json({
         success: true,
         paymentMethod,
-        message: 'Payment method added successfully' 
+        message: 'Payment method added successfully',
       });
     } catch (error: any) {
       console.error('Error adding payment method:', error);
@@ -165,14 +163,11 @@ export function createBillingRoutes(pool: Pool) {
 
       const { paymentMethodId } = req.params;
 
-      await billingService.setDefaultPaymentMethod(
-        req.user.id,
-        parseInt(paymentMethodId)
-      );
+      await billingService.setDefaultPaymentMethod(req.user.id, parseInt(paymentMethodId));
 
-      res.json({ 
+      res.json({
         success: true,
-        message: 'Default payment method updated' 
+        message: 'Default payment method updated',
       });
     } catch (error: any) {
       console.error('Error setting default payment method:', error);
@@ -187,20 +182,14 @@ export function createBillingRoutes(pool: Pool) {
   router.post('/webhooks/:provider', async (req: Request, res: Response) => {
     try {
       const { provider } = req.params;
-      const signature = req.headers['stripe-signature'] || 
-                       req.headers['paypal-transmission-sig'] as string;
+      const signature =
+        req.headers['stripe-signature'] || (req.headers['paypal-transmission-sig'] as string);
 
       const payload = req.body;
       const eventType = payload.type || payload.event_type;
       const eventId = payload.id;
 
-      await billingService.handleWebhook(
-        provider,
-        eventType,
-        eventId,
-        payload,
-        signature
-      );
+      await billingService.handleWebhook(provider, eventType, eventId, payload, signature);
 
       res.json({ received: true });
     } catch (error) {

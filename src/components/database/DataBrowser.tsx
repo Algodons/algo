@@ -19,7 +19,7 @@ const DataBrowser: React.FC<DataBrowserProps> = ({ connectionId }) => {
   const [pageSize] = useState(50);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [_searchTerm, _setSearchTerm] = useState('');
   const [sortColumn, setSortColumn] = useState<string>('');
   const [sortDirection, setSortDirection] = useState<'ASC' | 'DESC'>('ASC');
 
@@ -37,7 +37,9 @@ const DataBrowser: React.FC<DataBrowserProps> = ({ connectionId }) => {
 
   const fetchTables = async () => {
     try {
-      const response = await fetch(`http://localhost:4000/api/databases/connections/${connectionId}/tables`);
+      const response = await fetch(
+        `http://localhost:4000/api/databases/connections/${connectionId}/tables`
+      );
       const data = await response.json();
       if (data.tables) {
         setTables(data.tables);
@@ -54,11 +56,11 @@ const DataBrowser: React.FC<DataBrowserProps> = ({ connectionId }) => {
     try {
       const offset = (page - 1) * pageSize;
       let query = `SELECT * FROM ${selectedTable}`;
-      
+
       if (sortColumn) {
         query += ` ORDER BY ${sortColumn} ${sortDirection}`;
       }
-      
+
       query += ` LIMIT ${pageSize} OFFSET ${offset}`;
 
       const response = await fetch(
@@ -71,12 +73,14 @@ const DataBrowser: React.FC<DataBrowserProps> = ({ connectionId }) => {
       );
 
       const data = await response.json();
-      
+
       if (data.error) {
         setError(data.error);
         setTableData(null);
       } else {
-        const columns = data.fields ? data.fields.map((f: any) => f.name) : Object.keys(data.rows[0] || {});
+        const columns = data.fields
+          ? data.fields.map((f: any) => f.name)
+          : Object.keys(data.rows[0] || {});
         setTableData({
           rows: data.rows || [],
           columns: columns,
@@ -106,14 +110,16 @@ const DataBrowser: React.FC<DataBrowserProps> = ({ connectionId }) => {
 
     const headers = tableData.columns.join(',');
     const rows = tableData.rows.map((row) =>
-      tableData.columns.map((col) => {
-        const value = row[col];
-        // Escape values that contain commas or quotes
-        if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
-          return `"${value.replace(/"/g, '""')}"`;
-        }
-        return value;
-      }).join(',')
+      tableData.columns
+        .map((col) => {
+          const value = row[col];
+          // Escape values that contain commas or quotes
+          if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+            return `"${value.replace(/"/g, '""')}"`;
+          }
+          return value;
+        })
+        .join(',')
     );
 
     const csv = [headers, ...rows].join('\n');
@@ -158,8 +164,8 @@ const DataBrowser: React.FC<DataBrowserProps> = ({ connectionId }) => {
           {selectedTable && tableData && (
             <>
               <span className="row-count">
-                Showing {(page - 1) * pageSize + 1}-{Math.min(page * pageSize, tableData.totalRows)} of{' '}
-                {tableData.totalRows} rows
+                Showing {(page - 1) * pageSize + 1}-{Math.min(page * pageSize, tableData.totalRows)}{' '}
+                of {tableData.totalRows} rows
               </span>
               <button className="btn-small" onClick={exportToCSV}>
                 Export CSV
@@ -199,9 +205,11 @@ const DataBrowser: React.FC<DataBrowserProps> = ({ connectionId }) => {
                     {tableData.columns.map((column) => (
                       <td key={column}>
                         <div className="td-content">
-                          {row[column] !== null && row[column] !== undefined
-                            ? String(row[column])
-                            : <span className="null-value">NULL</span>}
+                          {row[column] !== null && row[column] !== undefined ? (
+                            String(row[column])
+                          ) : (
+                            <span className="null-value">NULL</span>
+                          )}
                         </div>
                       </td>
                     ))}

@@ -56,7 +56,7 @@ export function EnvironmentVariables({ projectId, organizationId }: EnvironmentV
       setLoading(true);
       // API call would go here
       // await envVarsApi.create(...)
-      
+
       setNewKey('');
       setNewValue('');
     } catch (err) {
@@ -134,9 +134,7 @@ export function EnvironmentVariables({ projectId, organizationId }: EnvironmentV
             <Plus className="w-4 h-4 mr-2" />
             Add Variable
           </Button>
-          <p className="text-xs text-gray-500">
-            Use UPPER_SNAKE_CASE for key names
-          </p>
+          <p className="text-xs text-gray-500">Use UPPER_SNAKE_CASE for key names</p>
         </div>
       </Card>
 

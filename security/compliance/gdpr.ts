@@ -131,7 +131,9 @@ export class GDPRComplianceService {
    * Record user consent
    */
   async recordConsent(consent: ConsentRecord): Promise<void> {
-    const timestamp = consent.granted ? consent.grantedAt || new Date() : consent.revokedAt || new Date();
+    const timestamp = consent.granted
+      ? consent.grantedAt || new Date()
+      : consent.revokedAt || new Date();
 
     await this.pool.query(
       `INSERT INTO user_consents 
@@ -158,8 +160,8 @@ export class GDPRComplianceService {
     const auditLogger = getAuditLogger();
     await auditLogger.log(
       createAuditEvent(
-        consent.granted 
-          ? AuditEventType.COMPLIANCE_GDPR_CONSENT_GRANTED 
+        consent.granted
+          ? AuditEventType.COMPLIANCE_GDPR_CONSENT_GRANTED
           : AuditEventType.COMPLIANCE_GDPR_CONSENT_REVOKED,
         `User ${consent.granted ? 'granted' : 'revoked'} consent for ${consent.consentType}`,
         {
@@ -174,12 +176,11 @@ export class GDPRComplianceService {
    * Get user consents
    */
   async getUserConsents(userId: number): Promise<ConsentRecord[]> {
-    const result = await this.pool.query(
-      `SELECT * FROM user_consents WHERE user_id = $1`,
-      [userId]
-    );
+    const result = await this.pool.query(`SELECT * FROM user_consents WHERE user_id = $1`, [
+      userId,
+    ]);
 
-    return result.rows.map(row => ({
+    return result.rows.map((row) => ({
       userId: row.user_id,
       consentType: row.consent_type,
       granted: row.granted,
@@ -219,20 +220,16 @@ export class GDPRComplianceService {
     // Log audit event
     const auditLogger = getAuditLogger();
     await auditLogger.log(
-      createAuditEvent(
-        AuditEventType.COMPLIANCE_GDPR_DATA_REQUEST,
-        'User requested data export',
-        {
-          userId,
-          userEmail,
-          metadata: { requestId, requestType: 'export' },
-        }
-      )
+      createAuditEvent(AuditEventType.COMPLIANCE_GDPR_DATA_REQUEST, 'User requested data export', {
+        userId,
+        userEmail,
+        metadata: { requestId, requestType: 'export' },
+      })
     );
 
     // In production, use a proper job queue (Bull, BullMQ, etc.) for async processing
     // For now, fire-and-forget with error logging
-    this.generateDataExport(requestId, userId).catch(error => {
+    this.generateDataExport(requestId, userId).catch((error) => {
       console.error(`Failed to generate data export for request ${requestId}:`, error);
     });
 
@@ -244,10 +241,9 @@ export class GDPRComplianceService {
    */
   private async generateDataExport(requestId: number, userId: number): Promise<void> {
     try {
-      await this.pool.query(
-        `UPDATE data_export_requests SET status = 'processing' WHERE id = $1`,
-        [requestId]
-      );
+      await this.pool.query(`UPDATE data_export_requests SET status = 'processing' WHERE id = $1`, [
+        requestId,
+      ]);
 
       // Collect all user data
       const userData = await this.collectUserData(userId);
@@ -260,17 +256,21 @@ export class GDPRComplianceService {
         `UPDATE data_export_requests 
          SET status = 'completed', completed_at = NOW(), download_url = $1, expires_at = $2, metadata = $3
          WHERE id = $4`,
-        [downloadUrl, expiresAt, JSON.stringify({ recordCount: Object.keys(userData).length }), requestId]
+        [
+          downloadUrl,
+          expiresAt,
+          JSON.stringify({ recordCount: Object.keys(userData).length }),
+          requestId,
+        ]
       );
 
       // Send email notification (in production)
       console.log(`Data export completed for request ${requestId}`);
     } catch (error) {
       console.error('Data export failed:', error);
-      await this.pool.query(
-        `UPDATE data_export_requests SET status = 'failed' WHERE id = $1`,
-        [requestId]
-      );
+      await this.pool.query(`UPDATE data_export_requests SET status = 'failed' WHERE id = $1`, [
+        requestId,
+      ]);
     }
   }
 
@@ -282,10 +282,7 @@ export class GDPRComplianceService {
     const data: Record<string, any> = {};
 
     // User profile
-    const userResult = await this.pool.query(
-      `SELECT * FROM users WHERE id = $1`,
-      [userId]
-    );
+    const userResult = await this.pool.query(`SELECT * FROM users WHERE id = $1`, [userId]);
     data.profile = userResult.rows[0];
 
     // Consents
@@ -377,10 +374,9 @@ export class GDPRComplianceService {
       } catch (error) {
         await this.pool.query('ROLLBACK');
         console.error(`Failed to delete data for request ${request.id}:`, error);
-        await this.pool.query(
-          `UPDATE data_deletion_requests SET status = 'failed' WHERE id = $1`,
-          [request.id]
-        );
+        await this.pool.query(`UPDATE data_deletion_requests SET status = 'failed' WHERE id = $1`, [
+          request.id,
+        ]);
       }
     }
   }
@@ -427,16 +423,16 @@ export class GDPRComplianceService {
    * Apply retention policies (delete old data)
    */
   async applyRetentionPolicies(): Promise<void> {
-    const policies = await this.pool.query(
-      `SELECT * FROM data_retention_policies`
-    );
+    const policies = await this.pool.query(`SELECT * FROM data_retention_policies`);
 
     for (const policy of policies.rows) {
       const cutoffDate = new Date(Date.now() - policy.retention_period_days * 24 * 60 * 60 * 1000);
-      
+
       // Apply policy based on data type
       // This is a simplified example - in production, implement per data type
-      console.log(`Applying retention policy for ${policy.data_type}: delete data before ${cutoffDate.toISOString()}`);
+      console.log(
+        `Applying retention policy for ${policy.data_type}: delete data before ${cutoffDate.toISOString()}`
+      );
     }
   }
 }

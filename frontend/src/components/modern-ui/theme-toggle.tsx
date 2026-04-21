@@ -1,23 +1,23 @@
-'use client'
+'use client';
 
-import { motion } from 'framer-motion'
-import { Moon, Sun, Monitor } from 'lucide-react'
-import { useTheme } from '@/lib/hooks/use-theme'
+import { motion } from 'framer-motion';
+import { Moon, Sun, Monitor } from 'lucide-react';
+import { useTheme } from '@/lib/hooks/use-theme';
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme } = useTheme();
 
   const themes = [
     { value: 'light', icon: Sun, label: 'Light' },
     { value: 'dark', icon: Moon, label: 'Dark' },
     { value: 'system', icon: Monitor, label: 'System' },
-  ] as const
+  ] as const;
 
   return (
     <div className="flex items-center gap-1 rounded-lg bg-white/5 p-1">
       {themes.map((t) => {
-        const Icon = t.icon
-        const isActive = theme === t.value
+        const Icon = t.icon;
+        const isActive = theme === t.value;
 
         return (
           <motion.button
@@ -26,9 +26,7 @@ export function ThemeToggle() {
             whileTap={{ scale: 0.95 }}
             onClick={() => setTheme(t.value)}
             className={`relative px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-              isActive
-                ? 'text-white'
-                : 'text-gray-400 hover:text-gray-300'
+              isActive ? 'text-white' : 'text-gray-400 hover:text-gray-300'
             }`}
             aria-label={`Switch to ${t.label} theme`}
           >
@@ -44,8 +42,8 @@ export function ThemeToggle() {
               <span className="hidden sm:inline">{t.label}</span>
             </span>
           </motion.button>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

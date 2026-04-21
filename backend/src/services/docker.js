@@ -31,10 +31,7 @@ const createContainer = async (projectId, language = 'javascript', userId) => {
       AttachStderr: true,
       OpenStdin: true,
       StdinOnce: false,
-      Env: [
-        `PROJECT_ID=${projectId}`,
-        `USER_ID=${userId}`,
-      ],
+      Env: [`PROJECT_ID=${projectId}`, `USER_ID=${userId}`],
       HostConfig: {
         Memory: 512 * 1024 * 1024, // 512MB
         MemorySwap: 512 * 1024 * 1024, // No swap

@@ -1,6 +1,6 @@
 /**
  * Blockchain & Web3 Integration Service
- * 
+ *
  * Manages cryptocurrency payments, NFT rewards, and immutable audit logs
  * on the blockchain.
  */
@@ -113,10 +113,9 @@ export class BlockchainService {
    */
   async checkPaymentStatus(paymentId: string): Promise<CryptoPayment> {
     try {
-      const result = await this.pool.query(
-        'SELECT * FROM crypto_payments WHERE id = $1',
-        [paymentId]
-      );
+      const result = await this.pool.query('SELECT * FROM crypto_payments WHERE id = $1', [
+        paymentId,
+      ]);
 
       if (result.rows.length === 0) {
         throw new Error('Payment not found');
@@ -127,11 +126,11 @@ export class BlockchainService {
       // In production, query blockchain for confirmations
       if (payment.status === 'pending' && payment.transaction_hash) {
         const confirmations = await this.getTransactionConfirmations(payment.transaction_hash);
-        
-        await this.pool.query(
-          'UPDATE crypto_payments SET confirmations = $1 WHERE id = $2',
-          [confirmations, paymentId]
-        );
+
+        await this.pool.query('UPDATE crypto_payments SET confirmations = $1 WHERE id = $2', [
+          confirmations,
+          paymentId,
+        ]);
 
         // Mark as confirmed after required confirmations (e.g., 6 for ETH)
         if (confirmations >= 6 && payment.status === 'pending') {
@@ -231,7 +230,7 @@ export class BlockchainService {
         [userId]
       );
 
-      return result.rows.map(row => ({
+      return result.rows.map((row) => ({
         id: row.id,
         userId: row.user_id,
         achievementId: row.achievement_id,
@@ -277,16 +276,25 @@ export class BlockchainService {
       await this.pool.query(
         `INSERT INTO blockchain_audit_logs (id, action, admin_id, resource_type, resource_id, metadata, blockchain_hash, timestamp)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-        [logId, action, adminId, resourceType, resourceId, JSON.stringify(metadata), blockchainHash, timestamp]
+        [
+          logId,
+          action,
+          adminId,
+          resourceType,
+          resourceId,
+          JSON.stringify(metadata),
+          blockchainHash,
+          timestamp,
+        ]
       );
 
       // In production, write hash to blockchain for immutability
       const blockNumber = await this.writeAuditToBlockchain(blockchainHash);
 
-      await this.pool.query(
-        'UPDATE blockchain_audit_logs SET block_number = $1 WHERE id = $2',
-        [blockNumber, logId]
-      );
+      await this.pool.query('UPDATE blockchain_audit_logs SET block_number = $1 WHERE id = $2', [
+        blockNumber,
+        logId,
+      ]);
 
       return {
         id: logId,
@@ -310,10 +318,9 @@ export class BlockchainService {
    */
   async verifyAuditLog(logId: string): Promise<{ valid: boolean; message: string }> {
     try {
-      const result = await this.pool.query(
-        'SELECT * FROM blockchain_audit_logs WHERE id = $1',
-        [logId]
-      );
+      const result = await this.pool.query('SELECT * FROM blockchain_audit_logs WHERE id = $1', [
+        logId,
+      ]);
 
       if (result.rows.length === 0) {
         return { valid: false, message: 'Audit log not found' };
@@ -340,7 +347,7 @@ export class BlockchainService {
 
       // In production, verify hash exists on blockchain
       const onChain = await this.verifyHashOnBlockchain(log.blockchain_hash, log.block_number);
-      
+
       if (!onChain) {
         return { valid: false, message: 'Hash not found on blockchain' };
       }
@@ -394,14 +401,16 @@ export class BlockchainService {
   /**
    * Get supported cryptocurrencies with current rates
    */
-  async getSupportedCryptocurrencies(): Promise<Array<{
-    symbol: string;
-    name: string;
-    network: string;
-    usdRate: number;
-    minAmount: number;
-    confirmationsRequired: number;
-  }>> {
+  async getSupportedCryptocurrencies(): Promise<
+    Array<{
+      symbol: string;
+      name: string;
+      network: string;
+      usdRate: number;
+      minAmount: number;
+      confirmationsRequired: number;
+    }>
+  > {
     return [
       {
         symbol: 'ETH',
@@ -444,11 +453,11 @@ export class BlockchainService {
     // In production, integrate with blockchain SDK (ethers.js, web3.js, etc.)
     // For now, simulate with a mock transaction hash
     const mockTxHash = '0x' + crypto.randomBytes(32).toString('hex');
-    
-    await this.pool.query(
-      'UPDATE crypto_payments SET transaction_hash = $1 WHERE id = $2',
-      [mockTxHash, payment.id]
-    );
+
+    await this.pool.query('UPDATE crypto_payments SET transaction_hash = $1 WHERE id = $2', [
+      mockTxHash,
+      payment.id,
+    ]);
   }
 
   private async getTransactionConfirmations(txHash: string): Promise<number> {
@@ -458,10 +467,10 @@ export class BlockchainService {
   }
 
   private async confirmPayment(paymentId: string): Promise<void> {
-    await this.pool.query(
-      'UPDATE crypto_payments SET status = $1 WHERE id = $2',
-      ['confirmed', paymentId]
-    );
+    await this.pool.query('UPDATE crypto_payments SET status = $1 WHERE id = $2', [
+      'confirmed',
+      paymentId,
+    ]);
 
     // Get payment details
     const result = await this.pool.query(
@@ -507,7 +516,11 @@ export class BlockchainService {
     return true;
   }
 
-  private async verifyWalletSignature(address: string, signature: string, userId: number): Promise<boolean> {
+  private async verifyWalletSignature(
+    address: string,
+    signature: string,
+    userId: number
+  ): Promise<boolean> {
     // In production, verify ECDSA signature
     // Message should be: "Connect wallet to Algo Cloud IDE - User ID: {userId}"
     // For now, return true for simulation

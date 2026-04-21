@@ -13,7 +13,9 @@ interface CodeEditorProps {
 export function CodeEditor({ projectId }: CodeEditorProps) {
   const editorRef = useRef<any>(null);
   const [language] = useState('javascript');
-  const [code, setCode] = useState('// Start coding...\n\nconsole.log("Hello from Algo Cloud IDE!");');
+  const [code, setCode] = useState(
+    '// Start coding...\n\nconsole.log("Hello from Algo Cloud IDE!");'
+  );
   const bindingRef = useRef<MonacoBinding | null>(null);
 
   useEffect(() => {

@@ -27,9 +27,9 @@ export class ConfigParser {
   parseRequirementsTxt(content: string): string[] {
     return content
       .split('\n')
-      .map(line => line.trim())
-      .filter(line => line && !line.startsWith('#'))
-      .map(line => line.split('==')[0].split('>=')[0].split('<=')[0].trim());
+      .map((line) => line.trim())
+      .filter((line) => line && !line.startsWith('#'))
+      .map((line) => line.split('==')[0].split('>=')[0].split('<=')[0].trim());
   }
 
   /**
@@ -42,15 +42,15 @@ export class ConfigParser {
   } {
     const nameMatch = content.match(/name\s*=\s*"([^"]+)"/);
     const versionMatch = content.match(/version\s*=\s*"([^"]+)"/);
-    
+
     // Extract dependencies section
     const depsMatch = content.match(/\[dependencies\]([\s\S]*?)(\[|$)/);
     const dependencies: string[] = [];
-    
+
     if (depsMatch) {
       const depsSection = depsMatch[1];
       const depLines = depsSection.split('\n');
-      
+
       for (const line of depLines) {
         const depMatch = line.match(/^([a-zA-Z0-9_-]+)\s*=/);
         if (depMatch) {
@@ -58,7 +58,7 @@ export class ConfigParser {
         }
       }
     }
-    
+
     return {
       name: nameMatch ? nameMatch[1] : 'unknown',
       version: versionMatch ? versionMatch[1] : '0.0.0',
@@ -77,7 +77,7 @@ export class ConfigParser {
     const groupIdMatch = content.match(/<groupId>([^<]+)<\/groupId>/);
     const artifactIdMatch = content.match(/<artifactId>([^<]+)<\/artifactId>/);
     const versionMatch = content.match(/<version>([^<]+)<\/version>/);
-    
+
     return {
       groupId: groupIdMatch ? groupIdMatch[1] : 'unknown',
       artifactId: artifactIdMatch ? artifactIdMatch[1] : 'unknown',
@@ -95,14 +95,14 @@ export class ConfigParser {
   } {
     const moduleMatch = content.match(/module\s+([^\s]+)/);
     const goVersionMatch = content.match(/go\s+([^\s]+)/);
-    
+
     const dependencies: string[] = [];
     const requireMatch = content.match(/require\s*\(([\s\S]*?)\)/);
-    
+
     if (requireMatch) {
       const requireSection = requireMatch[1];
       const lines = requireSection.split('\n');
-      
+
       for (const line of lines) {
         const depMatch = line.trim().match(/^([^\s]+)\s+/);
         if (depMatch) {
@@ -110,7 +110,7 @@ export class ConfigParser {
         }
       }
     }
-    
+
     return {
       module: moduleMatch ? moduleMatch[1] : 'unknown',
       goVersion: goVersionMatch ? goVersionMatch[1] : '1.0',
@@ -138,31 +138,33 @@ export class ConfigParser {
    */
   extractEnvVariables(content: string): string[] {
     const envVars = new Set<string>();
-    
+
     // Match process.env.VAR_NAME (JavaScript/TypeScript) - supports both UPPER_CASE and camelCase
     const jsMatches = content.matchAll(/process\.env\.([A-Z_][A-Za-z0-9_]*)/g);
     for (const match of jsMatches) {
       envVars.add(match[1]);
     }
-    
+
     // Match os.getenv('VAR_NAME') or os.environ['VAR_NAME'] (Python) - flexible casing
-    const pyMatches = content.matchAll(/(?:os\.getenv|os\.environ(?:\.get)?)\s*\(\s*['"]([A-Z_][A-Za-z0-9_]*)['"]?\s*\)/g);
+    const pyMatches = content.matchAll(
+      /(?:os\.getenv|os\.environ(?:\.get)?)\s*\(\s*['"]([A-Z_][A-Za-z0-9_]*)['"]?\s*\)/g
+    );
     for (const match of pyMatches) {
       envVars.add(match[1]);
     }
-    
+
     // Match env::var("VAR_NAME") (Rust) - flexible casing
     const rustMatches = content.matchAll(/env::var\(\s*"([A-Z_][A-Za-z0-9_]*)"\s*\)/g);
     for (const match of rustMatches) {
       envVars.add(match[1]);
     }
-    
+
     // Match os.Getenv("VAR_NAME") (Go) - flexible casing
     const goMatches = content.matchAll(/os\.Getenv\(\s*"([A-Z_][A-Za-z0-9_]*)"\s*\)/g);
     for (const match of goMatches) {
       envVars.add(match[1]);
     }
-    
+
     return Array.from(envVars);
   }
 
@@ -171,7 +173,7 @@ export class ConfigParser {
    */
   extractPorts(content: string): number[] {
     const ports = new Set<number>();
-    
+
     // Match common port patterns
     const patterns = [
       /port[:\s=]+(\d+)/gi,
@@ -179,7 +181,7 @@ export class ConfigParser {
       /listen[:\s]+(\d+)/gi,
       /\.listen\((\d+)\)/g,
     ];
-    
+
     for (const pattern of patterns) {
       const matches = content.matchAll(pattern);
       for (const match of matches) {
@@ -189,7 +191,7 @@ export class ConfigParser {
         }
       }
     }
-    
+
     return Array.from(ports);
   }
 }

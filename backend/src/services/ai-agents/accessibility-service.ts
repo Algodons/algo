@@ -1,6 +1,6 @@
 /**
  * Accessibility & Inclusivity Service
- * 
+ *
  * Provides real-time translation, voice commands, and automated
  * accessibility compliance checking.
  */
@@ -139,7 +139,13 @@ export class AccessibilityService {
       await this.pool.query(
         `INSERT INTO voice_commands (user_id, command_text, action, parameters, confidence, executed_at)
          VALUES ($1, $2, $3, $4, $5, NOW())`,
-        [userId, transcribedText, parsedCommand.action, JSON.stringify(parsedCommand.parameters), parsedCommand.confidence]
+        [
+          userId,
+          transcribedText,
+          parsedCommand.action,
+          JSON.stringify(parsedCommand.parameters),
+          parsedCommand.confidence,
+        ]
       );
 
       return {
@@ -168,7 +174,7 @@ export class AccessibilityService {
 
       // Calculate score
       const totalRules = this.getTotalAccessibilityRules(targetLevel);
-      const passedRules = totalRules - issues.filter(i => i.severity === 'error').length;
+      const passedRules = totalRules - issues.filter((i) => i.severity === 'error').length;
       const score = (passedRules / totalRules) * 100;
 
       // Store report
@@ -363,7 +369,7 @@ export class AccessibilityService {
     const suggestions: string[] = [];
 
     // Analyze issues and generate actionable suggestions
-    report.issues.forEach(issue => {
+    report.issues.forEach((issue) => {
       if (issue.severity === 'error') {
         suggestions.push(`Critical: ${issue.suggestion}`);
       }
@@ -447,7 +453,7 @@ export class AccessibilityService {
   private async parseCommand(text: string, context?: string): Promise<any> {
     // Simple NLP parsing for demo
     const lowerText = text.toLowerCase();
-    
+
     if (lowerText.includes('search') || lowerText.includes('find')) {
       return {
         action: 'search_users',
@@ -509,10 +515,7 @@ export class AccessibilityService {
 
   private async checkCommandPermission(userId: number, action: string): Promise<boolean> {
     // Check user role and permissions
-    const result = await this.pool.query(
-      'SELECT role FROM users WHERE id = $1',
-      [userId]
-    );
+    const result = await this.pool.query('SELECT role FROM users WHERE id = $1', [userId]);
 
     if (result.rows.length === 0) return false;
 
@@ -534,7 +537,7 @@ export class AccessibilityService {
 
   private async executeVoiceCommand(userId: number, parsedCommand: any): Promise<any> {
     const handler = this.voiceCommandsRegistry.get(parsedCommand.action);
-    
+
     if (!handler) {
       throw new Error('Command handler not found');
     }

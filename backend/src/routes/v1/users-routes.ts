@@ -199,10 +199,7 @@ export function createUsersRoutes(pool: Pool): Router {
       const { id } = req.params;
 
       try {
-        const result = await pool.query(
-          'DELETE FROM users WHERE id = $1 RETURNING id',
-          [id]
-        );
+        const result = await pool.query('DELETE FROM users WHERE id = $1 RETURNING id', [id]);
 
         if (result.rows.length === 0) {
           return res.status(404).json({

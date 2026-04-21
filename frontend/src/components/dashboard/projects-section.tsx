@@ -13,7 +13,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Plus, Grid, List, Search, Star, Share2, Clock, Activity } from 'lucide-react';
 
 interface Project {
@@ -72,8 +78,20 @@ export function ProjectsSection() {
   ];
 
   const templates = [
-    { id: 't1', name: 'Next.js Starter', language: 'TypeScript', framework: 'Next.js', category: 'web' },
-    { id: 't2', name: 'FastAPI Backend', language: 'Python', framework: 'FastAPI', category: 'api' },
+    {
+      id: 't1',
+      name: 'Next.js Starter',
+      language: 'TypeScript',
+      framework: 'Next.js',
+      category: 'web',
+    },
+    {
+      id: 't2',
+      name: 'FastAPI Backend',
+      language: 'Python',
+      framework: 'FastAPI',
+      category: 'api',
+    },
     { id: 't3', name: 'React + Vite', language: 'JavaScript', framework: 'Vite', category: 'web' },
     { id: 't4', name: 'Django REST API', language: 'Python', framework: 'Django', category: 'api' },
   ];
@@ -197,7 +215,9 @@ export function ProjectsSection() {
                       <div className="flex-1">
                         <CardTitle className="text-base flex items-center gap-2">
                           {project.name}
-                          {project.isFavorite && <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />}
+                          {project.isFavorite && (
+                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                          )}
                         </CardTitle>
                         <CardDescription className="mt-1">{project.description}</CardDescription>
                       </div>
@@ -252,7 +272,9 @@ export function ProjectsSection() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <h3 className="font-semibold">{project.name}</h3>
-                        {project.isFavorite && <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />}
+                        {project.isFavorite && (
+                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        )}
                       </div>
                       <p className="text-sm text-muted-foreground">{project.description}</p>
                     </div>

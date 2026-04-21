@@ -9,7 +9,13 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 interface TeamMembersProps {
   organizationId: number;
@@ -105,7 +111,7 @@ export function TeamMembers({ organizationId }: TeamMembersProps) {
             {members.length} {members.length === 1 ? 'member' : 'members'}
           </p>
         </div>
-        
+
         <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
           <DialogTrigger asChild>
             <Button>
@@ -162,9 +168,7 @@ export function TeamMembers({ organizationId }: TeamMembersProps) {
               <div className="flex items-center gap-4 flex-1">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                   <span className="text-lg font-semibold text-primary">
-                    {(member.user_name || member.user_email || 'U')
-                      .substring(0, 2)
-                      .toUpperCase()}
+                    {(member.user_name || member.user_email || 'U').substring(0, 2).toUpperCase()}
                   </span>
                 </div>
 

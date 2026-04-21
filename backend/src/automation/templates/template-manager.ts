@@ -134,7 +134,7 @@ export class TemplateManager {
     customization?: TemplateCustomization
   ): Promise<void> {
     const templates = await this.getAvailableTemplates();
-    const template = templates.find(t => t.name === templateName);
+    const template = templates.find((t) => t.name === templateName);
 
     if (!template) {
       throw new Error(`Template ${templateName} not found`);
@@ -192,7 +192,10 @@ export class TemplateManager {
   /**
    * Create React project
    */
-  private async createReactProject(targetDir: string, customization?: TemplateCustomization): Promise<void> {
+  private async createReactProject(
+    targetDir: string,
+    customization?: TemplateCustomization
+  ): Promise<void> {
     const projectName = customization?.projectName || 'my-app';
     await execAsync(`npm create vite@latest ${projectName} -- --template react-ts`, {
       cwd: path.dirname(targetDir),
@@ -202,17 +205,26 @@ export class TemplateManager {
   /**
    * Create Next.js project
    */
-  private async createNextProject(targetDir: string, customization?: TemplateCustomization): Promise<void> {
+  private async createNextProject(
+    targetDir: string,
+    customization?: TemplateCustomization
+  ): Promise<void> {
     const projectName = customization?.projectName || 'my-app';
-    await execAsync(`npx create-next-app@latest ${projectName} --typescript --tailwind --app --yes`, {
-      cwd: path.dirname(targetDir),
-    });
+    await execAsync(
+      `npx create-next-app@latest ${projectName} --typescript --tailwind --app --yes`,
+      {
+        cwd: path.dirname(targetDir),
+      }
+    );
   }
 
   /**
    * Create Vue project
    */
-  private async createVueProject(targetDir: string, customization?: TemplateCustomization): Promise<void> {
+  private async createVueProject(
+    targetDir: string,
+    customization?: TemplateCustomization
+  ): Promise<void> {
     const projectName = customization?.projectName || 'my-app';
     await execAsync(`npm create vue@latest ${projectName} -- --typescript --router --pinia`, {
       cwd: path.dirname(targetDir),
@@ -222,9 +234,12 @@ export class TemplateManager {
   /**
    * Create Express project
    */
-  private async createExpressProject(targetDir: string, _customization?: TemplateCustomization): Promise<void> {
+  private async createExpressProject(
+    targetDir: string,
+    _customization?: TemplateCustomization
+  ): Promise<void> {
     const projectName = _customization?.projectName || 'my-app';
-    
+
     // Create package.json
     const packageJson = {
       name: projectName,
@@ -250,10 +265,7 @@ export class TemplateManager {
       },
     };
 
-    await fs.writeFile(
-      path.join(targetDir, 'package.json'),
-      JSON.stringify(packageJson, null, 2)
-    );
+    await fs.writeFile(path.join(targetDir, 'package.json'), JSON.stringify(packageJson, null, 2));
 
     // Create basic Express app
     const indexTs = `import express from 'express';
@@ -284,7 +296,10 @@ app.listen(PORT, () => {
   /**
    * Create FastAPI project
    */
-  private async createFastAPIProject(targetDir: string, customization?: TemplateCustomization): Promise<void> {
+  private async createFastAPIProject(
+    targetDir: string,
+    customization?: TemplateCustomization
+  ): Promise<void> {
     // Create requirements.txt
     const requirements = `fastapi==0.104.1
 uvicorn[standard]==0.24.0
@@ -320,7 +335,10 @@ if __name__ == "__main__":
   /**
    * Create NestJS project
    */
-  private async createNestJSProject(targetDir: string, customization?: TemplateCustomization): Promise<void> {
+  private async createNestJSProject(
+    targetDir: string,
+    customization?: TemplateCustomization
+  ): Promise<void> {
     const projectName = customization?.projectName || 'my-app';
     await execAsync(`npx @nestjs/cli new ${projectName} --package-manager npm`, {
       cwd: path.dirname(targetDir),
@@ -382,7 +400,7 @@ services:
     const envContent = Object.entries(envVars)
       .map(([key, value]) => `${key}=${value}`)
       .join('\n');
-    
+
     await fs.writeFile(path.join(targetDir, '.env'), envContent);
   }
 
@@ -391,9 +409,9 @@ services:
    */
   async importFromGitHub(repoUrl: string, targetDir: string): Promise<void> {
     this.logger.info(`Cloning repository from ${repoUrl}...`);
-    
+
     await execAsync(`git clone ${repoUrl} ${targetDir}`);
-    
+
     this.logger.success('Repository cloned successfully');
   }
 }

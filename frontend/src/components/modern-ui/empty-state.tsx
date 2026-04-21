@@ -1,20 +1,20 @@
-'use client'
+'use client';
 
-import { motion } from 'framer-motion'
-import { LucideIcon } from 'lucide-react'
+import { motion } from 'framer-motion';
+import { LucideIcon } from 'lucide-react';
 
 interface EmptyStateProps {
-  icon: LucideIcon
-  title: string
-  description: string
+  icon: LucideIcon;
+  title: string;
+  description: string;
   action?: {
-    label: string
-    onClick: () => void
-  }
+    label: string;
+    onClick: () => void;
+  };
   secondaryAction?: {
-    label: string
-    onClick: () => void
-  }
+    label: string;
+    onClick: () => void;
+  };
 }
 
 export function EmptyState({
@@ -92,5 +92,5 @@ export function EmptyState({
         </motion.div>
       )}
     </motion.div>
-  )
+  );
 }

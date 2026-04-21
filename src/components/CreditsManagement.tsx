@@ -220,15 +220,11 @@ const CreditsManagement: React.FC = () => {
               <input
                 type="checkbox"
                 checked={autoReload.enabled}
-                onChange={(e) =>
-                  setAutoReload({ ...autoReload, enabled: e.target.checked })
-                }
+                onChange={(e) => setAutoReload({ ...autoReload, enabled: e.target.checked })}
               />
               <span className="toggle-slider"></span>
             </label>
-            <span className="toggle-label">
-              {autoReload.enabled ? 'Enabled' : 'Disabled'}
-            </span>
+            <span className="toggle-label">{autoReload.enabled ? 'Enabled' : 'Disabled'}</span>
           </div>
 
           {autoReload.enabled && (
@@ -239,9 +235,7 @@ const CreditsManagement: React.FC = () => {
                   type="number"
                   placeholder="Threshold amount"
                   value={autoReload.threshold}
-                  onChange={(e) =>
-                    setAutoReload({ ...autoReload, threshold: e.target.value })
-                  }
+                  onChange={(e) => setAutoReload({ ...autoReload, threshold: e.target.value })}
                   min="1"
                   step="0.01"
                 />
@@ -252,9 +246,7 @@ const CreditsManagement: React.FC = () => {
                   type="number"
                   placeholder="Amount to add"
                   value={autoReload.amount}
-                  onChange={(e) =>
-                    setAutoReload({ ...autoReload, amount: e.target.value })
-                  }
+                  onChange={(e) => setAutoReload({ ...autoReload, amount: e.target.value })}
                   min="1"
                   step="0.01"
                 />
@@ -267,8 +259,8 @@ const CreditsManagement: React.FC = () => {
 
           {!autoReload.enabled && (
             <p className="auto-reload-description">
-              Enable auto-reload to automatically purchase credits when your balance
-              falls below a specified threshold.
+              Enable auto-reload to automatically purchase credits when your balance falls below a
+              specified threshold.
             </p>
           )}
         </div>
@@ -283,21 +275,14 @@ const CreditsManagement: React.FC = () => {
           ) : (
             transactions.map((transaction) => (
               <div key={transaction.id} className="transaction-item">
-                <div className="transaction-icon">
-                  {getTransactionIcon(transaction.type)}
-                </div>
+                <div className="transaction-icon">{getTransactionIcon(transaction.type)}</div>
                 <div className="transaction-details">
                   <h3>{transaction.type.replace(/_/g, ' ').toUpperCase()}</h3>
-                  <p className="transaction-description">
-                    {transaction.description}
-                  </p>
+                  <p className="transaction-description">{transaction.description}</p>
                   <p className="transaction-date">{formatDate(transaction.createdAt)}</p>
                 </div>
                 <div className="transaction-amount">
-                  <span
-                    className="amount"
-                    style={{ color: getTransactionColor(transaction.type) }}
-                  >
+                  <span className="amount" style={{ color: getTransactionColor(transaction.type) }}>
                     {transaction.amount >= 0 ? '+' : ''}
                     {formatCurrency(transaction.amount)}
                   </span>

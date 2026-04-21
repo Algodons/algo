@@ -83,7 +83,8 @@ export function TeamBillingDashboard({ organizationId }: TeamBillingDashboardPro
         <div>
           <h2 className="text-2xl font-bold">Team Billing</h2>
           <p className="text-sm text-gray-500 mt-1">
-            Current billing period: {new Date(currentBilling.billing_period_start).toLocaleDateString()} -{' '}
+            Current billing period:{' '}
+            {new Date(currentBilling.billing_period_start).toLocaleDateString()} -{' '}
             {new Date(currentBilling.billing_period_end).toLocaleDateString()}
           </p>
         </div>
@@ -100,9 +101,7 @@ export function TeamBillingDashboard({ organizationId }: TeamBillingDashboardPro
           <div className="text-3xl font-bold">
             {formatCurrency(currentBilling.total_cost, currentBilling.currency)}
           </div>
-          <p className="text-xs text-gray-500 mt-2">
-            {daysRemaining} days remaining
-          </p>
+          <p className="text-xs text-gray-500 mt-2">{daysRemaining} days remaining</p>
         </Card>
 
         <Card className="p-6">
@@ -146,7 +145,7 @@ export function TeamBillingDashboard({ organizationId }: TeamBillingDashboardPro
       {/* Usage Breakdown */}
       <Card className="p-6">
         <h3 className="text-lg font-semibold mb-4">Usage by Team Member</h3>
-        
+
         {memberUsage.length === 0 ? (
           <p className="text-center text-gray-500 py-8">No usage data available</p>
         ) : (
@@ -163,7 +162,8 @@ export function TeamBillingDashboard({ organizationId }: TeamBillingDashboardPro
                   <div>
                     <div className="font-medium">{usage.user_name || `User ${usage.user_id}`}</div>
                     <div className="text-sm text-gray-500">
-                      {formatNumber(usage.compute_hours)} hrs • {formatNumber(usage.storage_gb)} GB storage • {formatNumber(usage.bandwidth_gb)} GB bandwidth
+                      {formatNumber(usage.compute_hours)} hrs • {formatNumber(usage.storage_gb)} GB
+                      storage • {formatNumber(usage.bandwidth_gb)} GB bandwidth
                     </div>
                   </div>
                 </div>
@@ -188,7 +188,7 @@ export function TeamBillingDashboard({ organizationId }: TeamBillingDashboardPro
           {[
             {
               label: 'Compute',
-              value: currentBilling.total_compute_hours * 0.10, // Example rate
+              value: currentBilling.total_compute_hours * 0.1, // Example rate
               color: 'bg-blue-500',
             },
             {

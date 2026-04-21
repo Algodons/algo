@@ -2,20 +2,23 @@
 
 ## ⚠️ CRITICAL: Development vs Production
 
-This monetization system implementation contains **MOCK IMPLEMENTATIONS** for several critical security features. These are intended for development and demonstration purposes only.
+This monetization system implementation contains **MOCK IMPLEMENTATIONS** for
+several critical security features. These are intended for development and
+demonstration purposes only.
 
 ## 🚨 DO NOT USE IN PRODUCTION WITHOUT ADDRESSING THESE ISSUES
 
 ### 1. Payment Processing (CRITICAL)
 
-**File:** `backend/src/services/billing-service.ts`
-**Line:** ~497-520
+**File:** `backend/src/services/billing-service.ts` **Line:** ~497-520
 
-**Issue:** The payment processing is mocked and always succeeds for any positive amount.
+**Issue:** The payment processing is mocked and always succeeds for any positive
+amount.
 
 **Risk:** Unauthorized charges, financial fraud, compromised billing integrity.
 
 **Fix Required:**
+
 ```typescript
 // Replace mock with actual Stripe integration:
 import Stripe from 'stripe';
@@ -40,14 +43,16 @@ return {
 
 ### 2. Webhook Signature Verification (CRITICAL)
 
-**File:** `backend/src/services/billing-service.ts`
-**Line:** ~523-545
+**File:** `backend/src/services/billing-service.ts` **Line:** ~523-545
 
-**Issue:** Webhook signature verification always returns true, accepting any webhook.
+**Issue:** Webhook signature verification always returns true, accepting any
+webhook.
 
-**Risk:** Malicious actors can send fake payment notifications, unauthorized account credits, service access without payment.
+**Risk:** Malicious actors can send fake payment notifications, unauthorized
+account credits, service access without payment.
 
 **Fix Required:**
+
 ```typescript
 // For Stripe webhooks:
 import Stripe from 'stripe';
@@ -68,14 +73,14 @@ try {
 
 ### 3. Auto-Reload Payment Processing (HIGH)
 
-**File:** `backend/src/services/credits-service.ts`
-**Line:** ~392-398
+**File:** `backend/src/services/credits-service.ts` **Line:** ~392-398
 
 **Issue:** Auto-reload is triggered but no payment is processed.
 
 **Risk:** Credits are added without charging users, financial losses.
 
 **Fix Required:**
+
 ```typescript
 // Implement actual payment processing:
 const invoice = await billingService.generateInvoice(userId, amount);
@@ -94,14 +99,15 @@ if (!paymentResult.success) {
 
 ### 4. Usage Alert Notifications (MEDIUM)
 
-**File:** `backend/src/services/usage-tracking-service.ts`
-**Line:** ~337-342
+**File:** `backend/src/services/usage-tracking-service.ts` **Line:** ~337-342
 
 **Issue:** Alerts are triggered but no notifications are sent.
 
-**Risk:** Users exceed limits without warning, unexpected charges, poor user experience.
+**Risk:** Users exceed limits without warning, unexpected charges, poor user
+experience.
 
 **Fix Required:**
+
 ```typescript
 // Implement notification sending:
 import { sendEmail } from './email-service';
@@ -128,17 +134,24 @@ if (notificationChannels.includes('sms')) {
 
 **Files:** All route files in `backend/src/routes/`
 
-**Issue:** Routes assume `req.user` exists but authentication middleware setup is not visible.
+**Issue:** Routes assume `req.user` exists but authentication middleware setup
+is not visible.
 
-**Risk:** Potential runtime errors, unauthorized access if middleware is not properly applied.
+**Risk:** Potential runtime errors, unauthorized access if middleware is not
+properly applied.
 
 **Fix Required:**
+
 ```typescript
 // In backend/src/index.ts, add authentication middleware:
 import { authenticate } from './middleware/auth';
 
 // Apply authentication before mounting monetization routes
-app.use('/api/subscriptions', authenticate, createSubscriptionRoutes(dashboardPool));
+app.use(
+  '/api/subscriptions',
+  authenticate,
+  createSubscriptionRoutes(dashboardPool)
+);
 app.use('/api/usage', authenticate, createUsageRoutes(dashboardPool));
 app.use('/api/billing', authenticate, createBillingRoutes(dashboardPool));
 app.use('/api/credits', authenticate, createCreditsRoutes(dashboardPool));
@@ -147,14 +160,14 @@ app.use('/api/alerts', authenticate, createAlertsRoutes(dashboardPool));
 
 ### 6. TypeScript Strict Mode (MEDIUM)
 
-**File:** `backend/tsconfig.json`
-**Lines:** 8, 17-22
+**File:** `backend/tsconfig.json` **Lines:** 8, 17-22
 
 **Issue:** TypeScript strict mode and type checking are disabled.
 
 **Risk:** Type safety issues, potential runtime errors, harder to maintain code.
 
 **Fix Required:**
+
 ```json
 {
   "compilerOptions": {
@@ -175,6 +188,7 @@ Then fix all type errors in the codebase.
 ### PCI DSS Compliance
 
 When handling payment card data:
+
 1. Never store raw card numbers
 2. Use tokenization via payment gateways (Stripe, PayPal)
 3. Ensure all payment data transmission is encrypted (HTTPS)
@@ -184,6 +198,7 @@ When handling payment card data:
 ### Rate Limiting
 
 Apply rate limits to prevent abuse:
+
 ```typescript
 import rateLimit from 'express-rate-limit';
 
@@ -251,6 +266,7 @@ SMS_SERVICE_API_KEY=...
 ## Support
 
 If you need help implementing these security features:
+
 - Review Stripe documentation: https://stripe.com/docs/api
 - Review PayPal documentation: https://developer.paypal.com/
 - Consult with security experts for PCI compliance
@@ -258,4 +274,7 @@ If you need help implementing these security features:
 
 ## Disclaimer
 
-This implementation is provided as-is for demonstration and development purposes. The developers are not responsible for any financial losses, security breaches, or compliance violations that may occur from using this code in production without implementing proper security measures.
+This implementation is provided as-is for demonstration and development
+purposes. The developers are not responsible for any financial losses, security
+breaches, or compliance violations that may occur from using this code in
+production without implementing proper security measures.

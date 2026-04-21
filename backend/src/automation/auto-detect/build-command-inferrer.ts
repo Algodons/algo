@@ -22,10 +22,7 @@ export class BuildCommandInferrer {
   /**
    * Infer build commands from project and framework info
    */
-  async inferCommands(
-    projectPath: string,
-    frameworks: FrameworkInfo[]
-  ): Promise<BuildCommands> {
+  async inferCommands(projectPath: string, frameworks: FrameworkInfo[]): Promise<BuildCommands> {
     const commands: BuildCommands = {
       install: [],
       build: [],
@@ -168,20 +165,20 @@ export class BuildCommandInferrer {
     }
 
     // Framework-specific commands
-    const djangoFramework = frameworks.find(f => f.name === 'Django');
+    const djangoFramework = frameworks.find((f) => f.name === 'Django');
     if (djangoFramework) {
       commands.start.push('python manage.py runserver');
       commands.dev.push('python manage.py runserver');
       commands.test.push('python manage.py test');
     }
 
-    const flaskFramework = frameworks.find(f => f.name === 'Flask');
+    const flaskFramework = frameworks.find((f) => f.name === 'Flask');
     if (flaskFramework) {
       commands.start.push('flask run');
       commands.dev.push('flask run --debug');
     }
 
-    const fastapiFramework = frameworks.find(f => f.name === 'FastAPI');
+    const fastapiFramework = frameworks.find((f) => f.name === 'FastAPI');
     if (fastapiFramework) {
       commands.start.push('uvicorn main:app');
       commands.dev.push('uvicorn main:app --reload');

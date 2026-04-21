@@ -66,9 +66,9 @@ export const checkAdminIpWhitelist = (allowedIps: string[]) => {
     }
 
     const clientIp = req.ip || req.socket.remoteAddress || '';
-    
+
     // Check if IP is in whitelist
-    const isAllowed = allowedIps.some(allowedIp => {
+    const isAllowed = allowedIps.some((allowedIp) => {
       if (allowedIp.includes('/')) {
         // CIDR notation support would go here
         return false; // Simplified for now
@@ -77,9 +77,9 @@ export const checkAdminIpWhitelist = (allowedIps: string[]) => {
     });
 
     if (!isAllowed) {
-      return res.status(403).json({ 
+      return res.status(403).json({
         error: 'Access denied from this IP address',
-        ip: clientIp 
+        ip: clientIp,
       });
     }
 
@@ -150,24 +150,23 @@ export const require2FA = (pool: Pool) => {
 
     // Check if user has 2FA enabled
     try {
-      const result = await pool.query(
-        'SELECT is_enabled FROM two_factor_auth WHERE user_id = $1',
-        [req.user.id]
-      );
+      const result = await pool.query('SELECT is_enabled FROM two_factor_auth WHERE user_id = $1', [
+        req.user.id,
+      ]);
 
       if (result.rows.length === 0 || !result.rows[0].is_enabled) {
-        return res.status(403).json({ 
+        return res.status(403).json({
           error: '2FA required for this operation',
-          message: 'Please enable two-factor authentication to perform this action'
+          message: 'Please enable two-factor authentication to perform this action',
         });
       }
 
       // Verify 2FA token from request header
       const tfaToken = req.headers['x-2fa-token'];
       if (!tfaToken) {
-        return res.status(403).json({ 
+        return res.status(403).json({
           error: '2FA token required',
-          message: 'Please provide a valid 2FA token'
+          message: 'Please provide a valid 2FA token',
         });
       }
 
@@ -184,7 +183,7 @@ export const require2FA = (pool: Pool) => {
       // if (!verified) {
       //   return res.status(403).json({ error: 'Invalid 2FA token' });
       // }
-      
+
       // SECURITY WARNING: Current implementation accepts any token
       // This MUST be implemented before production use
 
@@ -234,10 +233,9 @@ export const handleImpersonation = (pool: Pool) => {
       };
 
       // Load target user info
-      const userResult = await pool.query(
-        'SELECT id, email, role, name FROM users WHERE id = $1',
-        [session.target_user_id]
-      );
+      const userResult = await pool.query('SELECT id, email, role, name FROM users WHERE id = $1', [
+        session.target_user_id,
+      ]);
 
       if (userResult.rows.length > 0) {
         req.user = userResult.rows[0];
@@ -263,11 +261,11 @@ export const handleImpersonation = (pool: Pool) => {
 export const validateSensitiveOperation = (req: Request, res: Response, next: NextFunction) => {
   // Check if password confirmation is provided for sensitive operations
   const passwordConfirmation = req.headers['x-password-confirmation'];
-  
+
   if (!passwordConfirmation) {
-    return res.status(403).json({ 
+    return res.status(403).json({
       error: 'Password confirmation required',
-      message: 'This sensitive operation requires password confirmation'
+      message: 'This sensitive operation requires password confirmation',
     });
   }
 
@@ -286,10 +284,10 @@ export const validateSensitiveOperation = (req: Request, res: Response, next: Ne
   // if (!validPassword) {
   //   return res.status(403).json({ error: 'Invalid password' });
   // }
-  
+
   // SECURITY WARNING: Current implementation accepts any password
   // This MUST be implemented before production use
-  
+
   next();
 };
 
@@ -314,10 +312,10 @@ export const adminRateLimit = (pool: Pool, maxRequests: number = 100, windowMs: 
     }
 
     if (record.count >= maxRequests) {
-      return res.status(429).json({ 
+      return res.status(429).json({
         error: 'Rate limit exceeded',
         message: 'Too many requests. Please try again later.',
-        retryAfter: Math.ceil((record.resetTime - now) / 1000)
+        retryAfter: Math.ceil((record.resetTime - now) / 1000),
       });
     }
 

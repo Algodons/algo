@@ -1,6 +1,6 @@
 /**
  * Predictive Analytics Service
- * 
+ *
  * AI-powered predictive analytics for user behavior, churn prediction,
  * and upsell opportunities.
  */
@@ -60,11 +60,11 @@ export class PredictiveAnalyticsService {
     try {
       // Get user activity data
       const userMetrics = await this.getUserMetrics(userId);
-      
+
       // Calculate churn probability using multiple factors
       const factors = this.analyzeChurnFactors(userMetrics);
       const churnProbability = this.calculateChurnProbability(factors);
-      
+
       // Determine risk level
       let riskLevel: 'low' | 'medium' | 'high' | 'critical';
       if (churnProbability < 0.2) riskLevel = 'low';
@@ -79,7 +79,13 @@ export class PredictiveAnalyticsService {
       await this.pool.query(
         `INSERT INTO churn_predictions (user_id, probability, risk_level, factors, recommended_actions, created_at)
          VALUES ($1, $2, $3, $4, $5, NOW())`,
-        [userId, churnProbability, riskLevel, JSON.stringify(factors.contributing), JSON.stringify(recommendedActions)]
+        [
+          userId,
+          churnProbability,
+          riskLevel,
+          JSON.stringify(factors.contributing),
+          JSON.stringify(recommendedActions),
+        ]
       );
 
       return {
@@ -102,10 +108,10 @@ export class PredictiveAnalyticsService {
   async identifyUpsellOpportunity(userId: number): Promise<UpsellOpportunity | null> {
     try {
       const userMetrics = await this.getUserMetrics(userId);
-      
+
       // Check if user is a good candidate for upsell
       const upsellScore = this.calculateUpsellScore(userMetrics);
-      
+
       if (upsellScore < 0.5) {
         return null; // Not a good candidate
       }
@@ -115,7 +121,7 @@ export class PredictiveAnalyticsService {
       const suggestedTier = this.suggestNextTier(currentTier, userMetrics);
       const expectedRevenueLift = this.calculateRevenueLift(currentTier, suggestedTier);
       const reasoning = this.generateUpsellReasoning(userMetrics);
-      
+
       // Calculate optimal timing (days from now)
       const optimalTimingDays = this.calculateOptimalTiming(userMetrics);
 
@@ -133,7 +139,15 @@ export class PredictiveAnalyticsService {
       await this.pool.query(
         `INSERT INTO upsell_opportunities (user_id, current_tier, suggested_tier, probability, expected_revenue, optimal_timing_days, reasoning, created_at)
          VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())`,
-        [userId, currentTier, suggestedTier, upsellScore, expectedRevenueLift, optimalTimingDays, JSON.stringify(reasoning)]
+        [
+          userId,
+          currentTier,
+          suggestedTier,
+          upsellScore,
+          expectedRevenueLift,
+          optimalTimingDays,
+          JSON.stringify(reasoning),
+        ]
       );
 
       return opportunity;
@@ -214,10 +228,10 @@ export class PredictiveAnalyticsService {
 
       // Predict likely actions
       const predictedActions = this.predictLikelyActions(userHistory);
-      
+
       // Calculate engagement score (0-100)
       const engagementScore = this.calculateEngagementScore(userMetrics);
-      
+
       // Estimate lifetime value
       const lifetimeValueEstimate = this.estimateLifetimeValue(userMetrics, predictedActions);
 
@@ -243,7 +257,7 @@ export class PredictiveAnalyticsService {
   }> {
     try {
       const userMetrics = await this.getUserMetrics(userId);
-      
+
       // Check multiple criteria for auto-upgrade
       const criteria = {
         consistentUsage: userMetrics.days_active > 25,
@@ -253,7 +267,7 @@ export class PredictiveAnalyticsService {
         positiveEngagement: userMetrics.support_tickets === 0,
       };
 
-      const metCriteria = Object.values(criteria).filter(v => v).length;
+      const metCriteria = Object.values(criteria).filter((v) => v).length;
       const confidence = metCriteria / Object.keys(criteria).length;
       const shouldAutoUpgrade = confidence > 0.7;
 
@@ -318,7 +332,7 @@ export class PredictiveAnalyticsService {
     const factors = [];
     let confidence = 0.85;
 
-    const daysSinceLastActive = metrics.last_active 
+    const daysSinceLastActive = metrics.last_active
       ? Math.floor((Date.now() - new Date(metrics.last_active).getTime()) / (1000 * 60 * 60 * 24))
       : 999;
 
@@ -326,7 +340,8 @@ export class PredictiveAnalyticsService {
     if (metrics.days_active < 5) factors.push('Low engagement (< 5 active days)');
     if (metrics.credits < 10) factors.push('Low credit balance');
     if (metrics.subscription_status === 'trial') factors.push('Trial subscription');
-    if (!metrics.subscription_tier || metrics.subscription_tier === 'free') factors.push('Free tier user');
+    if (!metrics.subscription_tier || metrics.subscription_tier === 'free')
+      factors.push('Free tier user');
 
     return { contributing: factors, confidence };
   }
@@ -334,40 +349,40 @@ export class PredictiveAnalyticsService {
   private calculateChurnProbability(factors: { contributing: string[] }): number {
     const baseRate = 0.15;
     const factorWeight = 0.12;
-    return Math.min(0.95, baseRate + (factors.contributing.length * factorWeight));
+    return Math.min(0.95, baseRate + factors.contributing.length * factorWeight);
   }
 
   private generateRetentionActions(factors: any, riskLevel: string): string[] {
     const actions = [];
-    
+
     if (riskLevel === 'critical' || riskLevel === 'high') {
       actions.push('Send personalized re-engagement email');
       actions.push('Offer 20% discount on next billing cycle');
       actions.push('Schedule customer success call');
     }
-    
+
     if (factors.contributing.includes('Low credit balance')) {
       actions.push('Offer bonus credits');
     }
-    
+
     if (factors.contributing.includes('Free tier user')) {
       actions.push('Highlight premium features they would benefit from');
     }
 
     actions.push('Request feedback survey');
-    
+
     return actions;
   }
 
   private calculateUpsellScore(metrics: any): number {
     let score = 0;
-    
+
     if (metrics.days_active > 20) score += 0.3;
     if (metrics.resource_limit_hits > 5) score += 0.25;
     if (metrics.collaborator_count > 2) score += 0.2;
     if (metrics.storage_used / metrics.storage_limit > 0.75) score += 0.15;
     if (metrics.subscription_status === 'active') score += 0.1;
-    
+
     return Math.min(1, score);
   }
 
@@ -385,7 +400,7 @@ export class PredictiveAnalyticsService {
 
   private generateUpsellReasoning(metrics: any): string[] {
     const reasons = [];
-    
+
     if (metrics.resource_limit_hits > 5) {
       reasons.push('Frequently hitting resource limits');
     }
@@ -395,7 +410,7 @@ export class PredictiveAnalyticsService {
     if (metrics.days_active > 20) {
       reasons.push('High engagement and consistent usage');
     }
-    
+
     return reasons;
   }
 
@@ -408,14 +423,15 @@ export class PredictiveAnalyticsService {
 
   private isUnusualActivity(action: string, history: any[]): boolean {
     const recentActions = history.slice(0, 20);
-    const actionFrequency = recentActions.filter(h => h.action === action).length;
+    const actionFrequency = recentActions.filter((h) => h.action === action).length;
     return actionFrequency < 2; // Action is unusual if rarely performed
   }
 
   private isRapidActionSequence(history: any[]): boolean {
     if (history.length < 5) return false;
     const recent = history.slice(0, 5);
-    const timeSpan = new Date(recent[0].created_at).getTime() - new Date(recent[4].created_at).getTime();
+    const timeSpan =
+      new Date(recent[0].created_at).getTime() - new Date(recent[4].created_at).getTime();
     return timeSpan < 5000; // 5 actions in less than 5 seconds
   }
 
@@ -429,10 +445,12 @@ export class PredictiveAnalyticsService {
     return false;
   }
 
-  private predictLikelyActions(history: any[]): Array<{ action: string; probability: number; expectedDate: Date }> {
+  private predictLikelyActions(
+    history: any[]
+  ): Array<{ action: string; probability: number; expectedDate: Date }> {
     // Analyze patterns and predict likely future actions
     const actionCounts: any = {};
-    history.forEach(h => {
+    history.forEach((h) => {
       actionCounts[h.action] = (actionCounts[h.action] || 0) + 1;
     });
 
@@ -450,12 +468,19 @@ export class PredictiveAnalyticsService {
 
   private calculateEngagementScore(metrics: any): number {
     let score = 0;
-    
+
     score += Math.min(40, metrics.days_active * 2); // Max 40 points
     score += Math.min(30, metrics.total_actions / 10); // Max 30 points
-    score += metrics.subscription_tier === 'enterprise' ? 20 : metrics.subscription_tier === 'team' ? 15 : metrics.subscription_tier === 'pro' ? 10 : 5;
+    score +=
+      metrics.subscription_tier === 'enterprise'
+        ? 20
+        : metrics.subscription_tier === 'team'
+          ? 15
+          : metrics.subscription_tier === 'pro'
+            ? 10
+            : 5;
     score += Math.min(10, metrics.collaborator_count * 2); // Max 10 points
-    
+
     return Math.min(100, score);
   }
 
@@ -463,7 +488,7 @@ export class PredictiveAnalyticsService {
     const pricing: any = { free: 0, pro: 20, team: 50, enterprise: 200 };
     const currentMonthlyValue = pricing[metrics.subscription_tier] || 0;
     const engagementMultiplier = metrics.days_active > 20 ? 24 : metrics.days_active > 10 ? 12 : 6; // months
-    
+
     return currentMonthlyValue * engagementMultiplier;
   }
 }

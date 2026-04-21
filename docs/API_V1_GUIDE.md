@@ -23,7 +23,8 @@ Comprehensive guide for the Algo Cloud IDE Platform REST API v1.
 
 ## Overview
 
-The Algo Platform API v1 provides programmatic access to all platform features including:
+The Algo Platform API v1 provides programmatic access to all platform features
+including:
 
 - User and project management
 - File system operations
@@ -38,7 +39,8 @@ The Algo Platform API v1 provides programmatic access to all platform features i
 
 ## Authentication
 
-All API requests (except user registration) require authentication via Bearer token:
+All API requests (except user registration) require authentication via Bearer
+token:
 
 ```bash
 Authorization: Bearer YOUR_API_KEY
@@ -87,6 +89,7 @@ POST /users
 Create a new user account.
 
 **Request Body**:
+
 ```json
 {
   "email": "user@example.com",
@@ -97,6 +100,7 @@ Create a new user account.
 ```
 
 **Response** (201):
+
 ```json
 {
   "success": true,
@@ -143,6 +147,7 @@ POST /projects
 ```
 
 **Request Body**:
+
 ```json
 {
   "name": "My Awesome Project",
@@ -161,6 +166,7 @@ POST /projects/:id/deploy
 Initiates deployment of a project.
 
 **Response** (202):
+
 ```json
 {
   "success": true,
@@ -180,6 +186,7 @@ POST /projects/:id/clone
 ```
 
 **Request Body**:
+
 ```json
 {
   "name": "Cloned Project"
@@ -201,6 +208,7 @@ POST /files/:path
 ```
 
 **Request Body**:
+
 ```json
 {
   "projectId": "123",
@@ -230,6 +238,7 @@ POST /webhooks
 ```
 
 **Request Body**:
+
 ```json
 {
   "url": "https://your-domain.com/webhook",
@@ -262,6 +271,7 @@ GET /resources/usage?project_id=123&metric=cpu
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -300,6 +310,7 @@ POST /ai/agents/:agentId/invoke
 ```
 
 **Request Body**:
+
 ```json
 {
   "input": "Generate a React component",
@@ -327,6 +338,7 @@ POST /ai/models/:modelId/predict
 ```
 
 **Request Body**:
+
 ```json
 {
   "input": "This is a sample text",
@@ -348,12 +360,12 @@ npm install @algo/sdk
 import { AlgoSDK } from '@algo/sdk';
 
 const algo = new AlgoSDK({
-  apiKey: 'YOUR_API_KEY'
+  apiKey: 'YOUR_API_KEY',
 });
 
 // Create a project
 const project = await algo.projects.create({
-  name: 'My Project'
+  name: 'My Project',
 });
 
 // Deploy
@@ -403,22 +415,26 @@ algo resources usage
 // 1. Create a project
 const project = await algo.projects.create({
   name: 'My App',
-  template: 'react'
+  template: 'react',
 });
 
 // 2. Create files
-await algo.files.create('src/App.tsx', project.id, `
+await algo.files.create(
+  'src/App.tsx',
+  project.id,
+  `
   import React from 'react';
   export default function App() {
     return <div>Hello World</div>;
   }
-`);
+`
+);
 
 // 3. Setup webhook
 const webhook = await algo.webhooks.create({
   url: 'https://my-domain.com/webhook',
   events: ['deployment.completed'],
-  project_id: project.id
+  project_id: project.id,
 });
 
 // 4. Deploy

@@ -1,6 +1,7 @@
 # Contributing to Cloud IDE
 
-Thank you for your interest in contributing to the Cloud IDE project! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to the Cloud IDE project! This
+document provides guidelines and instructions for contributing.
 
 ## Table of Contents
 
@@ -31,22 +32,26 @@ Thank you for your interest in contributing to the Cloud IDE project! This docum
 
 1. Fork the repository
 2. Clone your fork:
+
 ```bash
 git clone https://github.com/YOUR_USERNAME/algo.git
 cd algo
 ```
 
 3. Add upstream remote:
+
 ```bash
 git remote add upstream https://github.com/Algodons/algo.git
 ```
 
 4. Install dependencies:
+
 ```bash
 npm install
 ```
 
 5. Start development server:
+
 ```bash
 npm run dev
 ```
@@ -64,6 +69,7 @@ git checkout -b feature/your-feature-name
 1. Make your changes
 2. Test your changes thoroughly
 3. Commit with clear messages:
+
 ```bash
 git commit -m "feat: add new feature X"
 ```
@@ -85,6 +91,7 @@ git rebase upstream/main
 - Avoid `any` types when possible
 
 **Good:**
+
 ```typescript
 interface User {
   id: string;
@@ -98,6 +105,7 @@ function getUser(id: string): Promise<User> {
 ```
 
 **Bad:**
+
 ```typescript
 function getUser(id: any): any {
   // implementation
@@ -112,6 +120,7 @@ function getUser(id: any): any {
 - Separate logic from presentation
 
 **Example:**
+
 ```typescript
 import React, { useState, useEffect } from 'react';
 
@@ -121,13 +130,13 @@ interface Props {
 
 const UserProfile: React.FC<Props> = ({ userId }) => {
   const [user, setUser] = useState<User | null>(null);
-  
+
   useEffect(() => {
     fetchUser(userId).then(setUser);
   }, [userId]);
-  
+
   if (!user) return <div>Loading...</div>;
-  
+
   return (
     <div>
       <h1>{user.name}</h1>
@@ -147,6 +156,7 @@ export default UserProfile;
 - Use CSS variables for theming
 
 **Example:**
+
 ```css
 .user-profile {
   padding: 16px;
@@ -170,15 +180,16 @@ export default UserProfile;
 - Use async/await over callbacks
 
 **Example:**
+
 ```typescript
 app.post('/api/users', async (req: Request, res: Response) => {
   try {
     const { name, email } = req.body;
-    
+
     if (!name || !email) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
-    
+
     const user = await createUser({ name, email });
     res.json({ success: true, user });
   } catch (error) {
@@ -200,6 +211,7 @@ Follow conventional commits:
 - `chore:` - Maintenance tasks
 
 **Examples:**
+
 ```
 feat: add collaborative cursor tracking
 fix: resolve WebSocket reconnection issue
@@ -223,21 +235,26 @@ When creating a PR, include:
 
 ```markdown
 ## Description
+
 Brief description of changes
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Breaking change
 - [ ] Documentation update
 
 ## Testing
+
 How to test these changes
 
 ## Screenshots (if applicable)
+
 Add screenshots for UI changes
 
 ## Checklist
+
 - [ ] Code follows project style guidelines
 - [ ] Self-review completed
 - [ ] Documentation updated
@@ -342,6 +359,7 @@ describe('UserProfile', () => {
 ## Recognition
 
 Contributors will be recognized in:
+
 - README.md contributors section
 - Release notes
 - Project documentation

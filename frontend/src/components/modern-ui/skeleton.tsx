@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import { motion } from 'framer-motion'
-import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface SkeletonProps {
-  className?: string
-  variant?: 'text' | 'circular' | 'rectangular'
-  width?: string | number
-  height?: string | number
-  animate?: boolean
+  className?: string;
+  variant?: 'text' | 'circular' | 'rectangular';
+  width?: string | number;
+  height?: string | number;
+  animate?: boolean;
 }
 
 export function Skeleton({
@@ -18,32 +18,40 @@ export function Skeleton({
   height,
   animate = true,
 }: SkeletonProps) {
-  const baseClasses = 'bg-white/5'
-  
+  const baseClasses = 'bg-white/5';
+
   const variantClasses = {
     text: 'rounded h-4',
     circular: 'rounded-full',
     rectangular: 'rounded-md',
-  }
+  };
 
-  const style: React.CSSProperties = {}
-  if (width) style.width = typeof width === 'number' ? `${width}px` : width
-  if (height) style.height = typeof height === 'number' ? `${height}px` : height
+  const style: React.CSSProperties = {};
+  if (width) style.width = typeof width === 'number' ? `${width}px` : width;
+  if (height) style.height = typeof height === 'number' ? `${height}px` : height;
 
   return (
     <motion.div
       className={cn(baseClasses, variantClasses[variant], className)}
       style={style}
-      animate={animate ? {
-        opacity: [0.5, 0.8, 0.5],
-      } : undefined}
-      transition={animate ? {
-        duration: 1.5,
-        repeat: Infinity,
-        ease: 'easeInOut',
-      } : undefined}
+      animate={
+        animate
+          ? {
+              opacity: [0.5, 0.8, 0.5],
+            }
+          : undefined
+      }
+      transition={
+        animate
+          ? {
+              duration: 1.5,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }
+          : undefined
+      }
     />
-  )
+  );
 }
 
 export function SkeletonCard() {
@@ -61,7 +69,7 @@ export function SkeletonCard() {
         <Skeleton variant="text" width="40%" />
       </div>
     </div>
-  )
+  );
 }
 
 export function SkeletonList({ count = 5 }: { count?: number }) {
@@ -77,7 +85,7 @@ export function SkeletonList({ count = 5 }: { count?: number }) {
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 export function SkeletonTable({ rows = 5, cols = 4 }: { rows?: number; cols?: number }) {
@@ -102,5 +110,5 @@ export function SkeletonTable({ rows = 5, cols = 4 }: { rows?: number; cols?: nu
         </div>
       ))}
     </div>
-  )
+  );
 }

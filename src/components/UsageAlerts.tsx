@@ -180,9 +180,7 @@ const UsageAlerts: React.FC = () => {
                 <label>Metric Type</label>
                 <select
                   value={newAlert.metricType}
-                  onChange={(e) =>
-                    setNewAlert({ ...newAlert, metricType: e.target.value })
-                  }
+                  onChange={(e) => setNewAlert({ ...newAlert, metricType: e.target.value })}
                 >
                   {metricTypes.map((type) => (
                     <option key={type.value} value={type.value}>
@@ -221,10 +219,7 @@ const UsageAlerts: React.FC = () => {
                         if (e.target.checked) {
                           setNewAlert({
                             ...newAlert,
-                            notificationChannels: [
-                              ...newAlert.notificationChannels,
-                              option.value,
-                            ],
+                            notificationChannels: [...newAlert.notificationChannels, option.value],
                           });
                         } else {
                           setNewAlert({
@@ -262,16 +257,11 @@ const UsageAlerts: React.FC = () => {
                         <input
                           type="checkbox"
                           checked={alert.isActive}
-                          onChange={() =>
-                            handleToggleAlert(alert.id, alert.isActive)
-                          }
+                          onChange={() => handleToggleAlert(alert.id, alert.isActive)}
                         />
                         <span className="toggle-slider-small"></span>
                       </label>
-                      <button
-                        className="btn-delete"
-                        onClick={() => handleDeleteAlert(alert.id)}
-                      >
+                      <button className="btn-delete" onClick={() => handleDeleteAlert(alert.id)}>
                         🗑️
                       </button>
                     </div>
@@ -281,14 +271,12 @@ const UsageAlerts: React.FC = () => {
                       <strong>Threshold:</strong> {alert.thresholdPercentage}% of limit
                     </p>
                     <p>
-                      <strong>Notifications:</strong>{' '}
-                      {alert.notificationChannels.join(', ')}
+                      <strong>Notifications:</strong> {alert.notificationChannels.join(', ')}
                     </p>
                     {alert.lastTriggeredAt && (
                       <p>
-                        <strong>Last triggered:</strong>{' '}
-                        {formatDate(alert.lastTriggeredAt)} ({alert.triggerCount}{' '}
-                        times total)
+                        <strong>Last triggered:</strong> {formatDate(alert.lastTriggeredAt)} (
+                        {alert.triggerCount} times total)
                       </p>
                     )}
                   </div>
@@ -312,8 +300,8 @@ const UsageAlerts: React.FC = () => {
                 <div className="history-details">
                   <h3>{formatMetricType(item.metricType)}</h3>
                   <p>
-                    Usage reached {item.percentageUsed.toFixed(1)}% ({item.currentValue}{' '}
-                    of {item.thresholdValue})
+                    Usage reached {item.percentageUsed.toFixed(1)}% ({item.currentValue} of{' '}
+                    {item.thresholdValue})
                   </p>
                   <p className="history-date">{formatDate(item.triggeredAt)}</p>
                 </div>
@@ -324,8 +312,8 @@ const UsageAlerts: React.FC = () => {
                       item.percentageUsed >= 100
                         ? '#fc8181'
                         : item.percentageUsed >= 90
-                        ? '#ed8936'
-                        : '#ecc94b',
+                          ? '#ed8936'
+                          : '#ecc94b',
                   }}
                 >
                   {item.percentageUsed.toFixed(0)}%

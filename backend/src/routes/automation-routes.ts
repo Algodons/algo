@@ -74,11 +74,7 @@ router.post('/generate-iac', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'projectPath is required' });
     }
 
-    const result = await automationService.generateIaC(
-      projectPath,
-      domain,
-      cloudProvider
-    );
+    const result = await automationService.generateIaC(projectPath, domain, cloudProvider);
 
     return res.json({
       success: true,
@@ -126,11 +122,7 @@ router.post('/init-template', async (req: Request, res: Response) => {
       });
     }
 
-    await automationService.initializeFromTemplate(
-      templateName,
-      targetDir,
-      customization
-    );
+    await automationService.initializeFromTemplate(templateName, targetDir, customization);
 
     return res.json({
       success: true,

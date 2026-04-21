@@ -1,16 +1,20 @@
 # Database Management Platform API Reference
 
 ## Base URL
+
 ```
 http://localhost:4000/api/databases
 ```
 
 ## Authentication
-Currently, the API does not require authentication. In production, implement JWT or API key authentication.
+
+Currently, the API does not require authentication. In production, implement JWT
+or API key authentication.
 
 ## Response Format
 
 ### Success Response
+
 ```json
 {
   "data": { ... },
@@ -19,6 +23,7 @@ Currently, the API does not require authentication. In production, implement JWT
 ```
 
 ### Error Response
+
 ```json
 {
   "error": "Error message description"
@@ -28,6 +33,7 @@ Currently, the API does not require authentication. In production, implement JWT
 ## Connection Management
 
 ### Create Connection
+
 ```http
 POST /connections
 Content-Type: application/json
@@ -55,6 +61,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "id": "uuid",
@@ -67,11 +74,13 @@ Content-Type: application/json
 ```
 
 ### List Connections
+
 ```http
 GET /connections
 ```
 
 **Response:**
+
 ```json
 {
   "connections": [
@@ -88,11 +97,13 @@ GET /connections
 ```
 
 ### Get Connection
+
 ```http
 GET /connections/:id
 ```
 
 ### Update Connection
+
 ```http
 PUT /connections/:id
 Content-Type: application/json
@@ -104,6 +115,7 @@ Content-Type: application/json
 ```
 
 ### Delete Connection
+
 ```http
 DELETE /connections/:id
 ```
@@ -111,11 +123,13 @@ DELETE /connections/:id
 **Response:** `204 No Content`
 
 ### Test Connection
+
 ```http
 POST /connections/:id/test
 ```
 
 **Response:**
+
 ```json
 {
   "healthy": boolean
@@ -123,16 +137,19 @@ POST /connections/:id/test
 ```
 
 ### Reconnect
+
 ```http
 POST /connections/:id/reconnect
 ```
 
 ### Get Statistics
+
 ```http
 GET /connections/stats/overview
 ```
 
 **Response:**
+
 ```json
 {
   "total": number,
@@ -150,6 +167,7 @@ GET /connections/stats/overview
 ## Query Operations
 
 ### Execute Query
+
 ```http
 POST /connections/:connectionId/query
 Content-Type: application/json
@@ -161,6 +179,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "rows": [object],
@@ -172,11 +191,13 @@ Content-Type: application/json
 ```
 
 ### Get Query History
+
 ```http
 GET /connections/:connectionId/query/history?limit=50
 ```
 
 **Response:**
+
 ```json
 {
   "history": [
@@ -195,6 +216,7 @@ GET /connections/:connectionId/query/history?limit=50
 ```
 
 ### Clear Query History
+
 ```http
 DELETE /connections/:connectionId/query/history
 ```
@@ -202,11 +224,13 @@ DELETE /connections/:connectionId/query/history
 **Response:** `204 No Content`
 
 ### Get Tables
+
 ```http
 GET /connections/:connectionId/tables
 ```
 
 **Response:**
+
 ```json
 {
   "tables": ["string"]
@@ -214,11 +238,13 @@ GET /connections/:connectionId/tables
 ```
 
 ### Get Table Schema
+
 ```http
 GET /connections/:connectionId/tables/:tableName/schema
 ```
 
 **Response:**
+
 ```json
 {
   "name": "string",
@@ -258,6 +284,7 @@ GET /connections/:connectionId/tables/:tableName/schema
 ```
 
 ### Get Query Metrics
+
 ```http
 POST /connections/:connectionId/query/metrics
 Content-Type: application/json
@@ -268,6 +295,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "executionTime": number,
@@ -280,6 +308,7 @@ Content-Type: application/json
 ```
 
 ### Transaction Operations
+
 ```http
 POST /connections/:connectionId/transaction/begin
 POST /connections/:connectionId/transaction/commit
@@ -289,11 +318,13 @@ POST /connections/:connectionId/transaction/rollback
 ## Schema Management
 
 ### Get Full Schema
+
 ```http
 GET /connections/:connectionId/schema
 ```
 
 **Response:**
+
 ```json
 {
   "tables": [
@@ -309,11 +340,13 @@ GET /connections/:connectionId/schema
 ```
 
 ### Get Table Schema
+
 ```http
 GET /connections/:connectionId/schema/:tableName
 ```
 
 ### Create Table
+
 ```http
 POST /connections/:connectionId/schema/tables
 Content-Type: application/json
@@ -352,11 +385,13 @@ Content-Type: application/json
 ```
 
 ### Drop Table
+
 ```http
 DELETE /connections/:connectionId/schema/tables/:tableName
 ```
 
 ### Modify Table
+
 ```http
 PUT /connections/:connectionId/schema/tables/:tableName
 Content-Type: application/json
@@ -376,6 +411,7 @@ Content-Type: application/json
 ```
 
 ### Add Index
+
 ```http
 POST /connections/:connectionId/schema/tables/:tableName/indexes
 Content-Type: application/json
@@ -388,11 +424,13 @@ Content-Type: application/json
 ```
 
 ### Drop Index
+
 ```http
 DELETE /connections/:connectionId/schema/tables/:tableName/indexes/:indexName
 ```
 
 ### Compare Schemas
+
 ```http
 POST /schema/compare
 Content-Type: application/json
@@ -404,6 +442,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "added": ["string"],
@@ -415,11 +454,13 @@ Content-Type: application/json
 ## Migration Management
 
 ### Initialize Migration System
+
 ```http
 POST /connections/:connectionId/migrations/init
 ```
 
 ### Create Migration
+
 ```http
 POST /connections/:connectionId/migrations
 Content-Type: application/json
@@ -433,6 +474,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "id": "uuid",
@@ -447,41 +489,49 @@ Content-Type: application/json
 ```
 
 ### List Migrations
+
 ```http
 GET /connections/:connectionId/migrations
 ```
 
 ### Get Migration
+
 ```http
 GET /connections/:connectionId/migrations/:migrationId
 ```
 
 ### Apply Migration
+
 ```http
 POST /connections/:connectionId/migrations/:migrationId/apply
 ```
 
 ### Rollback Migration
+
 ```http
 POST /connections/:connectionId/migrations/:migrationId/rollback
 ```
 
 ### Apply All Pending
+
 ```http
 POST /connections/:connectionId/migrations/apply-all
 ```
 
 ### Rollback to Version
+
 ```http
 POST /connections/:connectionId/migrations/rollback-to/:version
 ```
 
 ### Get Migration Status
+
 ```http
 GET /connections/:connectionId/migrations/status
 ```
 
 **Response:**
+
 ```json
 {
   "total": number,
@@ -498,11 +548,13 @@ GET /connections/:connectionId/migrations/status
 ```
 
 ### Dry Run
+
 ```http
 GET /connections/:connectionId/migrations/:migrationId/dry-run
 ```
 
 **Response:**
+
 ```json
 {
   "sql": "string"
@@ -512,6 +564,7 @@ GET /connections/:connectionId/migrations/:migrationId/dry-run
 ## Import/Export
 
 ### Import CSV
+
 ```http
 POST /connections/:connectionId/import/csv
 Content-Type: multipart/form-data
@@ -526,6 +579,7 @@ hasHeader: boolean
 ```
 
 **Response:**
+
 ```json
 {
   "rowsProcessed": number,
@@ -541,6 +595,7 @@ hasHeader: boolean
 ```
 
 ### Import JSON
+
 ```http
 POST /connections/:connectionId/import/json
 Content-Type: multipart/form-data
@@ -552,6 +607,7 @@ batchSize: number
 ```
 
 ### Export CSV
+
 ```http
 POST /connections/:connectionId/export/csv
 Content-Type: application/json
@@ -567,6 +623,7 @@ Content-Type: application/json
 **Response:** File download
 
 ### Export JSON
+
 ```http
 POST /connections/:connectionId/export/json
 Content-Type: application/json
@@ -579,6 +636,7 @@ Content-Type: application/json
 ```
 
 ### Export SQL
+
 ```http
 POST /connections/:connectionId/export/sql
 Content-Type: application/json
@@ -594,6 +652,7 @@ Content-Type: application/json
 ## Backup Management
 
 ### Create Backup
+
 ```http
 POST /connections/:connectionId/backups
 Content-Type: application/json
@@ -609,6 +668,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "id": "string",
@@ -623,26 +683,31 @@ Content-Type: application/json
 ```
 
 ### List Backups
+
 ```http
 GET /connections/:connectionId/backups
 ```
 
 ### Get Backup
+
 ```http
 GET /connections/:connectionId/backups/:backupId
 ```
 
 ### Restore Backup
+
 ```http
 POST /connections/:connectionId/backups/:backupId/restore
 ```
 
 ### Delete Backup
+
 ```http
 DELETE /connections/:connectionId/backups/:backupId
 ```
 
 ### Download Backup
+
 ```http
 GET /connections/:connectionId/backups/:backupId/download
 ```
@@ -650,6 +715,7 @@ GET /connections/:connectionId/backups/:backupId/download
 **Response:** File download
 
 ### Schedule Backup
+
 ```http
 POST /connections/:connectionId/backups/schedules
 Content-Type: application/json
@@ -665,6 +731,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "id": "string",
@@ -677,11 +744,13 @@ Content-Type: application/json
 ```
 
 ### List Backup Schedules
+
 ```http
 GET /connections/:connectionId/backups/schedules
 ```
 
 ### Update Backup Schedule
+
 ```http
 PUT /connections/:connectionId/backups/schedules/:scheduleId
 Content-Type: application/json
@@ -694,16 +763,19 @@ Content-Type: application/json
 ```
 
 ### Delete Backup Schedule
+
 ```http
 DELETE /connections/:connectionId/backups/schedules/:scheduleId
 ```
 
 ### Apply Retention Policy
+
 ```http
 POST /connections/:connectionId/backups/apply-retention
 ```
 
 ### Point-in-Time Recovery
+
 ```http
 POST /connections/:connectionId/backups/pitr
 Content-Type: application/json
@@ -715,18 +787,19 @@ Content-Type: application/json
 
 ## Error Codes
 
-| Status Code | Description |
-|------------|-------------|
-| 200 | Success |
-| 201 | Created |
-| 204 | No Content |
-| 400 | Bad Request - Invalid input |
-| 404 | Not Found - Resource doesn't exist |
-| 500 | Internal Server Error |
+| Status Code | Description                        |
+| ----------- | ---------------------------------- |
+| 200         | Success                            |
+| 201         | Created                            |
+| 204         | No Content                         |
+| 400         | Bad Request - Invalid input        |
+| 404         | Not Found - Resource doesn't exist |
+| 500         | Internal Server Error              |
 
 ## Rate Limiting
 
 Currently no rate limiting is implemented. In production, consider implementing:
+
 - 100 requests per 15 minutes for query execution
 - 10 requests per minute for backup operations
 - 50 requests per minute for schema operations
@@ -763,5 +836,6 @@ Currently no rate limiting is implemented. In production, consider implementing:
 ## Support
 
 For issues or questions, please refer to:
+
 - GitHub Issues: https://github.com/Algodons/algo/issues
 - Documentation: DATABASE_PLATFORM.md

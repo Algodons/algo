@@ -114,7 +114,7 @@ export class SubscriptionService {
     const amount = billingCycle === 'yearly' ? plan.priceYearly : plan.priceMonthly;
     const currentPeriodStart = new Date();
     const currentPeriodEnd = new Date();
-    
+
     if (billingCycle === 'yearly') {
       currentPeriodEnd.setFullYear(currentPeriodEnd.getFullYear() + 1);
     } else {
@@ -150,8 +150,17 @@ export class SubscriptionService {
           id, user_id as "userId", tier, status, billing_cycle as "billingCycle",
           amount, currency, current_period_start as "currentPeriodStart",
           current_period_end as "currentPeriodEnd", trial_ends_at as "trialEndsAt"`,
-        [userId, planName, 'active', billingCycle, amount, plan.currency,
-         currentPeriodStart, currentPeriodEnd, trialEndsAt]
+        [
+          userId,
+          planName,
+          'active',
+          billingCycle,
+          amount,
+          plan.currency,
+          currentPeriodStart,
+          currentPeriodEnd,
+          trialEndsAt,
+        ]
       );
 
       // Log the change
@@ -222,8 +231,16 @@ export class SubscriptionService {
           (user_id, subscription_id, change_type, old_tier, new_tier, 
            old_billing_cycle, new_billing_cycle, proration_amount)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-        [userId, result.rows[0].id, 'upgraded', currentSubscription.tier, newPlanName,
-         currentSubscription.billingCycle, billingCycle, proration]
+        [
+          userId,
+          result.rows[0].id,
+          'upgraded',
+          currentSubscription.tier,
+          newPlanName,
+          currentSubscription.billingCycle,
+          billingCycle,
+          proration,
+        ]
       );
 
       await client.query('COMMIT');
@@ -239,10 +256,7 @@ export class SubscriptionService {
   /**
    * Downgrade subscription
    */
-  async downgradeSubscription(
-    userId: number,
-    newPlanName: string
-  ): Promise<UserSubscription> {
+  async downgradeSubscription(userId: number, newPlanName: string): Promise<UserSubscription> {
     const currentSubscription = await this.getUserSubscription(userId);
     if (!currentSubscription) {
       throw new Error('No active subscription found');
@@ -253,9 +267,8 @@ export class SubscriptionService {
       throw new Error(`Plan ${newPlanName} not found`);
     }
 
-    const amount = currentSubscription.billingCycle === 'yearly' 
-      ? newPlan.priceYearly 
-      : newPlan.priceMonthly;
+    const amount =
+      currentSubscription.billingCycle === 'yearly' ? newPlan.priceYearly : newPlan.priceMonthly;
 
     const client = await this.pool.connect();
     try {
@@ -351,13 +364,15 @@ export class SubscriptionService {
     const now = new Date();
     const periodStart = new Date(currentSubscription.currentPeriodStart);
     const periodEnd = new Date(currentSubscription.currentPeriodEnd);
-    
-    const totalDays = Math.ceil((periodEnd.getTime() - periodStart.getTime()) / (1000 * 60 * 60 * 24));
+
+    const totalDays = Math.ceil(
+      (periodEnd.getTime() - periodStart.getTime()) / (1000 * 60 * 60 * 24)
+    );
     const remainingDays = Math.ceil((periodEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-    
+
     const unusedAmount = (currentSubscription.amount * remainingDays) / totalDays;
     const newPeriodAmount = (newAmount * remainingDays) / totalDays;
-    
+
     return Math.max(0, newPeriodAmount - unusedAmount);
   }
 
@@ -393,10 +408,13 @@ export class SubscriptionService {
       [userId, subscription.currentPeriodStart, subscription.currentPeriodEnd]
     );
 
-    const usage = usageResult.rows.reduce((acc, row) => {
-      acc[row.metric_type] = parseFloat(row.total_value);
-      return acc;
-    }, {} as Record<string, number>);
+    const usage = usageResult.rows.reduce(
+      (acc, row) => {
+        acc[row.metric_type] = parseFloat(row.total_value);
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
     const limits = {
       storage: plan.storageMb,
@@ -405,7 +423,7 @@ export class SubscriptionService {
       concurrent_deployments: plan.concurrentDeployments,
     };
 
-    const withinLimits = 
+    const withinLimits =
       (usage.storage || 0) <= limits.storage &&
       (usage.deployment_hours || 0) <= limits.compute_hours &&
       (usage.bandwidth || 0) <= limits.bandwidth;

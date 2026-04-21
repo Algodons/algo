@@ -11,7 +11,11 @@ function isValidPackageName(name: string): boolean {
 }
 
 // Execute command safely using spawn
-function executeCommand(command: string, args: string[], cwd: string): Promise<{ stdout: string; stderr: string }> {
+function executeCommand(
+  command: string,
+  args: string[],
+  cwd: string
+): Promise<{ stdout: string; stderr: string }> {
   return new Promise((resolve, reject) => {
     const proc = spawn(command, args, { cwd, shell: false });
     let stdout = '';
@@ -45,19 +49,22 @@ export function setupPackageRoutes(app: Express) {
     try {
       const { workspaceId, packages } = req.body;
       const workspacePath = path.join(WORKSPACE_DIR, workspaceId);
-      
-      const packageList = Array.isArray(packages) ? packages : (packages ? [packages] : []);
-      
+
+      const packageList = Array.isArray(packages) ? packages : packages ? [packages] : [];
+
       // Validate all package names
       for (const pkg of packageList) {
         if (!isValidPackageName(pkg)) {
-          return res.status(400).json({ error: 'Invalid package name', details: `Package name "${pkg}" contains invalid characters` });
+          return res.status(400).json({
+            error: 'Invalid package name',
+            details: `Package name "${pkg}" contains invalid characters`,
+          });
         }
       }
-      
+
       const args = packageList.length > 0 ? ['install', ...packageList] : ['install'];
       const { stdout, stderr } = await executeCommand('npm', args, workspacePath);
-      
+
       res.json({ success: true, stdout, stderr });
     } catch (error) {
       res.status(500).json({ error: 'NPM install failed', details: (error as Error).message });
@@ -68,18 +75,25 @@ export function setupPackageRoutes(app: Express) {
     try {
       const { workspaceId, packages } = req.body;
       const workspacePath = path.join(WORKSPACE_DIR, workspaceId);
-      
+
       const packageList = Array.isArray(packages) ? packages : [packages];
-      
+
       // Validate all package names
       for (const pkg of packageList) {
         if (!isValidPackageName(pkg)) {
-          return res.status(400).json({ error: 'Invalid package name', details: `Package name "${pkg}" contains invalid characters` });
+          return res.status(400).json({
+            error: 'Invalid package name',
+            details: `Package name "${pkg}" contains invalid characters`,
+          });
         }
       }
-      
-      const { stdout, stderr } = await executeCommand('npm', ['uninstall', ...packageList], workspacePath);
-      
+
+      const { stdout, stderr } = await executeCommand(
+        'npm',
+        ['uninstall', ...packageList],
+        workspacePath
+      );
+
       res.json({ success: true, stdout, stderr });
     } catch (error) {
       res.status(500).json({ error: 'NPM uninstall failed', details: (error as Error).message });
@@ -90,10 +104,10 @@ export function setupPackageRoutes(app: Express) {
     try {
       const { workspaceId } = req.query;
       const workspacePath = path.join(WORKSPACE_DIR, workspaceId as string);
-      
+
       const { stdout } = await executeCommand('npm', ['list', '--json'], workspacePath);
       const packages = JSON.parse(stdout);
-      
+
       res.json({ success: true, packages });
     } catch (error) {
       res.status(500).json({ error: 'Failed to list packages', details: (error as Error).message });
@@ -105,18 +119,25 @@ export function setupPackageRoutes(app: Express) {
     try {
       const { workspaceId, packages } = req.body;
       const workspacePath = path.join(WORKSPACE_DIR, workspaceId);
-      
+
       const packageList = Array.isArray(packages) ? packages : [packages];
-      
+
       // Validate all package names
       for (const pkg of packageList) {
         if (!isValidPackageName(pkg)) {
-          return res.status(400).json({ error: 'Invalid package name', details: `Package name "${pkg}" contains invalid characters` });
+          return res.status(400).json({
+            error: 'Invalid package name',
+            details: `Package name "${pkg}" contains invalid characters`,
+          });
         }
       }
-      
-      const { stdout, stderr } = await executeCommand('pip', ['install', ...packageList], workspacePath);
-      
+
+      const { stdout, stderr } = await executeCommand(
+        'pip',
+        ['install', ...packageList],
+        workspacePath
+      );
+
       res.json({ success: true, stdout, stderr });
     } catch (error) {
       res.status(500).json({ error: 'PIP install failed', details: (error as Error).message });
@@ -127,18 +148,25 @@ export function setupPackageRoutes(app: Express) {
     try {
       const { workspaceId, packages } = req.body;
       const workspacePath = path.join(WORKSPACE_DIR, workspaceId);
-      
+
       const packageList = Array.isArray(packages) ? packages : [packages];
-      
+
       // Validate all package names
       for (const pkg of packageList) {
         if (!isValidPackageName(pkg)) {
-          return res.status(400).json({ error: 'Invalid package name', details: `Package name "${pkg}" contains invalid characters` });
+          return res.status(400).json({
+            error: 'Invalid package name',
+            details: `Package name "${pkg}" contains invalid characters`,
+          });
         }
       }
-      
-      const { stdout, stderr } = await executeCommand('pip', ['uninstall', '-y', ...packageList], workspacePath);
-      
+
+      const { stdout, stderr } = await executeCommand(
+        'pip',
+        ['uninstall', '-y', ...packageList],
+        workspacePath
+      );
+
       res.json({ success: true, stdout, stderr });
     } catch (error) {
       res.status(500).json({ error: 'PIP uninstall failed', details: (error as Error).message });
@@ -149,10 +177,10 @@ export function setupPackageRoutes(app: Express) {
     try {
       const { workspaceId } = req.query;
       const workspacePath = path.join(WORKSPACE_DIR, workspaceId as string);
-      
+
       const { stdout } = await executeCommand('pip', ['list', '--format=json'], workspacePath);
       const packages = JSON.parse(stdout);
-      
+
       res.json({ success: true, packages });
     } catch (error) {
       res.status(500).json({ error: 'Failed to list packages', details: (error as Error).message });
@@ -164,18 +192,25 @@ export function setupPackageRoutes(app: Express) {
     try {
       const { workspaceId, packages } = req.body;
       const workspacePath = path.join(WORKSPACE_DIR, workspaceId);
-      
+
       const packageList = Array.isArray(packages) ? packages : [packages];
-      
+
       // Validate all package names
       for (const pkg of packageList) {
         if (!isValidPackageName(pkg)) {
-          return res.status(400).json({ error: 'Invalid package name', details: `Package name "${pkg}" contains invalid characters` });
+          return res.status(400).json({
+            error: 'Invalid package name',
+            details: `Package name "${pkg}" contains invalid characters`,
+          });
         }
       }
-      
-      const { stdout, stderr } = await executeCommand('cargo', ['install', ...packageList], workspacePath);
-      
+
+      const { stdout, stderr } = await executeCommand(
+        'cargo',
+        ['install', ...packageList],
+        workspacePath
+      );
+
       res.json({ success: true, stdout, stderr });
     } catch (error) {
       res.status(500).json({ error: 'Cargo install failed', details: (error as Error).message });
@@ -186,9 +221,9 @@ export function setupPackageRoutes(app: Express) {
     try {
       const { workspaceId } = req.body;
       const workspacePath = path.join(WORKSPACE_DIR, workspaceId);
-      
+
       const { stdout, stderr } = await executeCommand('cargo', ['build'], workspacePath);
-      
+
       res.json({ success: true, stdout, stderr });
     } catch (error) {
       res.status(500).json({ error: 'Cargo build failed', details: (error as Error).message });
@@ -200,19 +235,21 @@ export function setupPackageRoutes(app: Express) {
     try {
       const { workspaceId } = req.query;
       const workspacePath = path.join(WORKSPACE_DIR, workspaceId as string);
-      
+
       const managers = [];
       const fs = require('fs');
-      
+
       if (fs.existsSync(path.join(workspacePath, 'package.json'))) managers.push('npm');
       if (fs.existsSync(path.join(workspacePath, 'requirements.txt'))) managers.push('pip');
       if (fs.existsSync(path.join(workspacePath, 'Cargo.toml'))) managers.push('cargo');
       if (fs.existsSync(path.join(workspacePath, 'Gemfile'))) managers.push('bundler');
       if (fs.existsSync(path.join(workspacePath, 'go.mod'))) managers.push('go');
-      
+
       res.json({ success: true, managers });
     } catch (error) {
-      res.status(500).json({ error: 'Failed to detect package managers', details: (error as Error).message });
+      res
+        .status(500)
+        .json({ error: 'Failed to detect package managers', details: (error as Error).message });
     }
   });
 }

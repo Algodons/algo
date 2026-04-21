@@ -32,7 +32,7 @@ export async function encrypt(
   config: EncryptionConfig = {}
 ): Promise<EncryptedData> {
   const algorithm = config.algorithm || DEFAULT_ALGORITHM;
-  
+
   // Get a data encryption key from KMS
   const kms = getKMS();
   const { plaintext: key, encrypted: encryptedDEK, keyId } = await kms.generateDataKey();
@@ -45,10 +45,7 @@ export async function encrypt(
 
   // Encrypt data
   const dataBuffer = typeof data === 'string' ? Buffer.from(data, 'utf8') : data;
-  const encrypted = Buffer.concat([
-    cipher.update(dataBuffer),
-    cipher.final(),
-  ]);
+  const encrypted = Buffer.concat([cipher.update(dataBuffer), cipher.final()]);
 
   // Get authentication tag
   const authTag = cipher.getAuthTag();
@@ -65,7 +62,7 @@ export async function encrypt(
 
 /**
  * Decrypt data using AES-256-GCM
- * 
+ *
  * Note: This implementation requires the encrypted DEK to be stored alongside the data.
  * In a production system, you would:
  * 1. Store the encrypted DEK with the encrypted data
@@ -81,7 +78,7 @@ export async function decrypt(
 
   // Get the data encryption key from KMS
   const kms = getKMS();
-  
+
   // In production, decrypt the stored DEK
   // For now, this is a limitation - the DEK needs to be stored with the encrypted data
   // TODO: Implement proper DEK storage and retrieval
@@ -89,15 +86,13 @@ export async function decrypt(
   if (encryptedDEK) {
     key = await kms.decryptDataKey(Buffer.from(encryptedDEK, DEFAULT_ENCODING), keyId);
   } else {
-    throw new Error('Encrypted DEK not provided. Cannot decrypt data. In production, store encrypted DEK with data.');
+    throw new Error(
+      'Encrypted DEK not provided. Cannot decrypt data. In production, store encrypted DEK with data.'
+    );
   }
 
   // Create decipher
-  const decipher = crypto.createDecipheriv(
-    algorithm,
-    key,
-    Buffer.from(iv, DEFAULT_ENCODING)
-  );
+  const decipher = crypto.createDecipheriv(algorithm, key, Buffer.from(iv, DEFAULT_ENCODING));
 
   // Set auth tag
   decipher.setAuthTag(Buffer.from(authTag, DEFAULT_ENCODING));
@@ -144,10 +139,10 @@ export async function encryptFile(
   const fs = await import('fs/promises');
   const fileData = await fs.readFile(filePath);
   const encrypted = await encrypt(fileData, config);
-  
+
   // Write encrypted data to file
   await fs.writeFile(outputPath, JSON.stringify(encrypted, null, 2));
-  
+
   return encrypted;
 }
 
@@ -162,7 +157,7 @@ export async function decryptFile(
   const fs = await import('fs/promises');
   const encryptedDataString = await fs.readFile(encryptedFilePath, 'utf8');
   const encryptedData: EncryptedData = JSON.parse(encryptedDataString);
-  
+
   const decrypted = await decrypt(encryptedData, config);
   await fs.writeFile(outputPath, decrypted);
 }
@@ -190,11 +185,11 @@ export function generateSecurePassword(length: number = 16): string {
   const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=';
   const randomBytes = crypto.randomBytes(length);
   let password = '';
-  
+
   for (let i = 0; i < length; i++) {
     password += charset[randomBytes[i] % charset.length];
   }
-  
+
   return password;
 }
 
@@ -205,10 +200,10 @@ export function secureCompare(a: string, b: string): boolean {
   if (a.length !== b.length) {
     return false;
   }
-  
+
   const bufA = Buffer.from(a);
   const bufB = Buffer.from(b);
-  
+
   return crypto.timingSafeEqual(bufA, bufB);
 }
 
@@ -222,6 +217,8 @@ export async function encryptEnvVars(envVars: Record<string, string>): Promise<E
 /**
  * Decrypt environment variables
  */
-export async function decryptEnvVars(encryptedData: EncryptedData): Promise<Record<string, string>> {
+export async function decryptEnvVars(
+  encryptedData: EncryptedData
+): Promise<Record<string, string>> {
   return decryptJSON(encryptedData);
 }

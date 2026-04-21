@@ -54,11 +54,13 @@ npm run dev
 ## API Endpoints
 
 ### Health Check
+
 ```
 GET /health
 ```
 
 ### Authentication
+
 ```
 POST /api/auth/login
 POST /api/auth/register
@@ -67,6 +69,7 @@ POST /api/auth/register
 ## Customization Options
 
 When initializing this template, you can enable:
+
 - Database integration (PostgreSQL, MongoDB)
 - Authentication middleware
 - Rate limiting
@@ -92,6 +95,7 @@ JWT_SECRET=your-secret-key
 ## Database Integration
 
 ### PostgreSQL
+
 ```typescript
 import { Pool } from 'pg';
 
@@ -101,6 +105,7 @@ const pool = new Pool({
 ```
 
 ### MongoDB
+
 ```typescript
 import mongoose from 'mongoose';
 
@@ -114,11 +119,9 @@ JWT-based authentication is included:
 ```typescript
 import jwt from 'jsonwebtoken';
 
-const token = jwt.sign(
-  { userId: user.id }, 
-  process.env.JWT_SECRET,
-  { expiresIn: '7d' }
-);
+const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+  expiresIn: '7d',
+});
 ```
 
 ## Deployment
@@ -138,12 +141,12 @@ services:
   api:
     build: .
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - DATABASE_URL=postgresql://db:5432/mydb
     depends_on:
       - db
-  
+
   db:
     image: postgres:15-alpine
     environment:

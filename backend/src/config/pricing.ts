@@ -1,6 +1,6 @@
 /**
  * Pricing configuration for team billing
- * 
+ *
  * These values can be overridden via environment variables for production deployments
  */
 

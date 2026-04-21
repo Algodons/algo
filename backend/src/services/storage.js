@@ -33,11 +33,13 @@ initializeBucket().catch((err) => logger.error('S3 initialization error:', err))
 const createProjectBucket = async (s3Path) => {
   try {
     // S3 doesn't require explicit folder creation, but we can create a placeholder
-    await s3.putObject({
-      Bucket: BUCKET_NAME,
-      Key: `${s3Path}/.keep`,
-      Body: '',
-    }).promise();
+    await s3
+      .putObject({
+        Bucket: BUCKET_NAME,
+        Key: `${s3Path}/.keep`,
+        Body: '',
+      })
+      .promise();
 
     logger.info(`Project bucket created at ${s3Path}`);
   } catch (error) {
@@ -50,10 +52,12 @@ const readFile = async (projectId, filePath) => {
   try {
     const key = `projects/${projectId}${filePath}`;
 
-    const result = await s3.getObject({
-      Bucket: BUCKET_NAME,
-      Key: key,
-    }).promise();
+    const result = await s3
+      .getObject({
+        Bucket: BUCKET_NAME,
+        Key: key,
+      })
+      .promise();
 
     return result.Body.toString('utf-8');
   } catch (error) {
@@ -69,12 +73,14 @@ const writeFile = async (projectId, filePath, content) => {
   try {
     const key = `projects/${projectId}${filePath}`;
 
-    await s3.putObject({
-      Bucket: BUCKET_NAME,
-      Key: key,
-      Body: content,
-      ContentType: 'text/plain',
-    }).promise();
+    await s3
+      .putObject({
+        Bucket: BUCKET_NAME,
+        Key: key,
+        Body: content,
+        ContentType: 'text/plain',
+      })
+      .promise();
 
     logger.info(`File saved: ${key}`);
   } catch (error) {
@@ -87,11 +93,13 @@ const listFiles = async (projectId, path = '/') => {
   try {
     const prefix = `projects/${projectId}${path}`;
 
-    const result = await s3.listObjectsV2({
-      Bucket: BUCKET_NAME,
-      Prefix: prefix,
-      Delimiter: '/',
-    }).promise();
+    const result = await s3
+      .listObjectsV2({
+        Bucket: BUCKET_NAME,
+        Prefix: prefix,
+        Delimiter: '/',
+      })
+      .promise();
 
     const files = [];
 
@@ -133,10 +141,12 @@ const deleteFile = async (projectId, filePath) => {
   try {
     const key = `projects/${projectId}${filePath}`;
 
-    await s3.deleteObject({
-      Bucket: BUCKET_NAME,
-      Key: key,
-    }).promise();
+    await s3
+      .deleteObject({
+        Bucket: BUCKET_NAME,
+        Key: key,
+      })
+      .promise();
 
     logger.info(`File deleted: ${key}`);
   } catch (error) {

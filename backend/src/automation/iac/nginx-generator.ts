@@ -7,11 +7,7 @@ export class NginxGenerator {
   /**
    * Generate complete nginx configuration
    */
-  generateConfig(
-    domain: string,
-    ports: PortConfiguration[],
-    enableSSL: boolean = true
-  ): string {
+  generateConfig(domain: string, ports: PortConfiguration[], enableSSL: boolean = true): string {
     const mainPort = ports[0]?.port || 3000;
 
     if (enableSSL) {
@@ -159,10 +155,8 @@ server {
   /**
    * Generate load balancer configuration
    */
-  generateLoadBalancer(domain: string, upstreams: Array<{host: string, port: number}>): string {
-    const upstreamConfig = upstreams.map((u) => 
-      `    server ${u.host}:${u.port};`
-    ).join('\n');
+  generateLoadBalancer(domain: string, upstreams: Array<{ host: string; port: number }>): string {
+    const upstreamConfig = upstreams.map((u) => `    server ${u.host}:${u.port};`).join('\n');
 
     return `upstream backend {
 ${upstreamConfig}

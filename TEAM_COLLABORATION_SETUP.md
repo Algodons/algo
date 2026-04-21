@@ -1,8 +1,10 @@
 # Team Collaboration Features - Setup Guide
 
-This guide covers the setup, configuration, and deployment of the team collaboration features.
+This guide covers the setup, configuration, and deployment of the team
+collaboration features.
 
 ## Table of Contents
+
 - [Prerequisites](#prerequisites)
 - [Database Setup](#database-setup)
 - [Environment Configuration](#environment-configuration)
@@ -17,13 +19,16 @@ This guide covers the setup, configuration, and deployment of the team collabora
 ## Prerequisites
 
 ### Required Software
+
 - Node.js 18+ or higher
 - PostgreSQL 15+
 - Redis (optional, for production)
 - Git
 
 ### Required npm Packages
+
 The following packages are already included in package.json:
+
 - `socket.io` - Real-time WebSocket communication
 - `pg` - PostgreSQL client
 - `simple-git` - Git operations
@@ -184,7 +189,7 @@ VITE_WS_URL=http://localhost:4000
 ```sql
 -- Create sample users
 INSERT INTO users (email, password_hash, name, role)
-VALUES 
+VALUES
   ('admin@example.com', '$2b$10$...', 'Admin User', 'admin'),
   ('user1@example.com', '$2b$10$...', 'User One', 'user'),
   ('user2@example.com', '$2b$10$...', 'User Two', 'user');
@@ -195,7 +200,7 @@ VALUES ('Example Org', 'example-org', 'Sample organization for testing');
 
 -- Add members to organization
 INSERT INTO organization_members (organization_id, user_id, role, status, joined_at)
-VALUES 
+VALUES
   (1, 1, 'owner', 'active', CURRENT_TIMESTAMP),
   (1, 2, 'developer', 'active', CURRENT_TIMESTAMP),
   (1, 3, 'viewer', 'active', CURRENT_TIMESTAMP);
@@ -217,7 +222,7 @@ If you're migrating from an existing system:
 -- Example: Migrate existing projects to organization structure
 -- 1. Create organizations for each user's projects
 INSERT INTO organizations (name, slug, description)
-SELECT 
+SELECT
   CONCAT(u.name, '''s Organization'),
   LOWER(REPLACE(u.name, ' ', '-')),
   CONCAT('Organization for ', u.name)
@@ -234,7 +239,7 @@ INNER JOIN organizations o ON o.slug = LOWER(REPLACE(u.name, ' ', '-'));
 
 -- 3. Add project permissions for organization members
 INSERT INTO project_permissions (project_id, organization_id, permissions, granted_by)
-SELECT 
+SELECT
   p.id,
   o.id,
   '{"read": true, "write": true, "deploy": true, "admin": true}'::jsonb,
@@ -299,7 +304,8 @@ npm run build
 
 ### 4. WebSocket Configuration
 
-The WebSocket server is automatically initialized with the Express server. No additional configuration needed.
+The WebSocket server is automatically initialized with the Express server. No
+additional configuration needed.
 
 To verify WebSocket connection:
 
@@ -365,7 +371,8 @@ curl -X POST http://localhost:4000/api/teams/1/members \
 
 #### Test Real-time Collaboration
 
-Open two browser windows and connect to the same project. Observe cursor movements and file changes syncing in real-time.
+Open two browser windows and connect to the same project. Observe cursor
+movements and file changes syncing in real-time.
 
 #### Test Pull Requests
 
@@ -451,7 +458,7 @@ import { createAdapter } from '@socket.io/redis-adapter';
 const pubClient = new Redis({
   host: process.env.REDIS_HOST || 'localhost',
   port: parseInt(process.env.REDIS_PORT || '6379'),
-  password: process.env.REDIS_PASSWORD
+  password: process.env.REDIS_PASSWORD,
 });
 
 const subClient = pubClient.duplicate();
@@ -584,6 +591,7 @@ find $BACKUP_DIR -name "*.backup.gz" -mtime +7 -delete
 ```
 
 Add to crontab:
+
 ```bash
 # Run daily at 2 AM
 0 2 * * * /path/to/backup-script.sh
@@ -700,7 +708,8 @@ socket.on('connect_error', (err) => {
 
 1. **Load Balancer**: Use Nginx or HAProxy
 2. **Session Affinity**: Enable sticky sessions for WebSocket connections
-3. **Redis Adapter**: Use Redis adapter for Socket.IO to share sessions across servers
+3. **Redis Adapter**: Use Redis adapter for Socket.IO to share sessions across
+   servers
 4. **Database Connection Pooling**: Use pgBouncer for PostgreSQL
 
 ### Vertical Scaling
@@ -721,6 +730,7 @@ socket.on('connect_error', (err) => {
 ## Support
 
 For issues or questions:
+
 1. Check the [API Documentation](TEAM_COLLABORATION_API.md)
 2. Review the [Troubleshooting](#troubleshooting) section
 3. Check application logs

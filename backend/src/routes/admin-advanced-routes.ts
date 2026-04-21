@@ -1,6 +1,6 @@
 /**
  * Advanced Admin Routes
- * 
+ *
  * Routes for AI-powered analytics, blockchain, gamification, real-time analytics,
  * accessibility, and infrastructure management.
  */
@@ -153,7 +153,11 @@ export function createAdminAdvancedRoutes(pool: Pool) {
     try {
       const userId = parseInt(req.params.userId);
       const { action, metadata } = req.body;
-      const achievements = await gamificationService.checkAndAwardAchievements(userId, action, metadata);
+      const achievements = await gamificationService.checkAndAwardAchievements(
+        userId,
+        action,
+        metadata
+      );
       res.json({ awarded: achievements });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -164,30 +168,36 @@ export function createAdminAdvancedRoutes(pool: Pool) {
    * POST /api/admin/advanced/gamification/award-milestone/:userId/:milestoneId
    * Award milestone reward
    */
-  router.post('/gamification/award-milestone/:userId/:milestoneId', async (req: Request, res: Response) => {
-    try {
-      const userId = parseInt(req.params.userId);
-      const { milestoneId } = req.params;
-      const milestone = await gamificationService.awardMilestone(userId, milestoneId);
-      res.json(milestone);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
+  router.post(
+    '/gamification/award-milestone/:userId/:milestoneId',
+    async (req: Request, res: Response) => {
+      try {
+        const userId = parseInt(req.params.userId);
+        const { milestoneId } = req.params;
+        const milestone = await gamificationService.awardMilestone(userId, milestoneId);
+        res.json(milestone);
+      } catch (error: any) {
+        res.status(500).json({ error: error.message });
+      }
     }
-  });
+  );
 
   /**
    * GET /api/admin/advanced/gamification/commission-suggestions/:affiliateId
    * Get AI-driven commission structure suggestions
    */
-  router.get('/gamification/commission-suggestions/:affiliateId', async (req: Request, res: Response) => {
-    try {
-      const affiliateId = parseInt(req.params.affiliateId);
-      const suggestions = await gamificationService.getCommissionSuggestions(affiliateId);
-      res.json(suggestions);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
+  router.get(
+    '/gamification/commission-suggestions/:affiliateId',
+    async (req: Request, res: Response) => {
+      try {
+        const affiliateId = parseInt(req.params.affiliateId);
+        const suggestions = await gamificationService.getCommissionSuggestions(affiliateId);
+        res.json(suggestions);
+      } catch (error: any) {
+        res.status(500).json({ error: error.message });
+      }
     }
-  });
+  );
 
   // ============================================================================
   // BLOCKCHAIN & WEB3 ROUTES
@@ -529,15 +539,19 @@ export function createAdminAdvancedRoutes(pool: Pool) {
    * POST /api/admin/advanced/infrastructure/trigger-recovery
    * Trigger automated recovery
    */
-  router.post('/infrastructure/trigger-recovery', requireSuperAdmin, async (req: Request, res: Response) => {
-    try {
-      const { incident, severity } = req.body;
-      const recovery = await infrastructureService.triggerAutoRecovery(incident, severity);
-      res.json(recovery);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
+  router.post(
+    '/infrastructure/trigger-recovery',
+    requireSuperAdmin,
+    async (req: Request, res: Response) => {
+      try {
+        const { incident, severity } = req.body;
+        const recovery = await infrastructureService.triggerAutoRecovery(incident, severity);
+        res.json(recovery);
+      } catch (error: any) {
+        res.status(500).json({ error: error.message });
+      }
     }
-  });
+  );
 
   /**
    * GET /api/admin/advanced/infrastructure/optimize-cdn

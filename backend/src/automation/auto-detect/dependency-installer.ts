@@ -12,17 +12,17 @@ const execAsync = promisify(exec);
 function validateProjectPath(projectPath: string): string {
   // Resolve to absolute path and normalize
   const resolvedPath = path.resolve(projectPath);
-  
+
   // Basic validation - should be an absolute path
   if (!path.isAbsolute(resolvedPath)) {
     throw new Error('Project path must be absolute');
   }
-  
+
   // Prevent directory traversal
   if (resolvedPath.includes('..')) {
     throw new Error('Invalid project path: directory traversal not allowed');
   }
-  
+
   return resolvedPath;
 }
 
@@ -95,10 +95,10 @@ export class DependencyInstaller {
     try {
       // Validate project path
       const safePath = validateProjectPath(projectPath);
-      
+
       // Detect package manager
       let command = 'npm install';
-      
+
       if (await this.fileScanner.fileExists(safePath, 'yarn.lock')) {
         command = 'yarn install';
       } else if (await this.fileScanner.fileExists(safePath, 'pnpm-lock.yaml')) {
@@ -106,7 +106,7 @@ export class DependencyInstaller {
       }
 
       this.logger.debug(`Running: ${command}`);
-      const { stdout, stderr } = await execAsync(command, { 
+      const { stdout, stderr } = await execAsync(command, {
         cwd: safePath,
         maxBuffer: 10 * 1024 * 1024, // 10MB buffer
       });
@@ -145,7 +145,7 @@ export class DependencyInstaller {
       }
 
       this.logger.debug(`Running: ${command}`);
-      const { stdout, stderr } = await execAsync(command, { 
+      const { stdout, stderr } = await execAsync(command, {
         cwd: safePath,
         maxBuffer: 10 * 1024 * 1024,
       });
@@ -173,9 +173,9 @@ export class DependencyInstaller {
     try {
       const safePath = validateProjectPath(projectPath);
       const command = 'cargo fetch';
-      
+
       this.logger.debug(`Running: ${command}`);
-      const { stdout, stderr } = await execAsync(command, { 
+      const { stdout, stderr } = await execAsync(command, {
         cwd: safePath,
         maxBuffer: 10 * 1024 * 1024,
       });
@@ -203,9 +203,9 @@ export class DependencyInstaller {
     try {
       const safePath = validateProjectPath(projectPath);
       const command = 'go mod download';
-      
+
       this.logger.debug(`Running: ${command}`);
-      const { stdout, stderr } = await execAsync(command, { 
+      const { stdout, stderr } = await execAsync(command, {
         cwd: safePath,
         maxBuffer: 10 * 1024 * 1024,
       });
@@ -233,9 +233,9 @@ export class DependencyInstaller {
     try {
       const safePath = validateProjectPath(projectPath);
       const command = 'composer install';
-      
+
       this.logger.debug(`Running: ${command}`);
-      const { stdout, stderr } = await execAsync(command, { 
+      const { stdout, stderr } = await execAsync(command, {
         cwd: safePath,
         maxBuffer: 10 * 1024 * 1024,
       });

@@ -183,11 +183,7 @@ export class MongoDBAdapter extends BaseAdapter {
     }
   }
 
-  private inferFieldTypes(
-    obj: any,
-    prefix: string,
-    fieldTypes: Map<string, Set<string>>
-  ): void {
+  private inferFieldTypes(obj: any, prefix: string, fieldTypes: Map<string, Set<string>>): void {
     for (const [key, value] of Object.entries(obj)) {
       const fieldName = prefix ? `${prefix}.${key}` : key;
       const type = Array.isArray(value) ? 'Array' : typeof value;

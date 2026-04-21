@@ -2,7 +2,9 @@
 
 ## Overview
 
-The Admin Control System provides comprehensive management capabilities for user administration, platform analytics, sales & affiliate management, financial controls, and system administration.
+The Admin Control System provides comprehensive management capabilities for user
+administration, platform analytics, sales & affiliate management, financial
+controls, and system administration.
 
 ## Authentication
 
@@ -31,6 +33,7 @@ GET /api/admin/users/search
 ```
 
 **Query Parameters:**
+
 - `email` (optional): Filter by email (partial match)
 - `username` (optional): Filter by username (partial match)
 - `registrationDateFrom` (optional): Filter by registration date
@@ -43,6 +46,7 @@ GET /api/admin/users/search
 - `sortOrder` (optional): Sort order (ASC, DESC, default: DESC)
 
 **Response:**
+
 ```json
 {
   "users": [
@@ -72,6 +76,7 @@ GET /api/admin/users/:id
 ```
 
 **Response:**
+
 ```json
 {
   "user": {
@@ -80,7 +85,7 @@ GET /api/admin/users/:id
     "name": "John Doe",
     "tier": "pro",
     "subscription_status": "active",
-    "credit_balance": 100.00,
+    "credit_balance": 100.0,
     "is_suspended": false,
     "suspension": null
   }
@@ -96,6 +101,7 @@ POST /api/admin/users/:id/suspend
 **Requires:** 2FA
 
 **Request Body:**
+
 ```json
 {
   "reason": "Violation of terms of service",
@@ -112,6 +118,7 @@ POST /api/admin/users/:id/activate
 **Requires:** 2FA
 
 **Request Body:**
+
 ```json
 {
   "reason": "Appeal accepted"
@@ -125,9 +132,11 @@ GET /api/admin/users/:id/analytics?period=30d
 ```
 
 **Query Parameters:**
+
 - `period` (optional): 7d, 30d, 90d (default: 30d)
 
 **Response:**
+
 ```json
 {
   "resourceMetrics": [
@@ -159,6 +168,7 @@ POST /api/admin/users/:id/impersonate
 **Requires:** Super Admin, 2FA
 
 **Request Body:**
+
 ```json
 {
   "reason": "Support ticket #12345"
@@ -166,6 +176,7 @@ POST /api/admin/users/:id/impersonate
 ```
 
 **Response:**
+
 ```json
 {
   "sessionToken": "abc123...",
@@ -181,6 +192,7 @@ POST /api/admin/users/:id/impersonate/end
 ```
 
 **Request Body:**
+
 ```json
 {
   "sessionToken": "abc123..."
@@ -196,6 +208,7 @@ POST /api/admin/users/bulk/email
 **Requires:** Super Admin, 2FA
 
 **Request Body:**
+
 ```json
 {
   "subject": "Important Update",
@@ -217,9 +230,10 @@ POST /api/admin/users/bulk/credits
 **Requires:** Super Admin, 2FA
 
 **Request Body:**
+
 ```json
 {
-  "amount": 50.00,
+  "amount": 50.0,
   "reason": "Promotional credit",
   "userIds": [1, 2, 3]
 }
@@ -234,10 +248,11 @@ POST /api/admin/users/:id/subscription/override
 **Requires:** 2FA
 
 **Request Body:**
+
 ```json
 {
   "tier": "enterprise",
-  "amount": 99.00,
+  "amount": 99.0,
   "reason": "Custom enterprise deal"
 }
 ```
@@ -251,6 +266,7 @@ GET /api/admin/analytics/active-users
 ```
 
 **Response:**
+
 ```json
 {
   "activeUsers": 150,
@@ -268,6 +284,7 @@ GET /api/admin/analytics/revenue?period=12m
 ```
 
 **Response:**
+
 ```json
 {
   "mrr": "50000.00",
@@ -298,6 +315,7 @@ GET /api/admin/analytics/churn
 ```
 
 **Response:**
+
 ```json
 {
   "monthlyChurn": [
@@ -333,6 +351,7 @@ GET /api/admin/analytics/resources?period=24h
 ```
 
 **Response:**
+
 ```json
 {
   "metrics": [
@@ -351,8 +370,8 @@ GET /api/admin/analytics/resources?period=24h
       "count": 150
     }
   ],
-  "totalStorage": 5000.00,
-  "totalBandwidth": 10000.00
+  "totalStorage": 5000.0,
+  "totalBandwidth": 10000.0
 }
 ```
 
@@ -363,6 +382,7 @@ GET /api/admin/analytics/templates
 ```
 
 **Response:**
+
 ```json
 {
   "topTemplates": [
@@ -398,6 +418,7 @@ GET /api/admin/analytics/geography
 ```
 
 **Response:**
+
 ```json
 {
   "countries": [
@@ -430,6 +451,7 @@ GET /api/admin/analytics/performance?period=24h
 ```
 
 **Response:**
+
 ```json
 {
   "apiPerformance": [
@@ -460,6 +482,7 @@ GET /api/admin/analytics/summary
 ```
 
 **Response:**
+
 ```json
 {
   "users": {
@@ -494,11 +517,12 @@ POST /api/admin/affiliates
 ```
 
 **Request Body:**
+
 ```json
 {
   "userId": 1,
   "commissionType": "percentage",
-  "commissionValue": 20.00,
+  "commissionValue": 20.0,
   "tierConfig": {
     "tiers": [
       { "threshold": 1000, "rate": 15 },
@@ -521,13 +545,14 @@ GET /api/admin/affiliates/:id
 ```
 
 **Response:**
+
 ```json
 {
   "affiliate": {
     "id": 1,
     "affiliate_code": "ABC12345",
     "commission_type": "percentage",
-    "commission_value": 20.00,
+    "commission_value": 20.0,
     "status": "active"
   },
   "stats": {
@@ -547,10 +572,11 @@ PUT /api/admin/affiliates/:id
 ```
 
 **Request Body:**
+
 ```json
 {
   "commissionType": "tiered",
-  "commissionValue": 25.00,
+  "commissionValue": 25.0,
   "status": "active"
 }
 ```
@@ -562,14 +588,15 @@ POST /api/admin/affiliates/discount-codes
 ```
 
 **Request Body:**
+
 ```json
 {
   "code": "SUMMER2024",
   "type": "percentage",
-  "value": 20.00,
+  "value": 20.0,
   "affiliateId": 1,
   "usageLimit": 100,
-  "minPurchaseAmount": 50.00,
+  "minPurchaseAmount": 50.0,
   "applicableTiers": ["pro", "enterprise"],
   "expiresAt": "2024-12-31T23:59:59Z"
 }
@@ -596,10 +623,11 @@ POST /api/admin/affiliates/payouts
 **Requires:** 2FA
 
 **Request Body:**
+
 ```json
 {
   "affiliateId": 1,
-  "amount": 500.00,
+  "amount": 500.0,
   "method": "stripe_connect",
   "scheduledAt": "2024-01-15T00:00:00Z"
 }
@@ -614,6 +642,7 @@ POST /api/admin/affiliates/payouts/:id/process
 **Requires:** 2FA
 
 **Request Body:**
+
 ```json
 {
   "providerPayoutId": "po_abc123"
@@ -627,6 +656,7 @@ GET /api/admin/affiliates/dashboard
 ```
 
 **Response:**
+
 ```json
 {
   "stats": {
@@ -652,6 +682,7 @@ GET /api/admin/financial/reconciliation?startDate=2024-01-01&endDate=2024-01-31
 ```
 
 **Response:**
+
 ```json
 {
   "platformRevenue": [
@@ -691,10 +722,11 @@ POST /api/admin/financial/subscriptions/:id/upgrade
 **Requires:** 2FA
 
 **Request Body:**
+
 ```json
 {
   "newTier": "enterprise",
-  "newAmount": 199.00,
+  "newAmount": 199.0,
   "reason": "Custom enterprise deal"
 }
 ```
@@ -708,6 +740,7 @@ POST /api/admin/financial/subscriptions/:id/cancel
 **Requires:** 2FA
 
 **Request Body:**
+
 ```json
 {
   "reason": "User request",
@@ -724,6 +757,7 @@ POST /api/admin/financial/subscriptions/:id/pause
 **Requires:** 2FA
 
 **Request Body:**
+
 ```json
 {
   "pauseStartsAt": "2024-02-01T00:00:00Z",
@@ -746,11 +780,12 @@ POST /api/admin/financial/refunds
 **Requires:** 2FA
 
 **Request Body:**
+
 ```json
 {
   "userId": 1,
   "invoiceId": 100,
-  "amount": 50.00,
+  "amount": 50.0,
   "type": "partial",
   "reason": "service_issue",
   "reasonDetails": "Downtime on 2024-01-15"
@@ -766,6 +801,7 @@ POST /api/admin/financial/refunds/:id/process
 **Requires:** 2FA
 
 **Request Body:**
+
 ```json
 {
   "providerRefundId": "re_abc123"
@@ -787,6 +823,7 @@ POST /api/admin/financial/tax-config
 **Requires:** 2FA
 
 **Request Body:**
+
 ```json
 {
   "countryCode": "US",
@@ -821,6 +858,7 @@ GET /api/admin/system/health?period=1h
 ```
 
 **Response:**
+
 ```json
 {
   "aggregated": [
@@ -845,6 +883,7 @@ GET /api/admin/system/database-pool
 ```
 
 **Response:**
+
 ```json
 {
   "pool": {
@@ -867,6 +906,7 @@ GET /api/admin/system/containers?period=1h
 ```
 
 **Response:**
+
 ```json
 {
   "pods": [
@@ -915,6 +955,7 @@ POST /api/admin/system/announcements
 **Requires:** Super Admin
 
 **Request Body:**
+
 ```json
 {
   "title": "Scheduled Maintenance",
@@ -950,6 +991,7 @@ POST /api/admin/system/feature-flags
 **Requires:** Super Admin, 2FA
 
 **Request Body:**
+
 ```json
 {
   "name": "new_editor",
@@ -970,6 +1012,7 @@ PUT /api/admin/system/feature-flags/:id
 **Requires:** Super Admin, 2FA
 
 **Request Body:**
+
 ```json
 {
   "isEnabled": true,
@@ -993,6 +1036,7 @@ POST /api/admin/system/rate-limits
 **Requires:** Super Admin, 2FA
 
 **Request Body:**
+
 ```json
 {
   "userId": 1,
@@ -1012,6 +1056,7 @@ POST /api/admin/system/cdn/purge
 **Requires:** Super Admin, 2FA
 
 **Request Body:**
+
 ```json
 {
   "operationType": "purge_url",
@@ -1025,6 +1070,7 @@ POST /api/admin/system/cdn/purge
 All endpoints may return the following error responses:
 
 ### 401 Unauthorized
+
 ```json
 {
   "error": "Authentication required"
@@ -1032,6 +1078,7 @@ All endpoints may return the following error responses:
 ```
 
 ### 403 Forbidden
+
 ```json
 {
   "error": "Admin access required"
@@ -1039,6 +1086,7 @@ All endpoints may return the following error responses:
 ```
 
 ### 404 Not Found
+
 ```json
 {
   "error": "Resource not found"
@@ -1046,6 +1094,7 @@ All endpoints may return the following error responses:
 ```
 
 ### 429 Rate Limited
+
 ```json
 {
   "error": "Rate limit exceeded",
@@ -1054,6 +1103,7 @@ All endpoints may return the following error responses:
 ```
 
 ### 500 Internal Server Error
+
 ```json
 {
   "error": "Failed to process request"
@@ -1081,6 +1131,7 @@ X-2FA-Token: 123456
 ### Audit Logging
 
 All admin actions are automatically logged with:
+
 - User ID
 - Action performed
 - Resource affected
@@ -1095,6 +1146,7 @@ Admin sessions automatically timeout after 30 minutes of inactivity.
 ## Rate Limits
 
 Default rate limits for admin endpoints:
+
 - 100 requests per minute
 - 5000 requests per hour
 

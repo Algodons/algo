@@ -166,23 +166,28 @@ export function createCollaborationRoutes(pool: Pool): Router {
   });
 
   // Get file comments
-  router.get('/projects/:projectId/files/:filePath/comments', authenticate(pool), async (req, res) => {
-    try {
-      const projectId = parseInt(req.params.projectId);
-      const filePath = decodeURIComponent(req.params.filePath);
-      const comments = await collaborationService.getFileComments(projectId, filePath);
-      res.json({ comments });
-    } catch (error) {
-      console.error('Get file comments error:', error);
-      res.status(500).json({ error: 'Failed to get file comments' });
+  router.get(
+    '/projects/:projectId/files/:filePath/comments',
+    authenticate(pool),
+    async (req, res) => {
+      try {
+        const projectId = parseInt(req.params.projectId);
+        const filePath = decodeURIComponent(req.params.filePath);
+        const comments = await collaborationService.getFileComments(projectId, filePath);
+        res.json({ comments });
+      } catch (error) {
+        console.error('Get file comments error:', error);
+        res.status(500).json({ error: 'Failed to get file comments' });
+      }
     }
-  });
+  );
 
   // Get project comments
   router.get('/projects/:projectId/comments', authenticate(pool), async (req, res) => {
     try {
       const projectId = parseInt(req.params.projectId);
-      const resolved = req.query.resolved === 'true' ? true : req.query.resolved === 'false' ? false : undefined;
+      const resolved =
+        req.query.resolved === 'true' ? true : req.query.resolved === 'false' ? false : undefined;
       const comments = await collaborationService.getProjectComments(projectId, resolved);
       res.json({ comments });
     } catch (error) {

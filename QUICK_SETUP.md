@@ -1,10 +1,12 @@
 # Quick Setup Guide
 
-This guide will help you quickly set up the automated PR review and approval system in the Algodons/algo repository.
+This guide will help you quickly set up the automated PR review and approval
+system in the Algodons/algo repository.
 
 ## 1. Enable GitHub Actions
 
 GitHub Actions should be enabled by default. Verify by going to:
+
 - Repository → Settings → Actions → General
 - Ensure "Allow all actions and reusable workflows" is selected
 
@@ -26,7 +28,8 @@ Follow these steps to protect your main branch:
    - ✅ Include administrators
 5. Click **Create** or **Save changes**
 
-See [BRANCH_PROTECTION.md](.github/BRANCH_PROTECTION.md) for detailed configuration.
+See [BRANCH_PROTECTION.md](.github/BRANCH_PROTECTION.md) for detailed
+configuration.
 
 ## 3. Configure Trusted Contributors (Optional)
 
@@ -35,14 +38,12 @@ If you want to enable auto-approval for trusted contributors:
 1. Edit `.github/workflows/auto-approve.yml`
 2. Update the `TRUSTED_USERS` array with GitHub usernames:
    ```yaml
-   TRUSTED_USERS=(
-     "your-username"
-     "trusted-maintainer"
-   )
+   TRUSTED_USERS=( "your-username" "trusted-maintainer" )
    ```
 3. Commit and push the changes
 
-⚠️ **Note:** Auto-approval should only be used for trusted maintainers and still requires human verification before merging.
+⚠️ **Note:** Auto-approval should only be used for trusted maintainers and still
+requires human verification before merging.
 
 ## 4. Update CODEOWNERS (Optional but Recommended)
 
@@ -56,6 +57,7 @@ If you want to enable auto-approval for trusted contributors:
 3. Commit and push the changes
 
 If you don't have teams set up:
+
 - Remove the `@Algodons/` prefix
 - Use individual usernames instead: `@username`
 
@@ -64,6 +66,7 @@ If you don't have teams set up:
 Create these labels in your repository (Settings → Labels):
 
 **Type Labels:**
+
 - `frontend` (color: #61dafb)
 - `backend` (color: #68bc00)
 - `tests` (color: #0e8a16)
@@ -72,6 +75,7 @@ Create these labels in your repository (Settings → Labels):
 - `ci/cd` (color: #1d76db)
 
 **Size Labels:**
+
 - `size/xs` (color: #00ff00)
 - `size/s` (color: #7fff00)
 - `size/m` (color: #ffff00)
@@ -79,6 +83,7 @@ Create these labels in your repository (Settings → Labels):
 - `size/xl` (color: #ff0000)
 
 Or run this script to create them automatically:
+
 ```bash
 gh label create frontend --color 61dafb
 gh label create backend --color 68bc00
@@ -119,6 +124,7 @@ npm install
 ```
 
 This will install all dependencies defined in `package.json` including:
+
 - ESLint and plugins
 - Prettier
 - TypeScript
@@ -153,6 +159,7 @@ npm run test
 ## 9. Create Your First PR
 
 1. Create a feature branch:
+
    ```bash
    git checkout -b test/ci-setup
    ```
@@ -160,6 +167,7 @@ npm run test
 2. Make a small change (e.g., add a comment)
 
 3. Commit and push:
+
    ```bash
    git add .
    git commit -m "Test CI/CD setup"
@@ -173,6 +181,7 @@ npm run test
 ## 10. Verify Everything Works
 
 Check that these workflows run on your PR:
+
 - ✅ CI workflow (linting, building, testing)
 - ✅ CodeQL security scan
 - ✅ Automated code review
@@ -181,28 +190,34 @@ Check that these workflows run on your PR:
 ## Troubleshooting
 
 ### Workflows not running
+
 - Check that GitHub Actions is enabled
 - Ensure workflows are in `.github/workflows/` directory
 - Verify YAML syntax is correct
 
 ### Required status checks not appearing
+
 - Workflows must run at least once before they can be required
 - Create a test PR to trigger the workflows
 - Then add them to branch protection
 
 ### Auto-approval not working
+
 - Verify your username is in the trusted list
 - Check that all CI checks passed
 - Review workflow logs in the Actions tab
 
 ### Dependencies not installing
+
 - Ensure you have Node.js 18+ installed
 - Try deleting `node_modules` and running `npm ci`
 
 ## Next Steps
 
-1. **Add actual tests**: The setup includes testing infrastructure, but you'll need to write tests
-2. **Configure Codecov** (optional): Add `CODECOV_TOKEN` secret for coverage reports
+1. **Add actual tests**: The setup includes testing infrastructure, but you'll
+   need to write tests
+2. **Configure Codecov** (optional): Add `CODECOV_TOKEN` secret for coverage
+   reports
 3. **Set up Dependabot**: Enable automated dependency updates
 4. **Configure security alerts**: Set up notifications for security issues
 5. **Customize workflows**: Adjust the workflows to match your specific needs
@@ -216,6 +231,7 @@ Check that these workflows run on your PR:
 ## Getting Help
 
 If you encounter issues:
+
 1. Check the workflow logs in the Actions tab
 2. Review the documentation files
 3. Open an issue in the repository
@@ -223,4 +239,5 @@ If you encounter issues:
 
 ---
 
-**Congratulations!** 🎉 Your repository now has a comprehensive automated PR review and approval system!
+**Congratulations!** 🎉 Your repository now has a comprehensive automated PR
+review and approval system!

@@ -158,9 +158,7 @@ export function ActivityFeed({ organizationId, limit = 50 }: ActivityFeedProps) 
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-900">
-                      {formatActivityMessage(activity)}
-                    </p>
+                    <p className="text-sm text-gray-900">{formatActivityMessage(activity)}</p>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-xs text-gray-500">
                         {formatTimeAgo(activity.created_at)}

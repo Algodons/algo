@@ -263,10 +263,7 @@ export class CollaborationService {
   /**
    * Get all comments for a project
    */
-  async getProjectComments(
-    projectId: number,
-    resolved?: boolean
-  ): Promise<CodeComment[]> {
+  async getProjectComments(projectId: number, resolved?: boolean): Promise<CodeComment[]> {
     let query = `
       SELECT cc.*, u.name as user_name, u.email as user_email, u.avatar_url
       FROM code_comments cc
@@ -332,10 +329,10 @@ export class CollaborationService {
    * Update session recording URL
    */
   async updateSessionRecording(sessionId: number, recordingUrl: string): Promise<void> {
-    await this.pool.query(
-      'UPDATE collaboration_sessions SET recording_url = $1 WHERE id = $2',
-      [recordingUrl, sessionId]
-    );
+    await this.pool.query('UPDATE collaboration_sessions SET recording_url = $1 WHERE id = $2', [
+      recordingUrl,
+      sessionId,
+    ]);
   }
 
   /**

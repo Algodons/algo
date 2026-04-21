@@ -83,7 +83,7 @@ export class WebhookService {
         );
       } catch (error: any) {
         attempt++;
-        
+
         if (attempt < this.maxRetries) {
           // Wait before retry (exponential backoff)
           await this.delay(this.retryDelays[attempt - 1] || 15000);
@@ -163,6 +163,6 @@ export class WebhookService {
    * Delay helper for retry logic
    */
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }

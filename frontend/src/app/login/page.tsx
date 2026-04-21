@@ -42,9 +42,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">Algo Cloud IDE</CardTitle>
-          <CardDescription>
-            Enter your credentials to access your workspace
-          </CardDescription>
+          <CardDescription>Enter your credentials to access your workspace</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

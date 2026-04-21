@@ -2,7 +2,9 @@
 
 ## Overview
 
-The Cloud IDE platform provides RESTful APIs and WebSocket endpoints for various features including Git operations, package management, database connectivity, and file preview.
+The Cloud IDE platform provides RESTful APIs and WebSocket endpoints for various
+features including Git operations, package management, database connectivity,
+and file preview.
 
 ## Base URL
 
@@ -11,7 +13,9 @@ The Cloud IDE platform provides RESTful APIs and WebSocket endpoints for various
 
 ## Authentication
 
-Currently, the API doesn't require authentication. In production, you should implement:
+Currently, the API doesn't require authentication. In production, you should
+implement:
+
 - JWT tokens
 - OAuth2
 - API keys
@@ -19,6 +23,7 @@ Currently, the API doesn't require authentication. In production, you should imp
 ## Common Response Format
 
 ### Success Response
+
 ```json
 {
   "success": true,
@@ -28,6 +33,7 @@ Currently, the API doesn't require authentication. In production, you should imp
 ```
 
 ### Error Response
+
 ```json
 {
   "success": false,
@@ -45,6 +51,7 @@ Currently, the API doesn't require authentication. In production, you should imp
 Check if the server is running.
 
 **Response:**
+
 ```json
 {
   "status": "ok",
@@ -63,6 +70,7 @@ Check if the server is running.
 Clone a Git repository to a workspace.
 
 **Request Body:**
+
 ```json
 {
   "url": "https://github.com/user/repo.git",
@@ -71,6 +79,7 @@ Clone a Git repository to a workspace.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -86,9 +95,11 @@ Clone a Git repository to a workspace.
 Get the current Git status of a workspace.
 
 **Query Parameters:**
+
 - `workspaceId` (required): Workspace identifier
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -109,15 +120,17 @@ Get the current Git status of a workspace.
 Commit changes in a workspace.
 
 **Request Body:**
+
 ```json
 {
   "workspaceId": "workspace-123",
   "message": "Commit message",
-  "files": ["file1.js", "file2.js"]  // Optional, defaults to all
+  "files": ["file1.js", "file2.js"] // Optional, defaults to all
 }
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -135,15 +148,17 @@ Commit changes in a workspace.
 Push commits to remote repository.
 
 **Request Body:**
+
 ```json
 {
   "workspaceId": "workspace-123",
-  "remote": "origin",  // Optional, defaults to "origin"
-  "branch": "main"     // Optional, defaults to "main"
+  "remote": "origin", // Optional, defaults to "origin"
+  "branch": "main" // Optional, defaults to "main"
 }
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -158,15 +173,17 @@ Push commits to remote repository.
 Pull changes from remote repository.
 
 **Request Body:**
+
 ```json
 {
   "workspaceId": "workspace-123",
-  "remote": "origin",  // Optional
-  "branch": "main"     // Optional
+  "remote": "origin", // Optional
+  "branch": "main" // Optional
 }
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -185,9 +202,11 @@ Pull changes from remote repository.
 List all branches in a workspace.
 
 **Query Parameters:**
+
 - `workspaceId` (required): Workspace identifier
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -206,6 +225,7 @@ List all branches in a workspace.
 Create a new branch.
 
 **Request Body:**
+
 ```json
 {
   "workspaceId": "workspace-123",
@@ -214,6 +234,7 @@ Create a new branch.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -228,6 +249,7 @@ Create a new branch.
 Switch to a different branch.
 
 **Request Body:**
+
 ```json
 {
   "workspaceId": "workspace-123",
@@ -236,6 +258,7 @@ Switch to a different branch.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -250,10 +273,12 @@ Switch to a different branch.
 Get the diff of changes.
 
 **Query Parameters:**
+
 - `workspaceId` (required): Workspace identifier
 - `file` (optional): Specific file to diff
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -268,10 +293,12 @@ Get the diff of changes.
 Get commit history.
 
 **Query Parameters:**
+
 - `workspaceId` (required): Workspace identifier
 - `maxCount` (optional): Max number of commits (default: 50)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -299,14 +326,16 @@ Get commit history.
 Install npm packages.
 
 **Request Body:**
+
 ```json
 {
   "workspaceId": "workspace-123",
-  "packages": "express lodash"  // Space-separated or array
+  "packages": "express lodash" // Space-separated or array
 }
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -322,6 +351,7 @@ Install npm packages.
 Uninstall npm packages.
 
 **Request Body:**
+
 ```json
 {
   "workspaceId": "workspace-123",
@@ -336,9 +366,11 @@ Uninstall npm packages.
 List installed npm packages.
 
 **Query Parameters:**
+
 - `workspaceId` (required)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -355,6 +387,7 @@ List installed npm packages.
 Install Python packages with pip.
 
 **Request Body:**
+
 ```json
 {
   "workspaceId": "workspace-123",
@@ -369,6 +402,7 @@ Install Python packages with pip.
 Install Rust packages with cargo.
 
 **Request Body:**
+
 ```json
 {
   "workspaceId": "workspace-123",
@@ -383,9 +417,11 @@ Install Rust packages with cargo.
 Detect available package managers in workspace.
 
 **Query Parameters:**
+
 - `workspaceId` (required)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -404,6 +440,7 @@ Detect available package managers in workspace.
 Establish PostgreSQL connection.
 
 **Request Body:**
+
 ```json
 {
   "connectionId": "pg-conn-1",
@@ -416,6 +453,7 @@ Establish PostgreSQL connection.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -430,6 +468,7 @@ Establish PostgreSQL connection.
 Execute a SQL query.
 
 **Request Body:**
+
 ```json
 {
   "connectionId": "pg-conn-1",
@@ -438,6 +477,7 @@ Execute a SQL query.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -453,16 +493,15 @@ Execute a SQL query.
 List all tables in the database.
 
 **Query Parameters:**
+
 - `connectionId` (required)
 
 **Response:**
+
 ```json
 {
   "success": true,
-  "tables": [
-    { "table_name": "users" },
-    { "table_name": "posts" }
-  ]
+  "tables": [{ "table_name": "users" }, { "table_name": "posts" }]
 }
 ```
 
@@ -473,6 +512,7 @@ List all tables in the database.
 Establish MySQL connection.
 
 **Request Body:**
+
 ```json
 {
   "connectionId": "mysql-conn-1",
@@ -491,6 +531,7 @@ Establish MySQL connection.
 Establish MongoDB connection.
 
 **Request Body:**
+
 ```json
 {
   "connectionId": "mongo-conn-1",
@@ -506,12 +547,13 @@ Establish MongoDB connection.
 Execute a MongoDB operation.
 
 **Request Body:**
+
 ```json
 {
   "connectionId": "mongo-conn-1",
   "collection": "users",
   "query": { "age": { "$gt": 18 } },
-  "operation": "find"  // find, insertOne, updateOne, deleteOne
+  "operation": "find" // find, insertOne, updateOne, deleteOne
 }
 ```
 
@@ -522,6 +564,7 @@ Execute a MongoDB operation.
 Close database connection.
 
 **Request Body:**
+
 ```json
 {
   "connectionId": "pg-conn-1"
@@ -534,11 +577,12 @@ Close database connection.
 
 ### Serve Preview File
 
-#### GET /api/preview/:workspaceId/*
+#### GET /api/preview/:workspaceId/\*
 
 Serve a file for preview.
 
 **Example:**
+
 ```
 GET /api/preview/workspace-123/index.html
 ```
@@ -550,10 +594,11 @@ GET /api/preview/workspace-123/index.html
 Start watching workspace for file changes.
 
 **Request Body:**
+
 ```json
 {
   "workspaceId": "workspace-123",
-  "watchPath": "."  // Optional, defaults to "."
+  "watchPath": "." // Optional, defaults to "."
 }
 ```
 
@@ -564,6 +609,7 @@ Start watching workspace for file changes.
 Stop watching workspace.
 
 **Request Body:**
+
 ```json
 {
   "workspaceId": "workspace-123"
@@ -577,9 +623,11 @@ Stop watching workspace.
 Get the file tree structure.
 
 **Query Parameters:**
+
 - `workspaceId` (required)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -619,6 +667,7 @@ Connect to a Yjs document for real-time collaborative editing.
 Connect to a terminal session.
 
 **Messages from Server:**
+
 ```json
 {
   "type": "ready",
@@ -638,6 +687,7 @@ Connect to a terminal session.
 ```
 
 **Messages to Server:**
+
 ```json
 {
   "type": "input",
@@ -656,6 +706,7 @@ Connect to a terminal session.
 ## Rate Limiting
 
 Currently, no rate limiting is implemented. For production:
+
 - Implement rate limiting per IP
 - Use Redis for distributed rate limiting
 - Apply different limits per endpoint
@@ -663,6 +714,7 @@ Currently, no rate limiting is implemented. For production:
 ## CORS
 
 CORS is enabled for all origins in development. For production:
+
 - Restrict to specific domains
 - Configure in `server/index.ts`
 
@@ -681,6 +733,7 @@ Future versions will use: `/api/v2/...`
 ## SDK/Client Libraries
 
 Consider creating client libraries for:
+
 - JavaScript/TypeScript
 - Python
 - Go
@@ -688,6 +741,7 @@ Consider creating client libraries for:
 ## Webhooks
 
 Future feature: Webhooks for:
+
 - File changes
 - Git operations
 - Build completions

@@ -205,7 +205,11 @@ export class TeamBillingService {
          WHERE organization_id = $1 
            AND date >= $2 
            AND date <= $3`,
-        [organizationId, periodStart.toISOString().split('T')[0], periodEnd.toISOString().split('T')[0]]
+        [
+          organizationId,
+          periodStart.toISOString().split('T')[0],
+          periodEnd.toISOString().split('T')[0],
+        ]
       );
 
       const usage = usageResult.rows[0];
@@ -252,10 +256,7 @@ export class TeamBillingService {
   /**
    * Get billing records for an organization
    */
-  async getBillingRecords(
-    organizationId: number,
-    limit: number = 12
-  ): Promise<TeamBilling[]> {
+  async getBillingRecords(organizationId: number, limit: number = 12): Promise<TeamBilling[]> {
     const result = await this.pool.query(
       `SELECT * FROM team_billing
        WHERE organization_id = $1
@@ -303,7 +304,11 @@ export class TeamBillingService {
        WHERE organization_id = $1 
          AND date >= $2 
          AND date <= $3`,
-      [organizationId, periodStart.toISOString().split('T')[0], periodEnd.toISOString().split('T')[0]]
+      [
+        organizationId,
+        periodStart.toISOString().split('T')[0],
+        periodEnd.toISOString().split('T')[0],
+      ]
     );
 
     const usage = result.rows[0];

@@ -285,9 +285,7 @@ export function cacheMiddleware(config: CacheConfig = {}) {
       // Override json method to cache response
       res.json = function (data: any): Response {
         // Cache the response
-        setInCache(cacheKey, data, ttl).catch((error) =>
-          console.error('Cache set error:', error)
-        );
+        setInCache(cacheKey, data, ttl).catch((error) => console.error('Cache set error:', error));
 
         // Call original json method
         return originalJson(data);
@@ -319,12 +317,7 @@ export class QueryCache {
   /**
    * Cache query result
    */
-  async set(
-    query: string,
-    params: any[],
-    result: any,
-    ttl: number = 300
-  ): Promise<void> {
+  async set(query: string, params: any[], result: any, ttl: number = 300): Promise<void> {
     const key = this.generateKey(query, params);
     await setInCache(key, result, ttl);
   }
@@ -349,14 +342,8 @@ export class QueryCache {
    */
   private generateKey(query: string, params: any[]): string {
     const normalizedQuery = query.trim().toLowerCase();
-    const paramsHash = crypto
-      .createHash('md5')
-      .update(JSON.stringify(params))
-      .digest('hex');
-    const queryHash = crypto
-      .createHash('md5')
-      .update(normalizedQuery)
-      .digest('hex');
+    const paramsHash = crypto.createHash('md5').update(JSON.stringify(params)).digest('hex');
+    const queryHash = crypto.createHash('md5').update(normalizedQuery).digest('hex');
 
     return `${this.prefix}:${queryHash}:${paramsHash}`;
   }
@@ -368,12 +355,7 @@ export class QueryCache {
     const normalizedQuery = query.trim().toLowerCase();
 
     // Don't cache queries with certain keywords
-    const excludeKeywords = [
-      'random()',
-      'now()',
-      'current_timestamp',
-      'uuid_generate',
-    ];
+    const excludeKeywords = ['random()', 'now()', 'current_timestamp', 'uuid_generate'];
 
     for (const keyword of excludeKeywords) {
       if (normalizedQuery.includes(keyword.toLowerCase())) {
@@ -387,10 +369,7 @@ export class QueryCache {
     }
 
     // Don't cache realtime tables
-    if (
-      normalizedQuery.includes('realtime_') ||
-      normalizedQuery.includes('live_')
-    ) {
+    if (normalizedQuery.includes('realtime_') || normalizedQuery.includes('live_')) {
       return false;
     }
 

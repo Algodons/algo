@@ -101,96 +101,105 @@ router.post(
 /**
  * Export data to CSV
  */
-router.post('/connections/:connectionId/export/csv', async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { connectionId } = req.params;
-    const { tableName, query, compress, delimiter } = req.body;
+router.post(
+  '/connections/:connectionId/export/csv',
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { connectionId } = req.params;
+      const { tableName, query, compress, delimiter } = req.body;
 
-    const options = {
-      format: 'csv' as const,
-      tableName,
-      query,
-      compress,
-      delimiter,
-    };
+      const options = {
+        format: 'csv' as const,
+        tableName,
+        query,
+        compress,
+        delimiter,
+      };
 
-    const filePath = await importExportService.exportCSV(connectionId, options);
+      const filePath = await importExportService.exportCSV(connectionId, options);
 
-    res.download(filePath, path.basename(filePath), (err) => {
-      if (err) {
-        console.error('Download error:', err);
-      }
-      // Clean up file after download
-      fs.unlinkSync(filePath);
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      error: error.message || 'Failed to export CSV',
-    });
+      res.download(filePath, path.basename(filePath), (err) => {
+        if (err) {
+          console.error('Download error:', err);
+        }
+        // Clean up file after download
+        fs.unlinkSync(filePath);
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        error: error.message || 'Failed to export CSV',
+      });
+    }
   }
-});
+);
 
 /**
  * Export data to JSON
  */
-router.post('/connections/:connectionId/export/json', async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { connectionId } = req.params;
-    const { tableName, query, compress } = req.body;
+router.post(
+  '/connections/:connectionId/export/json',
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { connectionId } = req.params;
+      const { tableName, query, compress } = req.body;
 
-    const options = {
-      format: 'json' as const,
-      tableName,
-      query,
-      compress,
-    };
+      const options = {
+        format: 'json' as const,
+        tableName,
+        query,
+        compress,
+      };
 
-    const filePath = await importExportService.exportJSON(connectionId, options);
+      const filePath = await importExportService.exportJSON(connectionId, options);
 
-    res.download(filePath, path.basename(filePath), (err) => {
-      if (err) {
-        console.error('Download error:', err);
-      }
-      // Clean up file after download
-      fs.unlinkSync(filePath);
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      error: error.message || 'Failed to export JSON',
-    });
+      res.download(filePath, path.basename(filePath), (err) => {
+        if (err) {
+          console.error('Download error:', err);
+        }
+        // Clean up file after download
+        fs.unlinkSync(filePath);
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        error: error.message || 'Failed to export JSON',
+      });
+    }
   }
-});
+);
 
 /**
  * Export data to SQL
  */
-router.post('/connections/:connectionId/export/sql', async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { connectionId } = req.params;
-    const { tableName, schemaOnly, dataOnly, compress } = req.body;
+router.post(
+  '/connections/:connectionId/export/sql',
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { connectionId } = req.params;
+      const { tableName, schemaOnly, dataOnly, compress } = req.body;
 
-    const options = {
-      format: 'sql' as const,
-      tableName,
-      schemaOnly,
-      dataOnly,
-      compress,
-    };
+      const options = {
+        format: 'sql' as const,
+        tableName,
+        schemaOnly,
+        dataOnly,
+        compress,
+      };
 
-    const filePath = await importExportService.exportSQL(connectionId, options);
+      const filePath = await importExportService.exportSQL(connectionId, options);
 
-    res.download(filePath, path.basename(filePath), (err) => {
-      if (err) {
-        console.error('Download error:', err);
-      }
-      // Clean up file after download
-      fs.unlinkSync(filePath);
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      error: error.message || 'Failed to export SQL',
-    });
+      res.download(filePath, path.basename(filePath), (err) => {
+        if (err) {
+          console.error('Download error:', err);
+        }
+        // Clean up file after download
+        fs.unlinkSync(filePath);
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        error: error.message || 'Failed to export SQL',
+      });
+    }
   }
-});
+);
 
 export default router;

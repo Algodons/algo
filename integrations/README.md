@@ -1,22 +1,27 @@
 # Algo Platform Integrations
 
-This directory contains integrations for various third-party services with the Algo Cloud IDE Platform.
+This directory contains integrations for various third-party services with the
+Algo Cloud IDE Platform.
 
 ## Available Integrations
 
 ### Version Control
+
 - **GitHub** - OAuth integration, repository sync, webhooks
 - **GitLab** - OAuth integration, repository sync, webhooks
 
 ### Communication
+
 - **Slack** - Notifications, bot commands, slash commands
 - **Discord** - Webhooks, bot integration
 
 ### Productivity
+
 - **Notion** - Documentation sync, project management
 - **Linear** - Issue tracking, project management
 
 ### Deployment
+
 - **Vercel** - Migration tools, deployment sync
 - **Netlify** - Migration tools, deployment sync
 
@@ -47,7 +52,8 @@ All OAuth integrations follow the standard OAuth 2.0 flow:
 
 ## Webhook Handling
 
-Webhooks are handled through the main webhook service and routed to specific integration handlers.
+Webhooks are handled through the main webhook service and routed to specific
+integration handlers.
 
 ## Setup
 
@@ -133,6 +139,7 @@ To add a new integration:
 ## Testing
 
 Each integration should include:
+
 - Unit tests for API methods
 - Integration tests for OAuth flow
 - Webhook handler tests
@@ -140,4 +147,5 @@ Each integration should include:
 
 ## Support
 
-For integration-specific issues, refer to the individual integration README files.
+For integration-specific issues, refer to the individual integration README
+files.

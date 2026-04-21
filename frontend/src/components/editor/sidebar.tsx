@@ -69,23 +69,16 @@ export function EditorSidebar({ width, projectId }: EditorSidebarProps) {
           <span className="text-sm">{node.name}</span>
         </div>
         {node.type === 'folder' && isExpanded && node.children && (
-          <div>
-            {node.children.map((child) => renderFileNode(child, depth + 1))}
-          </div>
+          <div>{node.children.map((child) => renderFileNode(child, depth + 1))}</div>
         )}
       </div>
     );
   };
 
   return (
-    <div
-      className="border-r bg-background overflow-y-auto"
-      style={{ width }}
-    >
+    <div className="border-r bg-background overflow-y-auto" style={{ width }}>
       <div className="p-2">
-        <h2 className="text-xs font-semibold text-muted-foreground uppercase mb-2">
-          Files
-        </h2>
+        <h2 className="text-xs font-semibold text-muted-foreground uppercase mb-2">Files</h2>
         {files.map((file) => renderFileNode(file))}
       </div>
     </div>

@@ -1,6 +1,7 @@
 # Dashboard API Documentation
 
 ## Base URL
+
 ```
 http://localhost:4000/api/dashboard
 ```
@@ -10,11 +11,13 @@ http://localhost:4000/api/dashboard
 All endpoints require authentication using one of the following methods:
 
 ### API Key
+
 ```http
 X-API-Key: algo_sk_your_api_key_here
 ```
 
 ### Personal Access Token
+
 ```http
 Authorization: Bearer pat_your_token_here
 ```
@@ -28,11 +31,13 @@ GET /projects/projects
 ```
 
 **Query Parameters:**
+
 - `search` (optional): Search query for project name/description
 - `language` (optional): Filter by programming language
 - `favorite` (optional): Set to "true" to show only favorites
 
 **Response:**
+
 ```json
 {
   "projects": [
@@ -61,9 +66,11 @@ GET /projects/templates
 ```
 
 **Query Parameters:**
+
 - `category` (optional): Filter by template category
 
 **Response:**
+
 ```json
 {
   "templates": [
@@ -85,6 +92,7 @@ POST /projects/projects/from-template
 ```
 
 **Request Body:**
+
 ```json
 {
   "templateId": 1,
@@ -93,6 +101,7 @@ POST /projects/projects/from-template
 ```
 
 **Response:**
+
 ```json
 {
   "project": {
@@ -111,6 +120,7 @@ POST /projects/projects/:projectId/favorite
 ```
 
 **Response:**
+
 ```json
 {
   "isFavorite": true
@@ -124,6 +134,7 @@ POST /projects/projects/:projectId/share
 ```
 
 **Request Body:**
+
 ```json
 {
   "email": "collaborator@example.com",
@@ -134,6 +145,7 @@ POST /projects/projects/:projectId/share
 **Roles:** `viewer`, `editor`, `admin`
 
 **Response:**
+
 ```json
 {
   "collaborator": {
@@ -152,6 +164,7 @@ GET /projects/projects/:projectId/collaborators
 ```
 
 **Response:**
+
 ```json
 {
   "collaborators": [
@@ -174,6 +187,7 @@ POST /projects/projects/:projectId/accept-invite
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Invitation accepted"
@@ -187,6 +201,7 @@ POST /projects/projects/:projectId/transfer
 ```
 
 **Request Body:**
+
 ```json
 {
   "newOwnerEmail": "newowner@example.com"
@@ -202,6 +217,7 @@ GET /resources/usage/current
 ```
 
 **Response:**
+
 ```json
 {
   "usage": {
@@ -239,11 +255,13 @@ GET /resources/usage/historical
 ```
 
 **Query Parameters:**
+
 - `metric` (required): Metric type (cpu, memory, storage, bandwidth)
 - `start` (required): Start date (ISO 8601)
 - `end` (required): End date (ISO 8601)
 
 **Response:**
+
 ```json
 {
   "metrics": [
@@ -265,10 +283,12 @@ GET /resources/usage/timeseries
 ```
 
 **Query Parameters:**
+
 - `metric` (required): Metric type
 - `hours` (optional): Number of hours to fetch (default: 24)
 
 **Response:**
+
 ```json
 {
   "timeSeries": [
@@ -287,6 +307,7 @@ POST /resources/usage/record
 ```
 
 **Request Body:**
+
 ```json
 {
   "projectId": 123,
@@ -303,6 +324,7 @@ GET /resources/billing/current
 ```
 
 **Response:**
+
 ```json
 {
   "billing": {
@@ -313,7 +335,7 @@ GET /resources/billing/current
     "cpuCost": 12.34,
     "memoryCost": 15.89,
     "storageCost": 8.44,
-    "bandwidthCost": 9.00,
+    "bandwidthCost": 9.0,
     "status": "pending"
   }
 }
@@ -326,9 +348,11 @@ GET /resources/usage/forecast
 ```
 
 **Query Parameters:**
+
 - `metric` (required): Metric type
 
 **Response:**
+
 ```json
 {
   "forecast": {
@@ -349,6 +373,7 @@ POST /resources/alerts
 ```
 
 **Request Body:**
+
 ```json
 {
   "metricType": "memory",
@@ -364,6 +389,7 @@ GET /resources/alerts
 ```
 
 **Response:**
+
 ```json
 {
   "alerts": [
@@ -388,6 +414,7 @@ POST /api/api-keys
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "Production API Key",
@@ -397,6 +424,7 @@ POST /api/api-keys
 ```
 
 **Response:**
+
 ```json
 {
   "apiKey": {
@@ -416,6 +444,7 @@ GET /api/api-keys
 ```
 
 **Response:**
+
 ```json
 {
   "apiKeys": [
@@ -450,6 +479,7 @@ POST /api/webhooks
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "Deploy Notifications",
@@ -461,6 +491,7 @@ POST /api/webhooks
 ```
 
 **Response:**
+
 ```json
 {
   "webhook": {
@@ -481,6 +512,7 @@ GET /api/webhooks
 ```
 
 **Query Parameters:**
+
 - `projectId` (optional): Filter by project
 
 ### Update Webhook
@@ -490,6 +522,7 @@ PATCH /api/webhooks/:webhookId
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "Updated Name",
@@ -510,9 +543,11 @@ GET /api/webhooks/:webhookId/deliveries
 ```
 
 **Query Parameters:**
+
 - `limit` (optional): Number of deliveries to fetch (default: 50)
 
 **Response:**
+
 ```json
 {
   "deliveries": [
@@ -534,10 +569,12 @@ GET /api/analytics/usage
 ```
 
 **Query Parameters:**
+
 - `start` (optional): Start date (ISO 8601)
 - `end` (optional): End date (ISO 8601)
 
 **Response:**
+
 ```json
 {
   "analytics": {
@@ -576,6 +613,7 @@ GET /settings/profile
 ```
 
 **Response:**
+
 ```json
 {
   "profile": {
@@ -595,6 +633,7 @@ PATCH /settings/profile
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "Jane Doe",
@@ -610,6 +649,7 @@ POST /settings/organizations
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "Acme Corp",
@@ -637,6 +677,7 @@ POST /settings/organizations/:orgId/invite
 ```
 
 **Request Body:**
+
 ```json
 {
   "email": "member@example.com",
@@ -653,6 +694,7 @@ POST /settings/payment-methods
 ```
 
 **Request Body:**
+
 ```json
 {
   "type": "card",
@@ -688,6 +730,7 @@ GET /settings/invoices
 ```
 
 **Response:**
+
 ```json
 {
   "invoices": [
@@ -717,6 +760,7 @@ GET /settings/notifications/preferences
 ```
 
 **Response:**
+
 ```json
 {
   "preferences": {
@@ -738,6 +782,7 @@ PATCH /settings/notifications/preferences
 ```
 
 **Request Body:**
+
 ```json
 {
   "emailNotifications": true,
@@ -752,6 +797,7 @@ POST /settings/2fa/setup
 ```
 
 **Response:**
+
 ```json
 {
   "secret": "base64_secret",
@@ -766,6 +812,7 @@ POST /settings/2fa/enable
 ```
 
 **Request Body:**
+
 ```json
 {
   "code": "123456"
@@ -785,6 +832,7 @@ GET /settings/2fa/status
 ```
 
 **Response:**
+
 ```json
 {
   "isEnabled": true
@@ -798,6 +846,7 @@ POST /settings/ssh-keys
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "Work Laptop",
@@ -824,6 +873,7 @@ POST /settings/tokens
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "CLI Token",
@@ -833,6 +883,7 @@ POST /settings/tokens
 ```
 
 **Response:**
+
 ```json
 {
   "token": {
@@ -928,6 +979,7 @@ All endpoints return errors in the following format:
 ```
 
 **Common Status Codes:**
+
 - `400`: Bad Request - Invalid parameters
 - `401`: Unauthorized - Missing or invalid authentication
 - `403`: Forbidden - Insufficient permissions
@@ -937,10 +989,12 @@ All endpoints return errors in the following format:
 ## Rate Limiting
 
 API requests are rate limited:
+
 - 1000 requests per hour per API key
 - 100 requests per minute per API key
 
 Rate limit headers:
+
 ```
 X-RateLimit-Limit: 1000
 X-RateLimit-Remaining: 999

@@ -15,17 +15,17 @@ export function activate(context: vscode.ExtensionContext) {
   algoClient = axios.create({
     baseURL: apiUrl,
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
+      Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
   });
 
   // Register commands
-  
+
   // Deploy command
   const deployCommand = vscode.commands.registerCommand('algo.deploy', async () => {
     const projectId = config.get<string>('projectId');
-    
+
     if (!projectId) {
       vscode.window.showErrorMessage('Please configure your project ID in settings');
       return;
@@ -41,15 +41,14 @@ export function activate(context: vscode.ExtensionContext) {
     try {
       const response = await algoClient.post(`/projects/${projectId}/deploy`);
       const deployment = response.data.data;
-      
-      vscode.window.showInformationMessage(
-        `Deployment initiated! ID: ${deployment.id}`,
-        'View Status'
-      ).then(selection => {
-        if (selection === 'View Status') {
-          vscode.commands.executeCommand('algo.viewDeployment', deployment.id);
-        }
-      });
+
+      vscode.window
+        .showInformationMessage(`Deployment initiated! ID: ${deployment.id}`, 'View Status')
+        .then((selection) => {
+          if (selection === 'View Status') {
+            vscode.commands.executeCommand('algo.viewDeployment', deployment.id);
+          }
+        });
     } catch (error: any) {
       vscode.window.showErrorMessage(`Deployment failed: ${error.message}`);
     }
@@ -70,7 +69,7 @@ export function activate(context: vscode.ExtensionContext) {
     try {
       const response = await algoClient.get('/resources/usage');
       const usage = response.data.data;
-      
+
       // Create webview to display resources
       const panel = vscode.window.createWebviewPanel(
         'algoResources',
@@ -116,16 +115,13 @@ export function activate(context: vscode.ExtensionContext) {
 
         if (input) {
           vscode.window.showInformationMessage('Invoking AI agent...');
-          
-          const invokeResponse = await algoClient.post(
-            `/ai/agents/${selectedAgent.id}/invoke`,
-            { input }
-          );
-          
+
+          const invokeResponse = await algoClient.post(`/ai/agents/${selectedAgent.id}/invoke`, {
+            input,
+          });
+
           const result = invokeResponse.data.data;
-          vscode.window.showInformationMessage(
-            `Agent output: ${JSON.stringify(result.output)}`
-          );
+          vscode.window.showInformationMessage(`Agent output: ${JSON.stringify(result.output)}`);
         }
       }
     } catch (error: any) {
@@ -174,14 +170,18 @@ function getResourceWebviewContent(usage: any): string {
     <body>
       <h1>Resource Usage</h1>
       <div id="metrics">
-        ${Object.entries(usage.aggregates || {}).map(([metric, data]: [string, any]) => `
+        ${Object.entries(usage.aggregates || {})
+          .map(
+            ([metric, data]: [string, any]) => `
           <div class="metric">
             <h3>${metric.toUpperCase()}</h3>
             <p>Average: <span class="metric-value">${data.average.toFixed(2)} ${data.unit}</span></p>
             <p>Peak: <span class="metric-value">${data.peak.toFixed(2)} ${data.unit}</span></p>
             <p>Total: <span class="metric-value">${data.total.toFixed(2)} ${data.unit}</span></p>
           </div>
-        `).join('')}
+        `
+          )
+          .join('')}
       </div>
     </body>
     </html>

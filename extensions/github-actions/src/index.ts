@@ -16,7 +16,7 @@ async function run(): Promise<void> {
     const client = axios.create({
       baseURL: apiUrl,
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
     });
@@ -30,10 +30,10 @@ async function run(): Promise<void> {
 
     if (waitForDeployment) {
       core.info('Waiting for deployment to complete...');
-      
+
       const startTime = Date.now();
       let status = deployment.status;
-      
+
       while (status === 'pending' || status === 'building' || status === 'deploying') {
         // Check timeout
         if (Date.now() - startTime > deploymentTimeout * 1000) {
@@ -41,12 +41,12 @@ async function run(): Promise<void> {
         }
 
         // Wait 5 seconds before checking again
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await new Promise((resolve) => setTimeout(resolve, 5000));
 
         // Check deployment status
         const statusResponse = await client.get(`/deployments/${deployment.id}`);
         status = statusResponse.data.data.status;
-        
+
         core.info(`Deployment status: ${status}`);
 
         if (status === 'active') {

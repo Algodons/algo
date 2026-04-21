@@ -1,6 +1,8 @@
 # Development Environment Setup Guide
 
-This guide will help you set up your local development environment for testing and developing the Algo Cloud IDE platform, including Copilot SaaS functionality.
+This guide will help you set up your local development environment for testing
+and developing the Algo Cloud IDE platform, including Copilot SaaS
+functionality.
 
 ## Table of Contents
 
@@ -45,6 +47,7 @@ npm run dev:local
 ```
 
 This will start:
+
 - **Frontend** on http://localhost:3000 (Next.js)
 - **Backend** on http://localhost:4000 (Express)
 
@@ -83,7 +86,8 @@ NEXT_PUBLIC_COPILOT_API_URL=https://api-dev.copilot.example.com
 NEXT_PUBLIC_COPILOT_ENABLED=true
 ```
 
-> **Important:** Replace the placeholder API keys with your actual development credentials.
+> **Important:** Replace the placeholder API keys with your actual development
+> credentials.
 
 #### Database Configuration
 
@@ -99,7 +103,8 @@ DB_PASSWORD=dev_password
 
 ### Environment Switching
 
-The application automatically uses the appropriate environment file based on `NODE_ENV`:
+The application automatically uses the appropriate environment file based on
+`NODE_ENV`:
 
 - **Development:** Uses `.env.development` files
 - **Production:** Uses `.env` or `.env.production` files
@@ -113,17 +118,20 @@ The application automatically uses the appropriate environment file based on `NO
 npm run dev:local
 ```
 
-This uses `concurrently` to start both services simultaneously with hot-reload enabled.
+This uses `concurrently` to start both services simultaneously with hot-reload
+enabled.
 
 ### Option 2: Start Services Separately
 
 Start the backend:
+
 ```bash
 cd backend
 npm run dev
 ```
 
 In a new terminal, start the frontend:
+
 ```bash
 cd frontend
 npm run dev
@@ -218,21 +226,25 @@ View logs in the console where you started the backend server.
 ### Key Endpoints for Testing
 
 #### AI/ML Endpoints
+
 - `GET /api/v1/ai/agents` - List AI agents
 - `POST /api/v1/ai/agents/:agentId/invoke` - Invoke AI agent
 - `GET /api/v1/ai/models` - List ML models
 - `POST /api/v1/ai/models/:modelId/predict` - ML prediction
 
 #### Health Check
+
 - `GET /health` - Server health status
 
 #### Authentication
+
 - `POST /api/auth/login` - User login
 - `POST /api/auth/register` - User registration
 
 ### API Documentation
 
 For complete API documentation, see:
+
 - [Admin API](./ADMIN_API.md)
 - [Platform API v1](./PLATFORM_API_V1.md)
 - [Automation System](./AUTOMATION_SYSTEM.md)
@@ -365,6 +377,7 @@ npm run type-check
 #### WebSocket Connection Issues
 
 Check that:
+
 1. Backend is running on port 4000
 2. CORS is properly configured
 3. WebSocket URL is correct in frontend config
@@ -471,13 +484,13 @@ cd backend && npm run build
 
 ### Environment URLs
 
-| Service | Development URL |
-|---------|----------------|
-| Frontend | http://localhost:3000 |
-| Backend API | http://localhost:4000 |
-| WebSocket | ws://localhost:4000 |
-| Health Check | http://localhost:4000/health |
-| Copilot API | http://localhost:4000/api/copilot |
+| Service      | Development URL                   |
+| ------------ | --------------------------------- |
+| Frontend     | http://localhost:3000             |
+| Backend API  | http://localhost:4000             |
+| WebSocket    | ws://localhost:4000               |
+| Health Check | http://localhost:4000/health      |
+| Copilot API  | http://localhost:4000/api/copilot |
 
 ### Key Environment Variables
 
@@ -497,7 +510,8 @@ DEBUG=true
 Once your environment is running:
 
 1. Explore the IDE interface at http://localhost:3000
-2. Test Copilot API endpoints - see [COPILOT_API_TESTING.md](./COPILOT_API_TESTING.md)
+2. Test Copilot API endpoints - see
+   [COPILOT_API_TESTING.md](./COPILOT_API_TESTING.md)
 3. Review the [Automation System](./AUTOMATION_SYSTEM.md) for advanced features
 4. Check out [example projects](./AUTOMATION_EXAMPLES.md)
 5. Read about [Team Collaboration](./TEAM_COLLABORATION_SETUP.md)

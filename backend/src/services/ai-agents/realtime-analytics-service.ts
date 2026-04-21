@@ -1,6 +1,6 @@
 /**
  * Real-Time Analytics Service
- * 
+ *
  * Provides real-time analytics, global activity maps, custom dashboards,
  * and revenue impact simulations.
  */
@@ -131,7 +131,7 @@ export class RealtimeAnalyticsService extends EventEmitter {
         []
       );
 
-      const locations = result.rows.map(row => ({
+      const locations = result.rows.map((row) => ({
         country: row.country,
         countryCode: row.country_code,
         latitude: parseFloat(row.latitude),
@@ -206,7 +206,7 @@ export class RealtimeAnalyticsService extends EventEmitter {
         [userId]
       );
 
-      return result.rows.map(row => ({
+      return result.rows.map((row) => ({
         id: row.id,
         userId: row.user_id,
         name: row.name,
@@ -294,11 +294,13 @@ export class RealtimeAnalyticsService extends EventEmitter {
   /**
    * Simulate revenue impact of platform changes
    */
-  async simulateRevenueImpact(changes: Array<{
-    type: 'price_change' | 'feature_add' | 'limit_change' | 'promotion';
-    description: string;
-    details: any;
-  }>): Promise<RevenueSimulation> {
+  async simulateRevenueImpact(
+    changes: Array<{
+      type: 'price_change' | 'feature_add' | 'limit_change' | 'promotion';
+      description: string;
+      details: any;
+    }>
+  ): Promise<RevenueSimulation> {
     try {
       // Get current MRR
       const currentMRRResult = await this.pool.query(
@@ -311,7 +313,7 @@ export class RealtimeAnalyticsService extends EventEmitter {
 
       // Simulate impact for each change
       const impacts = await Promise.all(
-        changes.map(change => this.simulateChangeImpact(change, currentMRR))
+        changes.map((change) => this.simulateChangeImpact(change, currentMRR))
       );
 
       const totalImpact = impacts.reduce((sum, impact) => sum + impact.impact, 0);
@@ -353,9 +355,7 @@ export class RealtimeAnalyticsService extends EventEmitter {
       'revenue_today',
     ];
 
-    const results = await Promise.all(
-      metrics.map(metric => this.calculateMetric(metric))
-    );
+    const results = await Promise.all(metrics.map((metric) => this.calculateMetric(metric)));
 
     return results;
   }
@@ -408,8 +408,8 @@ export class RealtimeAnalyticsService extends EventEmitter {
   private async updateRealTimeMetrics(): Promise<void> {
     try {
       const metrics = await this.getRealTimeMetrics();
-      
-      metrics.forEach(metric => {
+
+      metrics.forEach((metric) => {
         this.metricsCache.set(metric.metric, metric);
       });
 
@@ -436,7 +436,7 @@ export class RealtimeAnalyticsService extends EventEmitter {
            WHERE created_at > NOW() - INTERVAL '5 minutes'`
         );
         value = parseInt(activeUsersResult.rows[0].count);
-        
+
         const prevActiveUsersResult = await this.pool.query(
           `SELECT COUNT(DISTINCT user_id) as count
            FROM audit_logs
@@ -493,19 +493,19 @@ export class RealtimeAnalyticsService extends EventEmitter {
         // Calculate impact of price change
         const priceChangePercent = change.details.percentageChange || 0;
         const affectedUsers = change.details.affectedTier || 'all';
-        
+
         // Get users in affected tier
         const tierResult = await this.pool.query(
           `SELECT COUNT(*) as count, AVG(mrr) as avg_mrr
            FROM subscriptions
            WHERE status = 'active' ${affectedUsers !== 'all' ? `AND tier = '${affectedUsers}'` : ''}`
         );
-        
+
         const tierMRR = parseFloat(tierResult.rows[0].avg_mrr) * parseInt(tierResult.rows[0].count);
-        
+
         // Assume some churn with price increase, growth with decrease
         const churnRate = priceChangePercent > 0 ? priceChangePercent * 0.05 : 0;
-        impact = (tierMRR * priceChangePercent / 100) * (1 - churnRate);
+        impact = ((tierMRR * priceChangePercent) / 100) * (1 - churnRate);
         confidence = 0.75;
         break;
 
@@ -513,11 +513,11 @@ export class RealtimeAnalyticsService extends EventEmitter {
         // New feature typically drives 2-5% upgrade rate
         const upgradeRate = 0.03;
         const avgUpgradeValue = 30;
-        
+
         const userCountResult = await this.pool.query(
-          'SELECT COUNT(*) as count FROM subscriptions WHERE status = \'active\''
+          "SELECT COUNT(*) as count FROM subscriptions WHERE status = 'active'"
         );
-        
+
         impact = parseInt(userCountResult.rows[0].count) * upgradeRate * avgUpgradeValue;
         confidence = 0.6;
         break;
@@ -548,7 +548,7 @@ export class RealtimeAnalyticsService extends EventEmitter {
 
   private async getActiveUsersData(timeRange: string): Promise<any> {
     const interval = this.parseTimeRange(timeRange);
-    
+
     const result = await this.pool.query(
       `SELECT 
         DATE_TRUNC('hour', created_at) as hour,
@@ -560,14 +560,14 @@ export class RealtimeAnalyticsService extends EventEmitter {
     );
 
     return {
-      labels: result.rows.map(r => r.hour),
-      data: result.rows.map(r => parseInt(r.users)),
+      labels: result.rows.map((r) => r.hour),
+      data: result.rows.map((r) => parseInt(r.users)),
     };
   }
 
   private async getRevenueData(timeRange: string): Promise<any> {
     const interval = this.parseTimeRange(timeRange);
-    
+
     const result = await this.pool.query(
       `SELECT 
         DATE_TRUNC('day', created_at) as day,
@@ -579,8 +579,8 @@ export class RealtimeAnalyticsService extends EventEmitter {
     );
 
     return {
-      labels: result.rows.map(r => r.day),
-      data: result.rows.map(r => parseFloat(r.revenue)),
+      labels: result.rows.map((r) => r.day),
+      data: result.rows.map((r) => parseFloat(r.revenue)),
     };
   }
 
@@ -606,7 +606,7 @@ export class RealtimeAnalyticsService extends EventEmitter {
 
   private async getUserSignupsData(timeRange: string): Promise<any> {
     const interval = this.parseTimeRange(timeRange);
-    
+
     const result = await this.pool.query(
       `SELECT 
         DATE_TRUNC('day', created_at) as day,
@@ -618,8 +618,8 @@ export class RealtimeAnalyticsService extends EventEmitter {
     );
 
     return {
-      labels: result.rows.map(r => r.day),
-      data: result.rows.map(r => parseInt(r.signups)),
+      labels: result.rows.map((r) => r.day),
+      data: result.rows.map((r) => parseInt(r.signups)),
     };
   }
 
